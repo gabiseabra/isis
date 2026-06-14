@@ -23,9 +23,6 @@ export type IconControlProps = {
 } & PaddingProps &
   MarginProps;
 
-/**
- * @direction inline
- */
 export function IconControl({
   as: Component,
   size,

@@ -1,0 +1,82 @@
+@use "../../styles/mixins/color" as color;
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  justify-self: baseline;
+  align-self: baseline;
+
+  padding: calc(var(--badge-space) * 0.75) var(--badge-space);
+  font-size: var(--badge-size);
+  line-height: var(--badge-size);
+  border-radius: var(--radius);
+  font-family: var(--font-body);
+  font-weight: normal;
+}
+
+@each $name, $_ in color.$colors-codes {
+  .#{"color-" + $name} {
+    color: var(#{"--color-" + $name});
+    background-color: var(#{"--bg-" + $name});
+  }
+}
+
+.size-s {
+  --badge-size: calc(var(--font-size-caption) * 0.85);
+  --badge-space: calc(var(--space) / 1.5);
+}
+
+.size-m {
+  --badge-size: var(--font-size-caption);
+  --badge-space: var(--space);
+}
+
+.size-l {
+  --badge-size: calc(var(--font-size-caption) * 1.25);
+  --badge-space: calc(var(--space) * 1.25);
+}
+
+.status-empty,
+.status-in-progress,
+.status-completed {
+  position: relative;
+  padding-left: calc(var(--space) * 2 + 6px);
+
+  &::before {
+    content: "";
+    display: block;
+    position: absolute;
+    left: var(--space);
+    top: 50%;
+    margin-top: -3px;
+    margin-right: var(--space);
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    vertical-align: middle;
+  }
+}
+
+.status-empty {
+  &::before {
+    border: 1px solid currentColor;
+    background: transparent;
+  }
+}
+
+.status-in-progress {
+  &::before {
+    border: 1px solid currentColor;
+    background: linear-gradient(to right, currentColor 50%, transparent 50%);
+  }
+}
+
+.status-completed {
+  &::before {
+    background: currentColor;
+  }
+}
+
+.active {
+  outline: 1.5px solid currentColor;
+}
