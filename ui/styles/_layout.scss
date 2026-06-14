@@ -1,0 +1,30 @@
+@use "mixins/layout" as layout;
+
+:root {
+  --space: 6px;
+  --radius: 8px;
+
+  --breakpoint-s: #{layout.$breakpoint-s};
+  --breakpoint-m: #{layout.$breakpoint-m};
+
+  --width-content: #{layout.$width-content};
+  --gutter-content: #{layout.$gutter-content};
+}
+
+html,
+body,
+#root {
+  width: 100%;
+  height: 100%;
+  min-height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  overflow: visible;
+}
+
+@page {
+  margin: 0;
+}

@@ -1,0 +1,29 @@
+$breakpoint-s: 450px;
+$breakpoint-m: 800px;
+$width-content: 800px;
+// Min. offset from the content to the edge of the viewport
+$gutter-content: 20px;
+
+@mixin breakpoint($size) {
+  @if $size == "s" {
+    @media screen and (max-width: $breakpoint-s) {
+      @content;
+    }
+  } @else if $size == "m" {
+    @media screen and (max-width: $breakpoint-m) {
+      @content;
+    }
+  } @else if $size == "l" {
+    @media screen and (min-width: $breakpoint-m + 1) {
+      @content;
+    }
+  } @else {
+    @error "Invalid breakpoint #{size}";
+  }
+}
+
+@mixin fit-content {
+  @media screen and (max-width: $width-content + ($gutter-content * 2)) {
+    @content;
+  }
+}

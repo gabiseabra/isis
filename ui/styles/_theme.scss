@@ -1,0 +1,60 @@
+/***********************************************************************************************************************
+ * [_theme.scss] Color and spacing configurations
+ **********************************************************************************************************************/
+
+:root {
+  /* site palette */
+
+  --color-primary: rgb(209, 127, 75);
+  --bg-primary: rgb(255, 234, 221);
+
+  /* surface colors */
+
+  --color-suface: #f2f2f2;
+  --color-background: #e3e3e3;
+  --color-shadow: rgba(21, 20, 30, 0.3);
+
+  /* text colors */
+
+  --color-text: #393939;
+  --color-heading: #393939;
+  --color-muted: #858389;
+  --color-disabled: #a7a5ab;
+  --color-divider: #d7d6d9;
+  --color-link: #3928bb;
+  // selected text colors
+  --color-highlight: rgb(232, 25, 6);
+  --bg-highlight: rgb(255, 241, 232);
+
+  /* notion colors */
+
+  --color-default: var(--color-text);
+  --bg-default: var(--bg-from);
+
+  --color-gray: #706a85;
+  --bg-gray: #eeedf4;
+
+  --color-brown: #8e2600;
+  --bg-brown: #f3d0c2;
+
+  --color-orange: #c36e00;
+  --bg-orange: #ffdca4;
+
+  --color-yellow: #cf9009;
+  --bg-yellow: #ffe9ae;
+
+  --color-green: #3d7a03;
+  --bg-green: #c5f1a8;
+
+  --color-blue: #2d60e4;
+  --bg-blue: #c8e6ff;
+
+  --color-purple: #5413dd;
+  --bg-purple: #d9d8ff;
+
+  --color-pink: #dc1a9f;
+  --bg-pink: #ffd4f9;
+
+  --color-red: #ea0000;
+  --bg-red: #ffcccc;
+}

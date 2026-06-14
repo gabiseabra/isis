@@ -1,0 +1,10 @@
+.DS_Store
+.idea
+.claude
+.codex
+.omx
+.env
+node_modules
+dist
+tsconfig.tsbuildinfo
+storybook-static
