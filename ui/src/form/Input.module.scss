@@ -1,0 +1,65 @@
+.InputWrapper {
+  display: inline-flex;
+  align-items: center;
+  box-sizing: border-box;
+  width: 100%;
+  border: var(--size-divider) solid var(--color-divider);
+  border-radius: var(--radius);
+  background: var(--color-suface);
+
+  &:focus-within {
+    border-color: var(--color-primary);
+  }
+
+  &:has(.Input:disabled) {
+    color: var(--color-disabled);
+    cursor: not-allowed;
+  }
+}
+
+.Input {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  border: none;
+  background: transparent;
+  color: var(--color-text);
+  font: inherit;
+  line-height: var(--line-height);
+  padding: var(--space) calc(var(--space) * 2);
+
+  &:focus {
+    outline: none;
+  }
+
+  &:disabled {
+    color: var(--color-disabled);
+    cursor: not-allowed;
+  }
+
+  &::placeholder {
+    color: var(--color-muted);
+  }
+}
+
+.InputWrapper:has(.LeftSlot) .Input {
+  padding-left: var(--space);
+}
+
+.InputWrapper:has(.RightSlot) .Input {
+  padding-right: var(--space);
+}
+
+.Slot {
+  display: inline-flex;
+  flex-shrink: 0;
+  color: var(--color-muted);
+}
+
+.LeftSlot {
+  padding-left: calc(var(--space) * 2);
+}
+
+.RightSlot {
+  padding-right: calc(var(--space) * 2);
+}
