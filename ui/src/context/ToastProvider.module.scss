@@ -1,0 +1,113 @@
+.Viewport {
+  position: fixed;
+  right: calc(var(--space) * 2);
+  bottom: calc(var(--space) * 2);
+  z-index: 1000;
+
+  display: flex;
+  flex-direction: column;
+  gap: var(--space);
+
+  width: min(360px, calc(100vw - var(--space) * 4));
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  outline: none;
+}
+
+.Root {
+  display: flex;
+  align-items: flex-start;
+  gap: calc(var(--space) * 1.5);
+
+  padding: calc(var(--space) * 1.5) calc(var(--space) * 2);
+  border-radius: var(--radius);
+  background: var(--toast-bg);
+  color: var(--toast-color);
+  box-shadow: 0 var(--space) calc(var(--space) * 3)
+    color-mix(in srgb, var(--color-shadow) 30%, transparent);
+
+  &[data-state="open"] {
+    animation: toast-slide-in 160ms ease-out;
+  }
+
+  &[data-state="closed"] {
+    animation: toast-hide 120ms ease-in;
+  }
+
+  &[data-swipe="move"] {
+    transform: translateX(var(--radix-toast-swipe-move-x));
+  }
+
+  &[data-swipe="cancel"] {
+    transform: translateX(0);
+    transition: transform 120ms ease-out;
+  }
+
+  &[data-swipe="end"] {
+    animation: toast-swipe-out 120ms ease-in;
+  }
+
+  > button {
+    color: inherit;
+  }
+}
+
+.Content {
+  flex: 1;
+  min-width: 0;
+}
+
+.Title {
+  margin: 0 0 calc(var(--space) / 2);
+  font-weight: 600;
+}
+
+.Description {
+  margin: 0;
+  color: var(--toast-description-color);
+}
+
+.neutral {
+  --toast-bg: var(--color-surface);
+  --toast-color: var(--color-text);
+  --toast-description-color: var(--color-muted);
+}
+
+.success {
+  --toast-bg: var(--bg-green);
+  --toast-color: var(--color-green);
+  --toast-description-color: currentColor;
+}
+
+.warning {
+  --toast-bg: var(--bg-yellow);
+  --toast-color: var(--color-yellow);
+  --toast-description-color: currentColor;
+}
+
+.error {
+  --toast-bg: var(--bg-red);
+  --toast-color: var(--color-red);
+  --toast-description-color: currentColor;
+}
+
+@keyframes toast-slide-in {
+  from {
+    transform: translateX(calc(100% + var(--space) * 2));
+    opacity: 0;
+  }
+}
+
+@keyframes toast-hide {
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes toast-swipe-out {
+  to {
+    transform: translateX(calc(100% + var(--space) * 2));
+    opacity: 0;
+  }
+}
