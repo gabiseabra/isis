@@ -8,7 +8,7 @@ export type IconControlProps = {
   as: "div" | "span" | "a" | "button";
 
   size: "xs" | "s" | "m" | "l" | "xl" | "auto";
-  color: css.Color | "currentColor";
+  color?: css.Color | "currentColor";
 
   badge?: string;
 
@@ -26,7 +26,7 @@ export type IconControlProps = {
 export function IconControl({
   as: Component,
   size,
-  color,
+  color = "currentColor",
   badge,
   children,
   className,

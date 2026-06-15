@@ -1,0 +1,79 @@
+import type { Meta, StoryObj } from "@storybook/react";
+import { useState } from "react";
+import { OverlayProvider } from "../context/OverlayProvider";
+import { Text } from "../display/Text";
+import { Button } from "../form/Button";
+import { Col } from "./FlexBox";
+import { Modal } from "./Modal";
+
+type ModalStoryArgs = {
+  defaultOpen: boolean;
+  title: string;
+  description: string;
+};
+
+const meta = {
+  title: "Layout/Modal",
+  args: {
+    defaultOpen: false,
+    title: "Modal title",
+    description: "Use this surface for focused content over the current page.",
+  },
+  render: (args) => <ModalStory {...args} />,
+  decorators: [
+    (Story) => (
+      <OverlayProvider>
+        <Col p={4} gap={2}>
+          <Story />
+        </Col>
+      </OverlayProvider>
+    ),
+  ],
+} satisfies Meta<ModalStoryArgs>;
+
+type Story = StoryObj<typeof meta>;
+
+export default meta;
+
+export const Default: Story = {};
+
+function ModalStory({ defaultOpen, title, description }: ModalStoryArgs) {
+  const [open, setOpen] = useState(defaultOpen);
+
+  return (
+    <>
+      <Button color="primary" onClick={() => setOpen(true)}>
+        Open modal
+      </Button>
+
+      <Modal
+        open={open}
+        title={title}
+        description={description}
+        footer={
+          <>
+            <Button size="s" onClick={() => setOpen(false)}>
+              Cancel
+            </Button>
+            <Button
+              size="s"
+              color="primary"
+              variant="primary"
+              onClick={() => setOpen(false)}
+            >
+              Confirm
+            </Button>
+          </>
+        }
+        onClose={() => setOpen(false)}
+      >
+        <Col gap={2}>
+          <Text>
+            Modal content stays centered in a Radix Dialog portal and closes
+            with the same data-state animation path as it opens.
+          </Text>
+        </Col>
+      </Modal>
+    </>
+  );
+}

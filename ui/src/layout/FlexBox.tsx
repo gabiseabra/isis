@@ -4,7 +4,7 @@ import * as css from "../utils/css";
 import styles from "./FlexBox.module.scss";
 
 export type RowProps = {
-  as?: "div" | "section" | "header" | "main";
+  as?: "div" | "section" | "header" | "footer" | "main";
   flex?: number | string;
   gap?: number;
   wrap?: boolean;
@@ -44,7 +44,7 @@ export function Row({
 }
 
 export type ColProps = {
-  as?: "div" | "section" | "header" | "main";
+  as?: "div" | "section" | "header" | "footer" | "main";
   flex?: number | string;
   alignX?: CSSProperties["alignItems"];
   alignY?: CSSProperties["justifyContent"];
