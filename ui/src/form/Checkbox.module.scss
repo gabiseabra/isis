@@ -21,7 +21,7 @@
   padding: 0;
   border: var(--size-divider) solid var(--color-divider);
   border-radius: calc(var(--radius) / 2);
-  background: var(--color-suface);
+  background: var(--color-surface);
   color: var(--color-text);
   cursor: pointer;
 
@@ -29,7 +29,7 @@
     border-color: var(--color-primary);
     background: color-mix(
       in srgb,
-      var(--color-suface) 90%,
+      var(--color-surface) 90%,
       var(--color-primary)
     );
   }
@@ -62,7 +62,7 @@
 
   &:disabled {
     border-color: var(--color-divider);
-    background: var(--color-suface);
+    background: var(--color-surface);
     color: var(--color-disabled);
     cursor: not-allowed;
   }
@@ -70,7 +70,7 @@
   &[data-state="checked"]:disabled {
     border-color: var(--color-disabled);
     background: var(--color-disabled);
-    color: var(--color-suface);
+    color: var(--color-surface);
   }
 }
 

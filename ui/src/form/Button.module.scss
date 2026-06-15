@@ -74,14 +74,14 @@
   &:disabled:not(.loadingState) {
     border-color: var(--color-disabled);
     background: var(--color-disabled);
-    color: var(--color-suface);
+    color: var(--color-surface);
     cursor: not-allowed;
   }
 }
 
 .variant-secondary {
   border-color: var(--button-color);
-  background: var(--color-suface);
+  background: var(--color-surface);
   color: var(--button-color);
 
   &:not(:disabled):hover,
@@ -91,7 +91,7 @@
 
   &:disabled:not(.loadingState) {
     border-color: var(--color-divider);
-    background: var(--color-suface);
+    background: var(--color-surface);
     color: var(--color-disabled);
     cursor: not-allowed;
   }
