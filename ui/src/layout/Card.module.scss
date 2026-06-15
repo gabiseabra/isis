@@ -1,0 +1,22 @@
+.Card {
+  border-radius: var(--card-radius);
+  background: var(--color-suface);
+  box-shadow: var(--card-shadow);
+}
+
+.elevation-0 {
+  --card-radius: var(--radius);
+  --card-shadow: none;
+}
+
+.elevation-1 {
+  --card-radius: calc(var(--radius) * 1.5);
+  --card-shadow: 0 calc(var(--space) / 2) var(--space)
+    color-mix(in srgb, var(--color-shadow) 25%, transparent);
+}
+
+.elevation-2 {
+  --card-radius: calc(var(--radius) * 2);
+  --card-shadow: 0 var(--space) calc(var(--space) * 3)
+    color-mix(in srgb, var(--color-shadow) 35%, transparent);
+}
