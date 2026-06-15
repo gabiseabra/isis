@@ -5,15 +5,18 @@ import { IconControl, type IconControlProps } from "./IconControl";
 
 type IconControlStoryArgs = Pick<
   IconControlProps,
-  "as" | "size" | "color" | "badge" | "disabled" | "readOnly" | "title"
+  "as" | "size" | "color" | "badge" | "disabled" | "title"
 >;
 
 const meta = {
   title: "Display/IconControl",
   args: {
-    as: "button",
+    as: "span",
     size: "m",
     color: "primary",
+    badge: "",
+    disabled: false,
+    title: "",
   },
   render: (args) => (
     <IconControl {...args}>
@@ -46,18 +49,18 @@ const meta = {
         "primary",
       ],
     },
-  },
-  parameters: {
-    controls: {
-      include: [
-        "as",
-        "size",
-        "color",
-        "badge",
-        "disabled",
-        "readOnly",
-        "title",
-      ],
+    badge: {
+      control: "text",
+    },
+    title: {
+      control: "text",
+    },
+    disabled: {
+      control: "boolean",
+      if: {
+        arg: "as",
+        eq: "button",
+      },
     },
   },
   decorators: [
@@ -77,6 +80,7 @@ export const Default: Story = {};
 
 export const WithBadge: Story = {
   args: {
+    as: "span",
     badge: "3",
   },
   render: (args) => (
@@ -86,10 +90,28 @@ export const WithBadge: Story = {
   ),
 };
 
+export const IconButton: Story = {
+  args: {
+    as: "button",
+    badge: "3",
+    title: "Favorite",
+  },
+  parameters: {
+    controls: {
+      exclude: ["as"],
+    },
+  },
+  render: (args) => (
+    <IconControl {...args} as="button" onClick={() => undefined}>
+      <FaHeart />
+    </IconControl>
+  ),
+};
+
 export const Sizes: Story = {
   parameters: {
     controls: {
-      include: ["as", "color", "badge"],
+      exclude: ["size"],
     },
   },
   render: (args) => (

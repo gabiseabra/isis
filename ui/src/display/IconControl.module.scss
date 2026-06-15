@@ -1,6 +1,9 @@
 @use "../../styles/mixins/color" as color;
 
 .icon {
+  --icon-color: currentColor;
+  --icon-background: var(--color-surface);
+
   position: relative;
 
   display: inline-flex;
@@ -14,6 +17,7 @@
 
   background: transparent;
   border: none;
+  color: var(--icon-color);
 
   width: var(--icon-size);
   height: 0;
@@ -24,7 +28,7 @@
     outline: none;
   }
 
-  & > * {
+  & > :not(.badge) {
     display: block;
     width: 100%;
     height: 100%;
@@ -33,15 +37,21 @@
 
 .badge {
   position: absolute;
-  bottom: calc(var(--badge-size) * -0.5);
-  right: calc(var(--badge-size) * -0.5);
+  left: calc(50% + var(--icon-size) / 2);
+  top: calc(50% + var(--icon-size) / 2);
+  transform: translate(-50%, -50%);
 
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   height: var(--badge-size);
   min-width: var(--badge-size);
   width: auto;
   border-radius: calc(var(--badge-size) / 2);
+  background: var(--icon-color);
+  color: var(--icon-background);
   font-size: calc(var(--badge-size) * 0.85);
-  line-height: 1.25;
+  line-height: 1;
 }
 
 .clickable {
@@ -50,13 +60,14 @@
 
 @each $name, $_ in color.$colors-codes {
   .#{"color-" + $name} {
-    color: var(#{"--color-" + $name});
-
-    .badge {
-      background: var(#{"--color-" + $name});
-      color: var(#{"--bg-" + $name});
-    }
+    --icon-color: var(#{"--color-" + $name});
+    --icon-background: var(#{"--bg-" + $name});
   }
+}
+
+.disabled {
+  --icon-color: var(--color-disabled);
+  --icon-background: var(--color-surface);
 }
 
 .size-xs {
@@ -82,4 +93,15 @@
 .size-xl {
   --icon-size: 64px;
   --badge-size: 24px;
+}
+
+button.icon {
+  border-radius: 50%;
+  padding: var(--space);
+  box-sizing: content-box;
+  transition: background-color 120ms ease-out;
+
+  &:not(:disabled):hover {
+    background-color: #00000010;
+  }
 }

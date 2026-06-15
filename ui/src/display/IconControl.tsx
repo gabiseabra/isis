@@ -53,7 +53,7 @@ export function IconControl({
         styles.icon,
         styles[`size-${size}`],
         color && styles[`color-${color}`],
-        disabled && styles[`color-gray`],
+        disabled && styles.disabled,
         onClick && !disabled && !readOnly && styles.clickable,
       ]
         .filter(Boolean)
@@ -66,7 +66,7 @@ export function IconControl({
         ...css.getPaddingStyles(props),
         ...css.getMarginStyles(props),
       }}
-      onClick={disabled || readOnly ? undefined : () => onClick?.()}
+      onClick={disabled || readOnly ? undefined : onClick}
       disabled={disabled}
       {...omit(props, [...css.paddingProps, ...css.marginProps])}
     >
