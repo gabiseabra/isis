@@ -9,17 +9,14 @@ const meta = {
   title: "Form/Field",
   args: {
     label: "Label",
+    description: "",
+    error: "",
   },
   render: (args) => (
     <Field name="field" {...args}>
       <Input placeholder="Input" />
     </Field>
   ),
-  parameters: {
-    controls: {
-      include: ["label", "description", "error"],
-    },
-  },
   decorators: [
     (Story) => (
       <Col p={4} gap={1}>
@@ -39,10 +36,20 @@ export const WithDescription: Story = {
   args: {
     description: "Description",
   },
+  parameters: {
+    controls: {
+      exclude: ["description"],
+    },
+  },
 };
 
 export const WithError: Story = {
   args: {
     error: "Error",
+  },
+  parameters: {
+    controls: {
+      exclude: ["error"],
+    },
   },
 };

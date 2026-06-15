@@ -21,11 +21,6 @@ const meta = {
       options: ["text", "email", "password", "search"],
     },
   },
-  parameters: {
-    controls: {
-      include: ["placeholder", "type", "disabled"],
-    },
-  },
   decorators: [
     (Story) => (
       <Col p={4} gap={1}>

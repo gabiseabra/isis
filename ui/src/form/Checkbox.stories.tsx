@@ -12,11 +12,6 @@ const meta = {
     disabled: false,
   },
   render: (args) => <Checkbox {...args} />,
-  parameters: {
-    controls: {
-      include: ["label", "checked", "disabled"],
-    },
-  },
   decorators: [
     (Story) => (
       <Col p={4} gap={1}>
@@ -36,10 +31,20 @@ export const Checked: Story = {
   args: {
     checked: true,
   },
+  parameters: {
+    controls: {
+      exclude: ["checked"],
+    },
+  },
 };
 
 export const Disabled: Story = {
   args: {
     disabled: true,
+  },
+  parameters: {
+    controls: {
+      exclude: ["disabled"],
+    },
   },
 };

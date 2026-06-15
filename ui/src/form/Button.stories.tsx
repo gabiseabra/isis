@@ -54,11 +54,6 @@ const meta = {
       options: sizes,
     },
   },
-  parameters: {
-    controls: {
-      include: ["color", "size", "disabled", "loading"],
-    },
-  },
   decorators: [
     (Story) => (
       <Row p={4} gap={1}>
@@ -77,7 +72,7 @@ export const Default: Story = {};
 export const Colors: Story = {
   parameters: {
     controls: {
-      include: ["size", "disabled", "loading"],
+      exclude: ["color"],
     },
   },
   render: (args) => (
@@ -95,7 +90,7 @@ export const Colors: Story = {
 export const Sizes: Story = {
   parameters: {
     controls: {
-      include: ["color", "disabled", "loading"],
+      exclude: ["size"],
     },
   },
   render: (args) => (
@@ -111,11 +106,6 @@ export const Sizes: Story = {
 };
 
 export const WithSlots: Story = {
-  parameters: {
-    controls: {
-      include: ["color", "size", "disabled", "loading"],
-    },
-  },
   render: (args) => (
     <ButtonTable
       rows={["slots"] as const}
@@ -139,7 +129,7 @@ export const Loading: Story = {
   },
   parameters: {
     controls: {
-      include: ["color", "size", "disabled"],
+      exclude: ["loading"],
     },
   },
   render: (args) => (
@@ -160,7 +150,7 @@ export const Disabled: Story = {
   },
   parameters: {
     controls: {
-      include: ["color", "size", "loading"],
+      exclude: ["disabled"],
     },
   },
   render: (args) => (

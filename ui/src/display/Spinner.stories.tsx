@@ -16,11 +16,6 @@ const meta = {
       options: ["s", "m", "l"],
     },
   },
-  parameters: {
-    controls: {
-      include: ["size"],
-    },
-  },
   decorators: [
     (Story) => (
       <Row p={4} gap={1}>
@@ -39,7 +34,7 @@ export const Default: Story = {};
 export const Sizes: Story = {
   parameters: {
     controls: {
-      include: [],
+      exclude: ["size"],
     },
   },
   render: (args) => (

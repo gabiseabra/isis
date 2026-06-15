@@ -16,11 +16,6 @@ const meta = {
     disabled: false,
   },
   render: (args) => <Textarea {...args} />,
-  parameters: {
-    controls: {
-      include: ["placeholder", "rows", "autoGrow", "disabled"],
-    },
-  },
   decorators: [
     (Story) => (
       <Col p={4} gap={1}>
@@ -40,5 +35,10 @@ export const AutoGrow: Story = {
   args: {
     autoGrow: true,
     rows: 1,
+  },
+  parameters: {
+    controls: {
+      exclude: ["autoGrow"],
+    },
   },
 };

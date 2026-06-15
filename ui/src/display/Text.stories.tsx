@@ -45,11 +45,6 @@ const meta = {
       options: [0, 1, 2, 3, 4],
     },
   },
-  parameters: {
-    controls: {
-      include: ["as", "size", "color", "indent"],
-    },
-  },
   decorators: [
     (Story) => (
       <Col p={4}>
@@ -68,7 +63,7 @@ export const Default: Story = {};
 export const Sizes: Story = {
   parameters: {
     controls: {
-      include: ["as", "color", "indent"],
+      exclude: ["size"],
     },
   },
   render: (args) => (
@@ -87,7 +82,7 @@ export const Sizes: Story = {
 export const Colors: Story = {
   parameters: {
     controls: {
-      include: ["as", "size", "indent"],
+      exclude: ["color"],
     },
   },
   render: (args) => (

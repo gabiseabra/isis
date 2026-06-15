@@ -9,6 +9,7 @@ const meta = {
   args: {
     color: "primary",
     size: "m",
+    status: undefined,
     active: false,
   },
   render: (args) => <Badge {...args}>Badge</Badge>,
@@ -37,11 +38,6 @@ const meta = {
       options: ["empty", "in-progress", "completed"],
     },
   },
-  parameters: {
-    controls: {
-      include: ["color", "size", "status", "active"],
-    },
-  },
   decorators: [
     (Story) => (
       <Col p={4} gap={1}>
@@ -60,7 +56,7 @@ export const Default: Story = {};
 export const Sizes: Story = {
   parameters: {
     controls: {
-      include: ["color", "status", "active"],
+      exclude: ["size"],
     },
   },
   render: (args) => (
@@ -81,7 +77,7 @@ export const Sizes: Story = {
 export const Colors: Story = {
   parameters: {
     controls: {
-      include: ["size", "status", "active"],
+      exclude: ["color"],
     },
   },
   render: (args) => (
@@ -111,7 +107,7 @@ export const Colors: Story = {
 export const Statuses: Story = {
   parameters: {
     controls: {
-      include: ["color", "size", "active"],
+      exclude: ["status"],
     },
   },
   render: (args) => (

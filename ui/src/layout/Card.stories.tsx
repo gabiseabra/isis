@@ -24,11 +24,6 @@ const meta = {
       options: elevations,
     },
   },
-  parameters: {
-    controls: {
-      include: ["elevation"],
-    },
-  },
   decorators: [
     (Story) => (
       <Col p={4}>
@@ -45,6 +40,11 @@ export default meta;
 export const Default: Story = {};
 
 export const Elevations: Story = {
+  parameters: {
+    controls: {
+      exclude: ["elevation"],
+    },
+  },
   render: (args) => (
     <Row gap={3} wrap>
       {elevations.map((elevation) => (
