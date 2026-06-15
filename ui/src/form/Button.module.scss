@@ -1,0 +1,147 @@
+@use "../../styles/mixins/color" as color;
+
+.Button {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  height: var(--button-height);
+  padding: 0 calc(var(--space) * 2);
+  border: var(--size-divider) solid transparent;
+  border-radius: var(--radius);
+  font: inherit;
+  font-weight: 500;
+  line-height: var(--line-height);
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+  user-select: none;
+
+  &:focus {
+    outline: none;
+  }
+
+  &:focus-visible {
+    outline: var(--size-divider) solid
+      color-mix(in srgb, var(--button-color) 40%, transparent);
+    outline-offset: var(--size-divider);
+  }
+}
+
+.Content {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space);
+}
+
+.Slot {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  line-height: 0;
+
+  svg {
+    width: 1em;
+    height: 1em;
+  }
+}
+
+.Spinner {
+  --spinner-color: currentColor;
+  --spinner-track: color-mix(in srgb, currentColor 25%, transparent);
+
+  position: absolute;
+  inset: 0;
+  margin: auto;
+}
+
+.loadingState {
+  cursor: progress;
+}
+
+.variant-primary {
+  border-color: var(--button-color);
+  background: var(--button-color);
+  color: var(--button-bg);
+
+  &:not(:disabled):hover,
+  &.loadingState {
+    border-color: color-mix(in srgb, var(--button-color) 90%, var(--button-bg));
+    background: color-mix(in srgb, var(--button-color) 90%, var(--button-bg));
+  }
+
+  &:disabled:not(.loadingState) {
+    border-color: var(--color-disabled);
+    background: var(--color-disabled);
+    color: var(--color-suface);
+    cursor: not-allowed;
+  }
+}
+
+.variant-secondary {
+  border-color: var(--button-color);
+  background: var(--color-suface);
+  color: var(--button-color);
+
+  &:not(:disabled):hover,
+  &.loadingState {
+    background: var(--button-bg);
+  }
+
+  &:disabled:not(.loadingState) {
+    border-color: var(--color-divider);
+    background: var(--color-suface);
+    color: var(--color-disabled);
+    cursor: not-allowed;
+  }
+}
+
+.variant-link {
+  height: auto;
+  padding: 0;
+  background: transparent;
+  color: var(--button-color);
+
+  .Content {
+    line-height: 1;
+    border-bottom: var(--size-divider) solid transparent;
+  }
+
+  &:not(:disabled):hover .Content {
+    border-bottom-color: currentColor;
+  }
+
+  &.loadingState {
+    color: color-mix(in srgb, var(--button-color) 70%, var(--color-disabled));
+  }
+
+  &:disabled:not(.loadingState) {
+    color: var(--color-disabled);
+    cursor: not-allowed;
+  }
+}
+
+@each $name, $_ in color.$colors-codes {
+  .#{"color-" + $name} {
+    --button-color: var(#{"--color-" + $name});
+    --button-bg: var(#{"--bg-" + $name});
+  }
+}
+
+.color-default {
+  --button-color: var(--color-text);
+  --button-bg: var(--color-background);
+}
+
+.size-s {
+  --button-height: calc(var(--space) * 4.5);
+}
+
+.size-m {
+  --button-height: calc(var(--space) * 6);
+}
+
+.size-l {
+  --button-height: calc(var(--space) * 8);
+}
