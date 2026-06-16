@@ -8,6 +8,7 @@ export type TextProps = {
   as?: TextTag;
   size?: TextSize;
   color?: TextColor;
+  font?: TextFont;
   indent?: number;
   disabled?: boolean;
 } & css.MarginProps &
@@ -20,6 +21,8 @@ type TextColor = css.Color | "disabled" | "muted" | "link";
 
 type TextSize = "caption" | "body" | "h1" | "h2" | "h3" | "h4" | "h5";
 
+type TextFont = "body" | "heading" | "subheading" | "monospace";
+
 /**
  * A block element meant for wrapping around text.
  * @direction block
@@ -29,6 +32,7 @@ export function Text({
   as: Tag = "div",
   size,
   color,
+  font,
   indent,
   children,
   className,
@@ -49,6 +53,7 @@ export function Text({
         indent && styles[`indent-${{ 1: 1, 2: 2, 3: 3, 4: 4 }[indent] ?? 0}`],
         size && styles[`size-${size}`],
         color && styles[`color-${color}`],
+        font && styles[`font-${font}`],
         className,
       ]
         .filter(Boolean)

@@ -3,6 +3,7 @@ import { type ReactNode } from "react";
 import { FaXmark } from "react-icons/fa6";
 import { useOverlay } from "../context/OverlayProvider";
 import { IconControl } from "../display/IconControl";
+import { Text } from "../display/Text";
 import { Col, Row } from "../layout/FlexBox";
 import styles from "./Modal.module.scss";
 
@@ -38,7 +39,9 @@ export function Modal({
           <Col as="header" className={styles.Header}>
             <Row alignX="space-between" alignY="center">
               <Dialog.Title asChild>
-                <span className={styles.Title}>{title}</span>
+                <Text as="h2" size="h4" m={0}>
+                  {title}
+                </Text>
               </Dialog.Title>
 
               <Dialog.Close
@@ -53,8 +56,10 @@ export function Modal({
             </Row>
 
             {description ? (
-              <Dialog.Description className={styles.Description}>
-                {description}
+              <Dialog.Description asChild>
+                <Text as="h5" color="muted" m={0}>
+                  {description}
+                </Text>
               </Dialog.Description>
             ) : null}
           </Col>

@@ -2,7 +2,10 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { Col } from "../layout/FlexBox";
 import { Span, Text, type TextProps } from "./Text";
 
-type TextStoryArgs = Pick<TextProps, "as" | "size" | "color" | "indent">;
+type TextStoryArgs = Pick<
+  TextProps,
+  "as" | "size" | "color" | "font" | "indent"
+>;
 
 const meta = {
   title: "Display/Text",
@@ -40,6 +43,10 @@ const meta = {
         "link",
       ],
     },
+    font: {
+      control: "select",
+      options: ["body", "heading", "subheading", "monospace"],
+    },
     indent: {
       control: "select",
       options: [0, 1, 2, 3, 4],
@@ -58,7 +65,24 @@ type Story = StoryObj<typeof meta>;
 
 export default meta;
 
-export const Default: Story = {};
+export const Default: Story = {
+  render: (props) => (
+    <Col>
+      <hgroup>
+        <Text as="h1">Lorem ipsum dolor sit amet</Text>
+        <Text as="h4" color="muted" mt={-2}>
+          Consectetur adipiscing elit, sed do eiusmod tempor incididunt.
+        </Text>
+      </hgroup>
+      <Text as="p" {...props}>
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod
+        tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim
+        veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea
+        commodo consequat.
+      </Text>
+    </Col>
+  ),
+};
 
 export const Sizes: Story = {
   parameters: {
@@ -106,6 +130,23 @@ export const Colors: Story = {
       ).map((color) => (
         <Text key={color} {...args} color={color}>
           {color}
+        </Text>
+      ))}
+    </div>
+  ),
+};
+
+export const Fonts: Story = {
+  parameters: {
+    controls: {
+      exclude: ["font"],
+    },
+  },
+  render: (args) => (
+    <div>
+      {(["body", "heading", "subheading", "monospace"] as const).map((font) => (
+        <Text key={font} {...args} font={font}>
+          {font}
         </Text>
       ))}
     </div>

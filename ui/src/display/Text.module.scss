@@ -107,6 +107,23 @@
   font-size: 1em;
 }
 
+// Fonts
+.font-body {
+  font-family: var(--font-body);
+}
+
+.font-heading {
+  font-family: var(--font-heading);
+}
+
+.font-subheading {
+  font-family: var(--font-subheading);
+}
+
+.font-monospace {
+  font-family: var(--font-monospace);
+}
+
 // Indents
 @for $i from 1 through 4 {
   .#{"indent-" + $i} {

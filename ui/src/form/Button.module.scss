@@ -8,8 +8,8 @@
   box-sizing: border-box;
   height: var(--button-height);
   padding: 0 calc(var(--space) * 2);
-  border: var(--size-divider) solid transparent;
-  border-radius: var(--radius);
+  border: 1px solid transparent;
+  border-radius: calc(var(--radius) * 0.75);
   font: inherit;
   font-weight: 500;
   line-height: var(--line-height);
@@ -17,15 +17,35 @@
   white-space: nowrap;
   cursor: pointer;
   user-select: none;
+  box-shadow: 0 1px 2px color-mix(in srgb, var(--color-shadow) 12%, transparent);
+  transition:
+    background-color 140ms ease-out,
+    border-color 140ms ease-out,
+    box-shadow 140ms ease-out,
+    color 140ms ease-out;
 
   &:focus {
     outline: none;
   }
 
   &:focus-visible {
-    outline: var(--size-divider) solid
-      color-mix(in srgb, var(--button-color) 40%, transparent);
-    outline-offset: var(--size-divider);
+    box-shadow:
+      0 0 0 var(--size-divider)
+        color-mix(in srgb, var(--color-surface) 90%, transparent),
+      0 0 0 calc(var(--size-divider) * 2)
+        color-mix(in srgb, var(--button-color) 35%, transparent),
+      0 2px 6px color-mix(in srgb, var(--color-shadow) 16%, transparent);
+  }
+
+  &:not(:disabled):hover {
+    box-shadow: 0 4px 10px
+      color-mix(in srgb, var(--color-shadow) 16%, transparent);
+  }
+
+  &:not(:disabled):active {
+    box-shadow: 0 1px 3px
+      color-mix(in srgb, var(--color-shadow) 14%, transparent);
+    transition-duration: 80ms;
   }
 }
 
@@ -33,6 +53,7 @@
   display: inline-flex;
   align-items: center;
   gap: var(--space);
+  transition: opacity 120ms ease-out;
 }
 
 .Slot {
@@ -58,17 +79,21 @@
 
 .loadingState {
   cursor: progress;
+
+  .Content {
+    opacity: 0;
+  }
 }
 
 .variant-primary {
-  border-color: var(--button-color);
+  border-color: color-mix(in srgb, var(--button-color) 80%, transparent);
   background: var(--button-color);
-  color: var(--button-bg);
+  color: color-mix(in srgb, var(--color-surface) 80%, var(--button-bg));
 
   &:not(:disabled):hover,
   &.loadingState {
-    border-color: color-mix(in srgb, var(--button-color) 90%, var(--button-bg));
-    background: color-mix(in srgb, var(--button-color) 90%, var(--button-bg));
+    border-color: color-mix(in srgb, var(--button-color) 88%, var(--button-bg));
+    background: color-mix(in srgb, var(--button-color) 88%, var(--button-bg));
   }
 
   &:disabled:not(.loadingState) {
@@ -76,17 +101,28 @@
     background: var(--color-disabled);
     color: var(--color-surface);
     cursor: not-allowed;
+    box-shadow: none;
   }
 }
 
 .variant-secondary {
-  border-color: var(--button-color);
+  border-color: color-mix(
+    in srgb,
+    var(--button-color) 32%,
+    var(--color-divider)
+  );
   background: var(--color-surface);
+  // background: color-mix(in srgb, var(--button-bg) 34%, var(--color-surface));
   color: var(--button-color);
 
   &:not(:disabled):hover,
   &.loadingState {
-    background: var(--button-bg);
+    border-color: color-mix(
+      in srgb,
+      var(--button-color) 55%,
+      var(--color-divider)
+    );
+    background: color-mix(in srgb, var(--button-bg) 50%, var(--color-surface));
   }
 
   &:disabled:not(.loadingState) {
@@ -94,22 +130,33 @@
     background: var(--color-surface);
     color: var(--color-disabled);
     cursor: not-allowed;
+    box-shadow: none;
   }
 }
 
 .variant-link {
   height: auto;
   padding: 0;
+  border-color: transparent;
   background: transparent;
   color: var(--button-color);
+  box-shadow: none;
 
   .Content {
     line-height: 1;
-    border-bottom: var(--size-divider) solid transparent;
+    border-bottom: 1px solid transparent;
+    transition:
+      border-color 120ms ease-out,
+      opacity 120ms ease-out;
   }
 
   &:not(:disabled):hover .Content {
     border-bottom-color: currentColor;
+  }
+
+  &:not(:disabled):hover,
+  &:not(:disabled):active {
+    box-shadow: none;
   }
 
   &.loadingState {
@@ -144,4 +191,12 @@
 
 .size-l {
   --button-height: calc(var(--space) * 8);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .Button,
+  .Content,
+  .variant-link .Content {
+    transition: none;
+  }
 }
