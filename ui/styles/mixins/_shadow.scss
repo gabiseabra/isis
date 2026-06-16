@@ -1,7 +1,7 @@
 @use "sass:list" as list;
 @use "sass:math" as math;
 
-@mixin shadow($distance: 1, $intensity: 1, $inset: false) {
+@mixin boxShadow($distance: 1, $intensity: 1, $inset: false) {
   $insetKeyword: null;
   @if $inset {
     $insetKeyword: inset;
@@ -25,4 +25,27 @@
   }
 
   box-shadow: $shadows;
+}
+
+@mixin dropShadow($distance: 1, $intensity: 1) {
+  $shadowCount: 1;
+  $shadowAlpha: 0%;
+
+  @if $intensity > 0 {
+    $shadowCount: math.ceil($intensity);
+    $shadowAlpha: math.div($intensity, $shadowCount) * 100%;
+  }
+
+  $shadowOpacity: math.div($shadowAlpha, 100%) * 1.56;
+  $shadow: drop-shadow(
+    0 calc(1px * #{$distance}) calc(1px * #{$distance})
+      rgb(from var(--color-shadow) r g b / calc(alpha * #{$shadowOpacity}))
+  );
+  $shadows: ();
+
+  @for $i from 1 through $shadowCount {
+    $shadows: list.append($shadows, $shadow, space);
+  }
+
+  filter: $shadows;
 }

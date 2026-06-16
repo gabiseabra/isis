@@ -12,7 +12,7 @@
     border-color 150ms ease-out,
     box-shadow 300ms ease-out;
   transition-delay: 0s;
-  @include shadow.shadow(0);
+  @include shadow.boxShadow(0);
 
   &:not(:has(.Input:disabled)) {
     &:hover {
@@ -25,7 +25,7 @@
 
     &:focus-within {
       border-color: var(--color-primary);
-      @include shadow.shadow(0.5, 0.5);
+      @include shadow.boxShadow(0.5, 0.5);
     }
   }
 

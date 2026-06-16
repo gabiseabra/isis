@@ -1,0 +1,91 @@
+@use "../../styles/mixins/shadow" as shadow;
+
+.Content {
+  --popover-animation-duration: 150ms;
+  --popover-tip-height: 7px;
+  --popover-tip-width: calc(var(--popover-tip-height) * 2);
+
+  z-index: 1000;
+  box-sizing: border-box;
+  width: min(280px, var(--radix-popover-content-available-width));
+  overflow: visible;
+  border: 1px solid var(--color-divider);
+  border-radius: calc(var(--radius) * 1.25);
+  background: var(--color-surface);
+  color: var(--color-text);
+  transform-origin: var(--radix-popover-content-transform-origin);
+  @include shadow.dropShadow(1.5);
+
+  &:focus {
+    outline: none;
+  }
+
+  &[data-state="open"] {
+    animation: popover-content-show var(--popover-animation-duration)
+      cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  &[data-state="closed"] {
+    animation: popover-content-hide var(--popover-animation-duration) ease-in;
+  }
+
+  &[data-variant="sheer"] {
+    --popover-tip-height: 5px;
+    border: 0;
+    background: rgb(21 20 30 / 64%);
+    color: var(--color-surface);
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+  }
+}
+
+.Body {
+  box-sizing: border-box;
+  max-height: min(280px, var(--radix-popover-content-available-height));
+  overflow: auto;
+  padding: calc(var(--space) * 2);
+  border-radius: inherit;
+  background: inherit;
+}
+
+.Arrow {
+  display: block;
+  width: var(--popover-tip-width);
+  height: var(--popover-tip-height);
+  fill: var(--color-surface);
+  filter: drop-shadow(0 -1px 0 var(--color-surface));
+  pointer-events: none;
+  stroke: var(--color-divider);
+  stroke-dasharray: 0 30 100;
+  stroke-width: 1px;
+}
+
+.Content[data-variant="sheer"] .Arrow {
+  filter: none;
+  fill: rgb(21 20 30 / 64%);
+  stroke: none;
+}
+
+.Content[data-variant="sheer"] .Body {
+  background: transparent;
+}
+
+@keyframes popover-content-show {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+}
+
+@keyframes popover-content-hide {
+  to {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .Content {
+    animation: none;
+  }
+}

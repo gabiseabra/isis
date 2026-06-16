@@ -29,7 +29,7 @@
   overflow: hidden;
   border-radius: calc(var(--radius) * 1.5);
   background: var(--color-surface);
-  @include shadow.shadow(5);
+  @include shadow.boxShadow(5);
 
   display: flex;
   flex-direction: column;

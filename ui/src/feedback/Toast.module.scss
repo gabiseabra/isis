@@ -28,7 +28,7 @@
   border: 1px solid var(--color-divider);
   background: var(--color-surface);
   color: var(--toast-color);
-  @include shadow.shadow(3);
+  @include shadow.boxShadow(3);
   overflow: hidden;
 
   &[data-state="open"] {
