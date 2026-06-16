@@ -26,25 +26,3 @@ type Story = StoryObj<typeof meta>;
 export default meta;
 
 export const Default: Story = {};
-
-export const Checked: Story = {
-  args: {
-    checked: true,
-  },
-  parameters: {
-    controls: {
-      exclude: ["checked"],
-    },
-  },
-};
-
-export const Disabled: Story = {
-  args: {
-    disabled: true,
-  },
-  parameters: {
-    controls: {
-      exclude: ["disabled"],
-    },
-  },
-};

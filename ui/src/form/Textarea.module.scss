@@ -3,32 +3,57 @@
   display: block;
   width: 100%;
   min-width: 0;
-  min-height: calc(var(--line-height) * 4);
-  border: var(--size-divider) solid var(--color-divider);
-  border-radius: var(--radius);
+  border: 1px solid var(--color-divider);
+  border-radius: calc(var(--radius) / 2);
   background: var(--color-surface);
-  color: var(--color-text);
+  box-shadow: 0 0 0 0 color-mix(in srgb, var(--color-primary) 25%, transparent);
   font: inherit;
   line-height: var(--line-height);
   padding: var(--space) calc(var(--space) * 2);
   resize: vertical;
+  transition:
+    border-color 150ms ease-out,
+    box-shadow 300ms ease-out;
+  transition-delay: 0s;
+
+  &:not(:disabled) {
+    &:hover {
+      border-color: color-mix(
+        in srgb,
+        var(--color-primary) 50%,
+        var(--color-divider)
+      );
+    }
+
+    &:focus {
+      border-color: var(--color-primary);
+      box-shadow: 0 0 0 2px
+        color-mix(in srgb, var(--color-primary) 25%, transparent);
+    }
+  }
+
+  &::placeholder {
+    color: var(--color-muted);
+  }
 
   &:focus {
     outline: none;
-    border-color: var(--color-primary);
   }
 
   &:disabled {
     color: var(--color-disabled);
     cursor: not-allowed;
   }
-
-  &::placeholder {
-    color: var(--color-muted);
-  }
 }
 
 .autogrow {
   overflow: hidden;
   resize: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .Textarea,
+  .Textarea::placeholder {
+    transition: none;
+  }
 }

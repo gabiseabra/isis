@@ -1,6 +1,7 @@
 import { Checkbox as CheckboxPrimitive } from "radix-ui";
 import { type ComponentProps, type ReactNode, useId } from "react";
-import { FaCheck } from "react-icons/fa";
+import { GiCheckMark } from "react-icons/gi";
+import { Row } from "../layout/FlexBox";
 import styles from "./Checkbox.module.scss";
 import { useField } from "./Field";
 
@@ -19,7 +20,7 @@ export function Checkbox({
   const checkboxId = id ?? generatedId;
 
   return (
-    <span className={styles.Checkbox}>
+    <Row alignY="center" className={styles.Checkbox}>
       <CheckboxPrimitive.Root
         className={[styles.Root, className].filter(Boolean).join(" ")}
         id={checkboxId}
@@ -27,7 +28,7 @@ export function Checkbox({
         {...fieldProps}
       >
         <CheckboxPrimitive.Indicator className={styles.Indicator}>
-          <FaCheck />
+          <GiCheckMark />
         </CheckboxPrimitive.Indicator>
       </CheckboxPrimitive.Root>
       {label && (
@@ -35,6 +36,6 @@ export function Checkbox({
           {label}
         </label>
       )}
-    </span>
+    </Row>
   );
 }

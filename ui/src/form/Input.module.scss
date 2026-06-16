@@ -3,12 +3,29 @@
   align-items: center;
   box-sizing: border-box;
   width: 100%;
-  border: var(--size-divider) solid var(--color-divider);
-  border-radius: var(--radius);
+  border: 1px solid var(--color-divider);
+  border-radius: calc(var(--radius) / 2);
   background: var(--color-surface);
+  box-shadow: 0 0 0 0 color-mix(in srgb, var(--color-primary) 25%, transparent);
+  transition:
+    border-color 150ms ease-out,
+    box-shadow 300ms ease-out;
+  transition-delay: 0s;
 
-  &:focus-within {
-    border-color: var(--color-primary);
+  &:not(:has(.Input:disabled)) {
+    &:hover {
+      border-color: color-mix(
+        in srgb,
+        var(--color-primary) 50%,
+        var(--color-divider)
+      );
+    }
+
+    &:focus-within {
+      border-color: var(--color-primary);
+      box-shadow: 0 0 0 2px
+        color-mix(in srgb, var(--color-primary) 25%, transparent);
+    }
   }
 
   &:has(.Input:disabled) {
@@ -23,18 +40,13 @@
   min-width: 0;
   border: none;
   background: transparent;
-  color: var(--color-text);
+  color: currentColor;
   font: inherit;
   line-height: var(--line-height);
   padding: var(--space) calc(var(--space) * 2);
 
   &:focus {
     outline: none;
-  }
-
-  &:disabled {
-    color: var(--color-disabled);
-    cursor: not-allowed;
   }
 
   &::placeholder {
@@ -54,6 +66,12 @@
   display: inline-flex;
   flex-shrink: 0;
   color: var(--color-muted);
+  transition: color 300ms ease-out;
+  transition-delay: 0s;
+}
+
+.InputWrapper:focus-within .Slot {
+  color: var(--color-primary);
 }
 
 .LeftSlot {
@@ -62,4 +80,12 @@
 
 .RightSlot {
   padding-right: calc(var(--space) * 2);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .InputWrapper,
+  .Input::placeholder,
+  .Slot {
+    transition: none;
+  }
 }

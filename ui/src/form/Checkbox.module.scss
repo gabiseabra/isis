@@ -1,9 +1,4 @@
 .Checkbox {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space);
-  color: var(--color-text);
-
   &:has(.Root:disabled) {
     color: var(--color-disabled);
     cursor: not-allowed;
@@ -14,63 +9,48 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  flex-shrink: 0;
   box-sizing: border-box;
-  width: calc(var(--space) * 3 + var(--size-divider));
-  height: calc(var(--space) * 3 + var(--size-divider));
-  padding: 0;
-  border: var(--size-divider) solid var(--color-divider);
+  width: 18px;
+  aspect-ratio: 1;
+  border: 1px solid color-mix(in srgb, var(--color-divider) 75%, transparent);
   border-radius: calc(var(--radius) / 2);
   background: var(--color-surface);
-  color: var(--color-text);
   cursor: pointer;
+  transition: all 140ms ease-out;
+  color: var(--bg-primary);
+  --checkbox-border: color-mix(
+    in srgb,
+    var(--color-primary) 50%,
+    var(--color-divider)
+  );
 
   &:not(:disabled):hover {
-    border-color: var(--color-primary);
-    background: color-mix(
-      in srgb,
-      var(--color-surface) 90%,
-      var(--color-primary)
-    );
+    border-color: var(--checkbox-border);
   }
 
   &:focus {
-    outline: none;
-  }
-
-  &:focus-visible {
-    border-color: var(--color-primary);
-    outline: var(--size-divider) solid
-      color-mix(in srgb, var(--color-primary) 40%, transparent);
-    outline-offset: var(--size-divider);
+    outline: 1px solid var(--checkbox-border);
   }
 
   &[data-state="checked"] {
     border-color: var(--color-primary);
     background: var(--color-primary);
-    color: var(--bg-primary);
   }
 
   &[data-state="checked"]:not(:disabled):hover {
-    border-color: color-mix(
-      in srgb,
-      var(--color-primary) 90%,
-      var(--bg-primary)
-    );
-    background: color-mix(in srgb, var(--color-primary) 90%, var(--bg-primary));
+    background: color-mix(in srgb, var(--color-primary) 75%, var(--bg-primary));
   }
 
   &:disabled {
-    border-color: var(--color-divider);
+    color: var(--color-surface);
+    border-color: color-mix(in srgb, var(--color-divider) 75%, transparent);
     background: var(--color-surface);
-    color: var(--color-disabled);
     cursor: not-allowed;
   }
 
   &[data-state="checked"]:disabled {
     border-color: var(--color-disabled);
     background: var(--color-disabled);
-    color: var(--color-surface);
   }
 }
 
@@ -78,18 +58,18 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: calc(var(--space) * 2 + var(--size-divider));
-  height: calc(var(--space) * 2 + var(--size-divider));
-  line-height: 0;
+  opacity: 0;
+  transition: opacity 150ms ease-out;
 
-  svg {
-    display: block;
-    width: 100%;
-    height: 100%;
-    stroke-width: var(--size-divider);
+  .Root[data-state="checked"] & {
+    opacity: 1;
   }
 }
 
-.Label {
-  color: currentColor;
+@media (prefers-reduced-motion: reduce) {
+  .Root,
+  .Indicator,
+  .Indicator svg path {
+    transition: none;
+  }
 }
