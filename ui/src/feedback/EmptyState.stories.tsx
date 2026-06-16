@@ -7,16 +7,33 @@ type EmptyStateSize = "m" | "l";
 
 type EmptyStateStoryArgs = {
   size: EmptyStateSize;
+  color: EmptyStateColor;
   title: string;
   message: string;
 };
 
 const sizes = ["m", "l"] as const;
+const colors = [
+  "default",
+  "gray",
+  "orange",
+  "yellow",
+  "green",
+  "blue",
+  "purple",
+  "pink",
+  "red",
+  "primary",
+  "muted",
+] as const;
+
+type EmptyStateColor = (typeof colors)[number];
 
 const meta = {
   title: "Feedback/EmptyState",
   args: {
     size: "m",
+    color: "muted",
     title: "Nothing to show yet",
     message: "Content will appear here once there is something available.",
   },
@@ -27,6 +44,10 @@ const meta = {
     size: {
       control: "select",
       options: sizes,
+    },
+    color: {
+      control: "select",
+      options: colors,
     },
   },
   decorators: [

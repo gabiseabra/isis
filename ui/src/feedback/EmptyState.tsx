@@ -3,8 +3,10 @@ import { BiSearch } from "react-icons/bi";
 import { IconControl } from "../display/IconControl";
 import { Text } from "../display/Text";
 import { Col, Row } from "../layout/FlexBox";
+import { Color } from "../utils/css";
 
 type EmptyStateProps = {
+  color?: Color | "muted";
   size: "m" | "l";
   icon?: ReactNode;
   title: ReactNode;
@@ -12,6 +14,7 @@ type EmptyStateProps = {
 };
 
 export function EmptyState({
+  color = "muted",
   size,
   icon = <BiSearch />,
   title,
@@ -23,7 +26,7 @@ export function EmptyState({
         <IconControl
           as="div"
           mb={1}
-          color="muted"
+          color={color}
           size={
             (
               {
@@ -41,7 +44,7 @@ export function EmptyState({
         as="div"
         size={size === "l" ? "h4" : "body"}
         font="heading"
-        color="muted"
+        color={color}
       >
         {title}
       </Text>

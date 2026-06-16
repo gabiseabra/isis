@@ -1,4 +1,6 @@
 import type { StorybookConfig } from "@storybook/react-vite";
+import { fileURLToPath } from "node:url";
+import { mergeConfig, type UserConfig } from "vite";
 
 const config: StorybookConfig = {
   framework: "@storybook/react-vite",
@@ -7,6 +9,16 @@ const config: StorybookConfig = {
   core: {
     builder: "@storybook/builder-vite",
   },
+  viteFinal: (config) =>
+    mergeConfig(config, {
+      resolve: {
+        alias: {
+          "@isis/common": fileURLToPath(
+            new URL("../../common/src", import.meta.url),
+          ),
+        },
+      },
+    } satisfies UserConfig),
 };
 
 export default config;
