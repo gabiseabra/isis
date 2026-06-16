@@ -1,0 +1,143 @@
+@use "../../styles/mixins/shadow" as shadow;
+
+.Trigger {
+  display: inline-flex;
+  box-sizing: border-box;
+  width: 100%;
+  height: 32px;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space);
+  padding: 0 calc(var(--space) * 2);
+  border: 1px solid var(--color-divider);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font: inherit;
+  cursor: pointer;
+  transition:
+    border-color 150ms ease-out,
+    box-shadow 300ms ease-out;
+  @include shadow.shadow(0);
+
+  &:not([data-disabled]):hover {
+    border-color: color-mix(
+      in srgb,
+      var(--color-primary) 50%,
+      var(--color-divider)
+    );
+  }
+
+  &:is(:focus, :focus-visible) {
+    outline: none;
+  }
+
+  &:is(:focus-visible, [data-state="open"]) {
+    border-color: var(--color-primary);
+    @include shadow.shadow(0.5, 0.5);
+  }
+
+  &[data-placeholder] {
+    color: var(--color-muted);
+  }
+
+  &[data-disabled] {
+    color: var(--color-disabled);
+    cursor: not-allowed;
+  }
+
+  &:not([data-disabled]):hover .Icon,
+  &[data-state="open"] .Icon {
+    color: var(--color-primary);
+  }
+
+  &[data-state="open"] .Icon {
+    transform: rotate(180deg);
+  }
+}
+
+.Icon {
+  transition:
+    color 150ms ease-out,
+    transform 150ms ease-out;
+}
+
+.Content {
+  z-index: 1000;
+  min-width: var(--radix-select-trigger-width);
+  max-height: min(var(--radix-select-content-available-height), 320px);
+  overflow: hidden;
+  border: 1px solid var(--color-divider);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+  transform-origin: var(--radix-select-content-transform-origin);
+  @include shadow.shadow(3);
+
+  &[data-state="open"] {
+    animation: dropdown-content-show 180ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  &[data-state="closed"] {
+    animation: dropdown-content-hide 120ms ease-in;
+  }
+}
+
+.Viewport {
+  padding: var(--space);
+  gap: 3px;
+  display: flex;
+  flex-direction: column;
+}
+
+.Item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  padding: var(--space);
+  border-radius: var(--radius);
+  cursor: pointer;
+  user-select: none;
+  transition:
+    background-color 150ms ease-out,
+    color 150ms ease-out;
+
+  &:focus {
+    outline: none;
+  }
+
+  &[data-highlighted],
+  &[data-state="checked"] {
+    background: color-mix(in srgb, var(--bg-primary) 50%, var(--color-surface));
+    color: var(--color-primary);
+  }
+
+  &[data-disabled] {
+    color: var(--color-disabled);
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+}
+
+@keyframes dropdown-content-show {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+}
+
+@keyframes dropdown-content-hide {
+  to {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .Trigger,
+  .Icon,
+  .Content,
+  .Item {
+    transition: none;
+    animation: none;
+  }
+}
