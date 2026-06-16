@@ -9,21 +9,13 @@ export type CheckboxProps = ComponentProps<typeof CheckboxPrimitive.Root> & {
   label?: ReactNode;
 };
 
-export function Checkbox({
-  className = "",
-  id,
-  label,
-  ...props
-}: CheckboxProps) {
+export function Checkbox({ className, label, ...props }: CheckboxProps) {
   const fieldProps = useField(props);
-  const generatedId = useId();
-  const checkboxId = id ?? generatedId;
 
   return (
     <Row alignY="center" className={styles.Checkbox}>
       <CheckboxPrimitive.Root
         className={[styles.Root, className].filter(Boolean).join(" ")}
-        id={checkboxId}
         {...props}
         {...fieldProps}
       >
@@ -32,7 +24,7 @@ export function Checkbox({
         </CheckboxPrimitive.Indicator>
       </CheckboxPrimitive.Root>
       {label && (
-        <label className={styles.Label} htmlFor={checkboxId}>
+        <label className={styles.Label} htmlFor={fieldProps.id ?? props.id}>
           {label}
         </label>
       )}

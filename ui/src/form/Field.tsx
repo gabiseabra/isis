@@ -9,7 +9,7 @@ import {
 import styles from "./Field.module.scss";
 
 const FieldContext = createContext<{
-  name?: string;
+  id?: string;
   isTouched: boolean;
   isError: boolean;
   onFocus?: () => void;
@@ -27,6 +27,8 @@ export function useField<Element extends HTMLElement>(props: {
 
   return {
     ...ctx,
+    isTouched: ctx.isTouched,
+    isError: ctx.isError,
     onFocus(e: FocusEvent<Element>) {
       props.onFocus?.(e);
       ctx.onFocus?.();
@@ -38,15 +40,15 @@ export function useField<Element extends HTMLElement>(props: {
   };
 }
 
-export type FieldProps = ComponentProps<"div"> & {
-  name: string;
+export type FieldProps = Omit<ComponentProps<"div">, "id"> & {
+  id: string;
   label?: ReactNode;
   description?: ReactNode;
   error?: ReactNode;
 };
 
 export function Field({
-  name,
+  id,
   label,
   description,
   error,
@@ -58,7 +60,7 @@ export function Field({
   return (
     <FieldContext.Provider
       value={{
-        name,
+        id,
         isTouched,
         isError: !!error,
         onBlur() {
@@ -71,7 +73,7 @@ export function Field({
         {...props}
       >
         {label && (
-          <label className={styles.Label} htmlFor={name}>
+          <label className={styles.Label} htmlFor={id}>
             {label}
           </label>
         )}

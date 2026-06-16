@@ -13,7 +13,7 @@ const meta = {
     error: "",
   },
   render: (args) => (
-    <Field name="field" {...args}>
+    <Field id="field" {...args}>
       <Input placeholder="Input" />
     </Field>
   ),
