@@ -1,26 +1,18 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { BiX } from "react-icons/bi";
 import { FaBell } from "react-icons/fa";
-import { Button } from "../form/Button";
+import { IconControl } from "../display/IconControl";
 import { Col } from "../layout/FlexBox";
 import { Banner, type BannerProps } from "./Banner";
-import { IconControl } from "./IconControl";
 
 const bannerTypes = ["neutral", "success", "warning", "error", "info"] as const;
-const bannerButtonColors = {
-  neutral: "gray",
-  success: "green",
-  warning: "yellow",
-  error: "red",
-  info: "blue",
-} as const;
 
 type BannerStoryArgs = Pick<BannerProps, "type" | "title"> & {
   message: string;
 };
 
 const meta = {
-  title: "Display/Banner",
+  title: "Feedback/Banner",
   args: {
     type: "info",
     title: "Banner title",

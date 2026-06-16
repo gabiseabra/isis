@@ -5,10 +5,10 @@ import {
   FaExclamationTriangle,
   FaInfoCircle,
 } from "react-icons/fa";
+import { IconControl } from "../display/IconControl";
+import { Text } from "../display/Text";
 import { Col, Row, type RowProps } from "../layout/FlexBox";
 import styles from "./Banner.module.scss";
-import { IconControl } from "./IconControl";
-import { Text } from "./Text";
 
 export type BannerType = "error" | "success" | "warning" | "info" | "neutral";
 

@@ -1,6 +1,6 @@
 import { ReactNode } from "react";
+import { ToastProvider } from "../feedback/Toast";
 import { OverlayProvider } from "./OverlayProvider";
-import { ToastProvider } from "./ToastProvider";
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
   return (

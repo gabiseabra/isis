@@ -3,7 +3,7 @@ import { ReactNode } from "react";
 import { FaHeart } from "react-icons/fa";
 import { Button } from "../form/Button";
 import { Col, Row } from "../layout/FlexBox";
-import { ToastProvider, type ToastType, useToast } from "./ToastProvider";
+import { ToastProvider, type ToastType, useToast } from "./Toast";
 
 type ToastStoryArgs = {
   type: ToastType;
@@ -23,7 +23,7 @@ const toastButtonColors = {
 } as const;
 
 const meta = {
-  title: "Context/ToastProvider",
+  title: "Feedback/Toast",
   args: {
     type: "neutral",
     title: "Toast title",

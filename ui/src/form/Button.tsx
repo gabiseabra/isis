@@ -1,5 +1,5 @@
 import { type ComponentProps, type ReactNode } from "react";
-import { Spinner } from "../display/Spinner";
+import { Spinner } from "../feedback/Spinner";
 import { Color } from "../utils/css";
 import styles from "./Button.module.scss";
 
