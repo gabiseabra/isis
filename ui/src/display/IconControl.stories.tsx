@@ -47,6 +47,7 @@ const meta = {
         "pink",
         "red",
         "primary",
+        "muted",
       ],
     },
     badge: {

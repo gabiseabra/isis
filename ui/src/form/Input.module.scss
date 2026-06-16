@@ -1,16 +1,18 @@
+@use "../../styles/mixins/shadow" as shadow;
+
 .InputWrapper {
   display: inline-flex;
   align-items: center;
   box-sizing: border-box;
   width: 100%;
   border: 1px solid var(--color-divider);
-  border-radius: calc(var(--radius) / 2);
+  border-radius: var(--radius);
   background: var(--color-surface);
-  box-shadow: 0 0 0 0 color-mix(in srgb, var(--color-primary) 25%, transparent);
   transition:
     border-color 150ms ease-out,
     box-shadow 300ms ease-out;
   transition-delay: 0s;
+  @include shadow.shadow(0);
 
   &:not(:has(.Input:disabled)) {
     &:hover {
@@ -23,8 +25,7 @@
 
     &:focus-within {
       border-color: var(--color-primary);
-      box-shadow: 0 0 0 2px
-        color-mix(in srgb, var(--color-primary) 25%, transparent);
+      @include shadow.shadow(0.5, 0.5);
     }
   }
 

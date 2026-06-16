@@ -1,5 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { Button, type ButtonProps } from "../form/Button";
+import { ReactNode } from "react";
+import { FaHeart } from "react-icons/fa";
+import { Button } from "../form/Button";
 import { Col, Row } from "../layout/FlexBox";
 import { ToastProvider, type ToastType, useToast } from "./ToastProvider";
 
@@ -8,18 +10,17 @@ type ToastStoryArgs = {
   title: string;
   message: string;
   duration: number;
+  icon?: ReactNode;
 };
 
-const toastTypes = ["neutral", "success", "warning", "error"] as const;
-const toastButtonColors: Record<
-  ToastType,
-  NonNullable<ButtonProps["color"]>
-> = {
+const toastTypes = ["neutral", "success", "warning", "error", "info"] as const;
+const toastButtonColors = {
   neutral: "gray",
   success: "green",
   warning: "yellow",
   error: "red",
-};
+  info: "blue",
+} as const;
 
 const meta = {
   title: "Context/ToastProvider",
@@ -68,7 +69,17 @@ export const Types: Story = {
   ),
 };
 
-function ToastTrigger({ type, title, message, duration }: ToastStoryArgs) {
+export const WithIcon: Story = {
+  render: (args) => <ToastTrigger {...args} icon={<FaHeart />} />,
+};
+
+function ToastTrigger({
+  type,
+  title,
+  message,
+  duration,
+  icon,
+}: ToastStoryArgs) {
   const toast = useToast();
 
   return (
@@ -80,6 +91,7 @@ function ToastTrigger({ type, title, message, duration }: ToastStoryArgs) {
           title,
           message,
           duration,
+          icon,
         })
       }
     >

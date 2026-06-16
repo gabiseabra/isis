@@ -1,6 +1,6 @@
 import { Dialog } from "radix-ui";
 import { type ReactNode } from "react";
-import { FaXmark } from "react-icons/fa6";
+import { BiX } from "react-icons/bi";
 import { useOverlay } from "../context/OverlayProvider";
 import { IconControl } from "../display/IconControl";
 import { Text } from "../display/Text";
@@ -49,8 +49,13 @@ export function Modal({
                 aria-label="Fechar"
                 asChild
               >
-                <IconControl as="button" size="s" style={{ cursor: "pointer" }}>
-                  <FaXmark />
+                <IconControl
+                  as="button"
+                  color="muted"
+                  size="m"
+                  style={{ cursor: "pointer" }}
+                >
+                  <BiX />
                 </IconControl>
               </Dialog.Close>
             </Row>

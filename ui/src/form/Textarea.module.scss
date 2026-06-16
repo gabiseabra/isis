@@ -1,12 +1,13 @@
+@use "../../styles/mixins/shadow" as shadow;
+
 .Textarea {
   box-sizing: border-box;
   display: block;
   width: 100%;
   min-width: 0;
   border: 1px solid var(--color-divider);
-  border-radius: calc(var(--radius) / 2);
+  border-radius: var(--radius);
   background: var(--color-surface);
-  box-shadow: 0 0 0 0 color-mix(in srgb, var(--color-primary) 25%, transparent);
   font: inherit;
   line-height: var(--line-height);
   padding: var(--space) calc(var(--space) * 2);
@@ -15,6 +16,7 @@
     border-color 150ms ease-out,
     box-shadow 300ms ease-out;
   transition-delay: 0s;
+  @include shadow.shadow(0);
 
   &:not(:disabled) {
     &:hover {
@@ -27,8 +29,7 @@
 
     &:focus {
       border-color: var(--color-primary);
-      box-shadow: 0 0 0 2px
-        color-mix(in srgb, var(--color-primary) 25%, transparent);
+      @include shadow.shadow(0.5, 0.5);
     }
   }
 

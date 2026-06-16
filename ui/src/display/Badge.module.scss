@@ -1,6 +1,6 @@
 @use "../../styles/mixins/color" as color;
 
-.badge {
+.Badge {
   display: inline-flex;
   align-items: center;
   justify-self: baseline;
@@ -39,8 +39,10 @@
 .status-empty,
 .status-in-progress,
 .status-completed {
+  --status-size: 6px;
+
   position: relative;
-  padding-left: calc(var(--space) * 2 + 6px);
+  padding-left: calc(var(--space) * 2 + var(--status-size));
 
   &::before {
     content: "";
@@ -50,10 +52,9 @@
     top: 50%;
     margin-top: -3px;
     margin-right: var(--space);
-    width: 6px;
-    height: 6px;
+    width: var(--status-size);
+    height: var(--status-size);
     border-radius: 50%;
-    vertical-align: middle;
   }
 }
 

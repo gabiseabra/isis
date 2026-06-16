@@ -65,6 +65,11 @@
   }
 }
 
+.color-muted {
+  --icon-color: var(--color-muted);
+  --icon-background: var(--color-surface);
+}
+
 .disabled {
   --icon-color: var(--color-disabled);
   --icon-background: var(--color-surface);

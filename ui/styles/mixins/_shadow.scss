@@ -1,0 +1,28 @@
+@use "sass:list" as list;
+@use "sass:math" as math;
+
+@mixin shadow($distance: 1, $intensity: 1, $inset: false) {
+  $insetKeyword: null;
+  @if $inset {
+    $insetKeyword: inset;
+  }
+
+  $shadowCount: 1;
+  $shadowAlpha: 0%;
+
+  @if $intensity > 0 {
+    $shadowCount: math.ceil($intensity);
+    $shadowAlpha: math.div($intensity, $shadowCount) * 100%;
+  }
+
+  $shadow: #{$insetKeyword}
+    color-mix(in srgb, var(--color-shadow) #{$shadowAlpha}, transparent) 0
+    calc(1px * #{$distance}) calc(3px * #{$distance});
+  $shadows: ();
+
+  @for $i from 1 through $shadowCount {
+    $shadows: list.append($shadows, $shadow, comma);
+  }
+
+  box-shadow: $shadows;
+}

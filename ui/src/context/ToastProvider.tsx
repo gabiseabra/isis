@@ -6,17 +6,32 @@ import {
   useContext,
   useState,
 } from "react";
-import { FaXmark } from "react-icons/fa6";
+import { BiX } from "react-icons/bi";
+import {
+  FaCheckCircle,
+  FaExclamationCircle,
+  FaExclamationTriangle,
+  FaInfoCircle,
+} from "react-icons/fa";
 import { IconControl } from "../display/IconControl";
+import { Text } from "../display/Text";
+import { Col } from "../layout/FlexBox";
 import styles from "./ToastProvider.module.scss";
 
-export type ToastType = "error" | "success" | "warning" | "neutral";
+export type ToastType = "error" | "success" | "warning" | "info" | "neutral";
 
 type ToastProps = {
   type: ToastType;
   title?: ReactNode;
   message: ReactNode;
+  icon?: ReactNode;
   duration?: number;
+};
+
+type ToastState = ToastProps & {
+  open: boolean;
+  id: number;
+  paused: boolean;
 };
 
 const ToastContext = createContext<(toast: ToastProps) => void>(() => {});
@@ -28,9 +43,7 @@ export function useToast() {
 }
 
 export function ToastProvider({ children }: { children: ReactNode }) {
-  const [toasts, setToasts] = useState<
-    (ToastProps & { open: boolean; id: number })[]
-  >([]);
+  const [toasts, setToasts] = useState<ToastState[]>([]);
 
   const closeToast = useCallback((id: number) => {
     setToasts((toasts) =>
@@ -43,7 +56,19 @@ export function ToastProvider({ children }: { children: ReactNode }) {
 
   const openToast = useCallback((toast: ToastProps) => {
     const id = Math.random();
-    setToasts((toasts) => [...toasts, { ...toast, id, open: true }]);
+    setToasts((toasts) => [
+      ...toasts,
+      { ...toast, id, open: true, paused: false },
+    ]);
+  }, []);
+
+  const setToastPaused = useCallback((id: number, paused: boolean) => {
+    setToasts((toasts) =>
+      toasts.map((toast) => ({
+        ...toast,
+        paused: toast.id === id ? paused : toast.paused,
+      })),
+    );
   }, []);
 
   return (
@@ -57,23 +82,52 @@ export function ToastProvider({ children }: { children: ReactNode }) {
             className={[styles.Root, styles[toast.type]].join(" ")}
             open={toast.open}
             onOpenChange={() => closeToast(toast.id)}
+            onPause={() => setToastPaused(toast.id, true)}
+            onResume={() => setToastPaused(toast.id, false)}
             duration={toast.duration}
           >
-            <div className={styles.Content}>
+            {(toast.type !== "neutral" || toast.icon) && (
+              <IconControl as="span" size="s" color="currentColor" my={1}>
+                {toast.icon ??
+                  {
+                    success: <FaCheckCircle />,
+                    warning: <FaExclamationTriangle />,
+                    error: <FaExclamationCircle />,
+                    info: <FaInfoCircle />,
+                    neutral: null,
+                  }[toast.type]}
+              </IconControl>
+            )}
+
+            <Col className={styles.Content} my={1}>
               {toast.title && (
-                <Toast.Title className={styles.Title}>
-                  {toast.title}
+                <Toast.Title className={styles.Title} asChild>
+                  <Text as="h3" size="body" color="currentColor" m={0}>
+                    {toast.title}
+                  </Text>
                 </Toast.Title>
               )}
               <Toast.Description className={styles.Description}>
                 {toast.message}
               </Toast.Description>
-            </div>
+            </Col>
+
             <Toast.Action asChild altText="Fechar">
-              <IconControl as="button" size="s" color="currentColor">
-                <FaXmark />
+              <IconControl as="button" size="s" color="muted">
+                <BiX />
               </IconControl>
             </Toast.Action>
+
+            {toast.duration !== Infinity && (
+              <span className={styles.ProgressTrack} aria-hidden="true">
+                <span
+                  className={[styles.Progress, toast.paused && styles.paused]
+                    .filter(Boolean)
+                    .join(" ")}
+                  style={{ animationDuration: `${toast.duration || 5000}ms` }}
+                />
+              </span>
+            )}
           </Toast.Root>
         ))}
 

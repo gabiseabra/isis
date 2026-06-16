@@ -8,7 +8,7 @@ export type IconControlProps = {
   as: "div" | "span" | "a" | "button";
 
   size: "xs" | "s" | "m" | "l" | "xl" | "auto";
-  color?: css.Color | "currentColor";
+  color?: css.Color | "muted" | "currentColor";
 
   badge?: string;
 

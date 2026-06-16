@@ -38,7 +38,7 @@ export function Button({
         .filter(Boolean)
         .join(" ")}
       aria-busy={loading || undefined}
-      disabled={disabled || loading}
+      disabled={disabled}
       type={type}
       {...props}
     >

@@ -1,3 +1,5 @@
+@use "../../styles/mixins/shadow" as shadow;
+
 .Viewport {
   position: fixed;
   right: calc(var(--space) * 2);
@@ -16,23 +18,25 @@
 }
 
 .Root {
+  position: relative;
   display: flex;
   align-items: flex-start;
   gap: calc(var(--space) * 1.5);
 
   padding: calc(var(--space) * 1.5) calc(var(--space) * 2);
   border-radius: var(--radius);
-  background: var(--toast-bg);
+  border: 1px solid var(--color-divider);
+  background: var(--color-surface);
   color: var(--toast-color);
-  box-shadow: 0 var(--space) calc(var(--space) * 3)
-    color-mix(in srgb, var(--color-shadow) 30%, transparent);
+  @include shadow.shadow(3);
+  overflow: hidden;
 
   &[data-state="open"] {
-    animation: toast-slide-in 160ms ease-out;
+    animation: toast-slide-in 150ms ease-out;
   }
 
   &[data-state="closed"] {
-    animation: toast-hide 120ms ease-in;
+    animation: toast-hide 150ms ease-in;
   }
 
   &[data-swipe="move"] {
@@ -41,16 +45,35 @@
 
   &[data-swipe="cancel"] {
     transform: translateX(0);
-    transition: transform 120ms ease-out;
+    transition: transform 150ms ease-out;
   }
 
   &[data-swipe="end"] {
-    animation: toast-swipe-out 120ms ease-in;
+    animation: toast-swipe-out 150ms ease-in;
   }
+}
 
-  > button {
-    color: inherit;
-  }
+.ProgressTrack {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 3px;
+  background: var(--color-divider);
+}
+
+.Progress {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: currentColor;
+  transform: scaleX(1);
+  transform-origin: left;
+  animation: toast-progress linear forwards;
+}
+
+.paused {
+  animation-play-state: paused;
 }
 
 .Content {
@@ -58,38 +81,29 @@
   min-width: 0;
 }
 
-.Title {
-  margin: 0 0 calc(var(--space) / 2);
-  font-weight: 600;
-}
-
 .Description {
   margin: 0;
-  color: var(--toast-description-color);
+  color: var(--color-text);
 }
 
 .neutral {
-  --toast-bg: var(--color-surface);
   --toast-color: var(--color-text);
-  --toast-description-color: var(--color-muted);
 }
 
 .success {
-  --toast-bg: var(--bg-green);
   --toast-color: var(--color-green);
-  --toast-description-color: currentColor;
 }
 
 .warning {
-  --toast-bg: var(--bg-yellow);
-  --toast-color: var(--color-yellow);
-  --toast-description-color: currentColor;
+  --toast-color: var(--color-orange);
 }
 
 .error {
-  --toast-bg: var(--bg-red);
   --toast-color: var(--color-red);
-  --toast-description-color: currentColor;
+}
+
+.info {
+  --toast-color: var(--color-blue);
 }
 
 @keyframes toast-slide-in {
@@ -109,5 +123,11 @@
   to {
     transform: translateX(calc(100% + var(--space) * 2));
     opacity: 0;
+  }
+}
+
+@keyframes toast-progress {
+  to {
+    transform: scaleX(0);
   }
 }

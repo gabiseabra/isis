@@ -1,3 +1,5 @@
+@use "../../styles/mixins/shadow" as shadow;
+
 .Overlay {
   position: fixed;
   inset: 0;
@@ -27,8 +29,7 @@
   overflow: hidden;
   border-radius: calc(var(--radius) * 1.5);
   background: var(--color-surface);
-  box-shadow: 0 var(--space) calc(var(--space) * 4)
-    color-mix(in srgb, var(--color-shadow) 40%, transparent);
+  @include shadow.shadow(5);
 
   display: flex;
   flex-direction: column;
@@ -47,7 +48,7 @@
 }
 
 .Body {
-  padding: calc(var(--space) * 2);
+  padding: calc(var(--space) * 2) calc(var(--space) * 4);
   gap: calc(var(--space) * 2);
   flex: 1 1 auto;
   min-height: 0;
@@ -55,9 +56,13 @@
 }
 
 .Header {
-  padding: calc(var(--space) * 2);
+  padding: calc(var(--space) * 2) calc(var(--space) * 4);
   border-bottom: 1px solid var(--color-divider);
   flex: 0 0 auto;
+
+  .Close {
+    margin-right: calc(var(--space) * -2);
+  }
 }
 
 .Footer {

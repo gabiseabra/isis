@@ -52,11 +52,8 @@ function ModalStory({ defaultOpen, title, description }: ModalStoryArgs) {
         description={description}
         footer={
           <>
-            <Button size="s" onClick={() => setOpen(false)}>
-              Cancel
-            </Button>
+            <Button onClick={() => setOpen(false)}>Cancel</Button>
             <Button
-              size="s"
               color="primary"
               variant="primary"
               onClick={() => setOpen(false)}

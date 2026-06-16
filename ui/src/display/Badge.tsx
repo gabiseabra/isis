@@ -25,7 +25,7 @@ export function Badge({
     <span
       className={[
         className,
-        styles.badge,
+        styles.Badge,
         styles[`size-${size}`],
         styles[`color-${color}`],
         status && styles[`status-${status}`],

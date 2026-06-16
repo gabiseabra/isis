@@ -74,6 +74,10 @@
   }
 }
 
+.color-currentColor {
+  color: currentColor;
+}
+
 // Sizes
 @each $name,
   $size in (caption: "var(--font-size-caption)", body: "var(--font-size)")
