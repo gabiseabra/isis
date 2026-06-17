@@ -7,7 +7,7 @@ import {
   type ReactNode,
   type Ref,
 } from "react";
-import { useOverlay } from "../context/OverlayProvider";
+import { useOverlay } from "./OverlayProvider";
 import styles from "./Popover.module.scss";
 
 const PopoverBoundaryContext = createContext<HTMLElement | null>(null);

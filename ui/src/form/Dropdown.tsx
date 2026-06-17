@@ -1,8 +1,8 @@
 import { Select as SelectPrimitive } from "radix-ui";
 import { type ComponentProps, type ReactNode } from "react";
 import { BiCheck, BiChevronDown } from "react-icons/bi";
-import { useOverlay } from "../context/OverlayProvider";
 import { IconControl } from "../display/IconControl";
+import { useOverlay } from "../overlay/OverlayProvider";
 import styles from "./Dropdown.module.scss";
 import { useField } from "./Field";
 

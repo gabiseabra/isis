@@ -1,10 +1,10 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { useState } from "react";
-import { OverlayProvider } from "../context/OverlayProvider";
 import { Text } from "../display/Text";
 import { Button } from "../form/Button";
-import { Col } from "./FlexBox";
+import { Col } from "../layout/FlexBox";
 import { Modal } from "./Modal";
+import { OverlayProvider } from "./OverlayProvider";
 
 type ModalStoryArgs = {
   defaultOpen: boolean;
@@ -13,7 +13,7 @@ type ModalStoryArgs = {
 };
 
 const meta = {
-  title: "Layout/Modal",
+  title: "Overlay/Modal",
   args: {
     defaultOpen: false,
     title: "Modal title",

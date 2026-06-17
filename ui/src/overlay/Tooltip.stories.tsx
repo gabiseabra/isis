@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { OverlayProvider } from "../context/OverlayProvider";
 import { Button } from "../form/Button";
-import { Row } from "./FlexBox";
+import { Row } from "../layout/FlexBox";
+import { OverlayProvider } from "./OverlayProvider";
 import { Tooltip, type TooltipProps } from "./Tooltip";
 
 type TooltipStoryArgs = Pick<
@@ -13,7 +13,7 @@ const sides = ["top", "right", "bottom", "left"] as const;
 const aligns = ["start", "center", "end"] as const;
 
 const meta = {
-  title: "Layout/Tooltip",
+  title: "Overlay/Tooltip",
   args: {
     align: "center",
     alignOffset: 0,

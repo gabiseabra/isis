@@ -1,11 +1,11 @@
 import { Dialog } from "radix-ui";
 import { type ReactNode } from "react";
 import { BiX } from "react-icons/bi";
-import { useOverlay } from "../context/OverlayProvider";
 import { IconControl } from "../display/IconControl";
 import { Text } from "../display/Text";
 import { Col, Row } from "../layout/FlexBox";
 import styles from "./Modal.module.scss";
+import { useOverlay } from "./OverlayProvider";
 
 export function Modal({
   open,

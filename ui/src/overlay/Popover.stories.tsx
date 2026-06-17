@@ -1,8 +1,8 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { OverlayProvider } from "../context/OverlayProvider";
 import { Button } from "../form/Button";
-import { Card } from "./Card";
-import { Row } from "./FlexBox";
+import { Card } from "../layout/Card";
+import { Row } from "../layout/FlexBox";
+import { OverlayProvider } from "./OverlayProvider";
 import { Popover, PopoverProps } from "./Popover";
 
 type PopoverStoryArgs = Pick<
@@ -21,7 +21,7 @@ const aligns = ["start", "center", "end"] as const;
 const variants = ["solid", "sheer"] as const;
 
 const meta = {
-  title: "Layout/Popover",
+  title: "Overlay/Popover",
   args: {
     align: "center",
     alignOffset: 0,
