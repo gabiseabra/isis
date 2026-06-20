@@ -28,11 +28,10 @@
     );
   }
 
-  &:is(:focus, :focus-visible) {
+  &:focus,
+  &:focus-visible,
+  &[data-state="open"] {
     outline: none;
-  }
-
-  &:is(:focus-visible, [data-state="open"]) {
     border-color: var(--color-primary);
     @include shadow.boxShadow(0.5, 0.5);
   }
@@ -64,27 +63,32 @@
 
 .Content {
   z-index: 1000;
-  min-width: var(--radix-select-trigger-width);
-  max-height: min(var(--radix-select-content-available-height), 320px);
   overflow: hidden;
+  min-width: var(--radix-popper-anchor-width);
+  max-height: min(var(--radix-popper-available-height), 320px);
+  transform-origin: var(--radix-popper-transform-origin);
   border: 1px solid var(--color-divider);
   border-radius: var(--radius);
   background: var(--color-surface);
-  transform-origin: var(--radix-select-content-transform-origin);
   @include shadow.boxShadow(3);
 
   &[data-state="open"] {
+    opacity: 1;
+    transform: scale(1);
     animation: dropdown-content-show 180ms cubic-bezier(0.16, 1, 0.3, 1);
   }
 
   &[data-state="closed"] {
+    opacity: 0;
+    transform: scale(0.95);
+    pointer-events: none;
     animation: dropdown-content-hide 120ms ease-in;
   }
 }
 
 .Viewport {
   padding: var(--space);
-  gap: 3px;
+  gap: 4px;
   display: flex;
   flex-direction: column;
 }
@@ -94,24 +98,30 @@
   display: flex;
   align-items: center;
   padding: var(--space);
-  border-radius: var(--radius);
+  border-radius: calc(var(--radius) / 2);
   cursor: pointer;
   user-select: none;
   transition:
-    background-color 150ms ease-out,
+    outline 80ms ease-out,
+    background 150ms ease-out,
     color 150ms ease-out;
+  outline: 0 solid transparent;
 
-  &:focus {
-    outline: none;
-  }
-
-  &[data-highlighted],
-  &[data-state="checked"] {
+  &[data-active],
+  &:hover {
     background: color-mix(in srgb, var(--bg-primary) 50%, var(--color-surface));
     color: var(--color-primary);
   }
 
+  &:focus {
+    outline: 1px solid var(--color-primary);
+    outline-offset: 2px;
+    box-shadow: 0 0 3px 0 inset
+      color-mix(in srgb, var(--color-primary) 25%, transparent);
+  }
+
   &[data-disabled] {
+    box-shadow: none;
     color: var(--color-disabled);
     cursor: not-allowed;
     pointer-events: none;

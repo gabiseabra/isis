@@ -28,7 +28,7 @@ export const radius = (n: number) => `calc(var(--radius) * ${n})`;
 export const breakpoint = (size: "s" | "m") => `var(--breakpoint-${size})`;
 
 export function computeProperty(variableOrProperty: string, element?: Element) {
-  return getComputedStyle(element ?? document.documentElement)
+  return getComputedStyle(element ?? document.body)
     .getPropertyValue(
       variableOrProperty.startsWith("var")
         ? variableOrProperty.slice(4, -1)

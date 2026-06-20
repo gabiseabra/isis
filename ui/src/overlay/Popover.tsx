@@ -1,16 +1,8 @@
-import { Popover as PopoverPrimitive, Slot } from "radix-ui";
-import {
-  createContext,
-  useContext,
-  useState,
-  type ComponentProps,
-  type ReactNode,
-  type Ref,
-} from "react";
+import { Popover as PopoverPrimitive } from "radix-ui";
+import { type ComponentProps, type ReactNode } from "react";
+import { createBoundary, useBoundary } from "./Boundary";
 import { useOverlay } from "./OverlayProvider";
 import styles from "./Popover.module.scss";
-
-const PopoverBoundaryContext = createContext<HTMLElement | null>(null);
 
 export type PopoverProps = Omit<
   ComponentProps<typeof PopoverPrimitive.Content>,
@@ -33,7 +25,7 @@ export function Popover({
   ...props
 }: PopoverProps) {
   const overlay = useOverlay();
-  const collisionBoundary = useContext(PopoverBoundaryContext);
+  const boundary = useBoundary(Popover.Boundary);
 
   return (
     <PopoverPrimitive.Root open={open} onOpenChange={onOpenChange}>
@@ -42,7 +34,8 @@ export function Popover({
         <PopoverPrimitive.Content
           className={[styles.Content, className].filter(Boolean).join(" ")}
           data-variant={variant}
-          collisionBoundary={collisionBoundary}
+          collisionPadding={boundary.paddingPx}
+          collisionBoundary={boundary.element}
           {...props}
         >
           <div className={styles.Body}>{content}</div>
@@ -57,30 +50,4 @@ export function Popover({
   );
 }
 
-type PopoverBoundaryProps = Omit<ComponentProps<"div">, "ref"> & {
-  asChild?: boolean;
-  ref?: Ref<HTMLElement>;
-};
-
-Popover.Boundary = function PopoverBoundary({
-  asChild,
-  ref,
-  ...props
-}: PopoverBoundaryProps) {
-  const [element, setElement] = useState<HTMLElement | null>(null);
-  const boundaryRef = (element: HTMLElement | null) => {
-    setElement(element);
-    if (ref instanceof Function) ref(element);
-    else if (ref) ref.current = element;
-  };
-
-  return (
-    <PopoverBoundaryContext.Provider value={element}>
-      {asChild ? (
-        <Slot.Root ref={boundaryRef} {...props} />
-      ) : (
-        <div ref={boundaryRef} {...props} />
-      )}
-    </PopoverBoundaryContext.Provider>
-  );
-};
+Popover.Boundary = createBoundary();

@@ -1,6 +1,6 @@
 import type { StorybookConfig } from "@storybook/react-vite";
 import { fileURLToPath } from "node:url";
-import { mergeConfig, type UserConfig } from "vite";
+import { mergeConfig } from "vite";
 
 const config: StorybookConfig = {
   framework: "@storybook/react-vite",
@@ -11,6 +11,9 @@ const config: StorybookConfig = {
   },
   viteFinal: (config) =>
     mergeConfig(config, {
+      optimizeDeps: {
+        exclude: ["@isis/common"],
+      },
       resolve: {
         alias: {
           "@isis/common": fileURLToPath(
@@ -18,7 +21,7 @@ const config: StorybookConfig = {
           ),
         },
       },
-    } satisfies UserConfig),
+    }),
 };
 
 export default config;
