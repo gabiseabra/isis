@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { Span, Text } from "../display/Text";
+import { Text } from "../display/Text";
 import { Card, type CardProps } from "./Card";
 import { Table } from "./Table";
 

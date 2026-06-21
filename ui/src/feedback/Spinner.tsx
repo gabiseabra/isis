@@ -8,9 +8,8 @@ export type SpinnerProps = {
 export function Spinner({ size, className, ...props }: SpinnerProps) {
   return (
     <div
-      className={[className, styles.spinner, styles[`size-${size}`]]
-        .filter(Boolean)
-        .join(" ")}
+      className={[styles.Spinner, className].filter(Boolean).join(" ")}
+      data-size={size}
       role="status"
       {...props}
     />

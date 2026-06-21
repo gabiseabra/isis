@@ -5,17 +5,17 @@
   background: var(--color-surface);
 }
 
-.elevation-0 {
+.Card[data-elevation="0"] {
   --card-radius: var(--radius);
   @include shadow.boxShadow(0.5);
 }
 
-.elevation-1 {
+.Card[data-elevation="1"] {
   --card-radius: calc(var(--radius) * 1.25);
   @include shadow.boxShadow(1.25);
 }
 
-.elevation-2 {
+.Card[data-elevation="2"] {
   --card-radius: calc(var(--radius) * 1.5);
   @include shadow.boxShadow(2);
 }

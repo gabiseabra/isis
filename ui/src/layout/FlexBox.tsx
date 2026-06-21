@@ -27,7 +27,8 @@ export function Row({
 }: RowProps) {
   return (
     <Component
-      className={`${className} ${styles.row}`}
+      className={[styles.FlexBox, className].filter(Boolean).join(" ")}
+      data-direction="row"
       style={{
         flex,
         alignItems: alignY,
@@ -65,7 +66,8 @@ export function Col({
 }: ColProps) {
   return (
     <Component
-      className={`${className} ${styles.col}`}
+      className={[styles.FlexBox, className].filter(Boolean).join(" ")}
+      data-direction="column"
       style={{
         flex,
         alignItems: alignX,

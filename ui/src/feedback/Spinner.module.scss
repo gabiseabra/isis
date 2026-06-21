@@ -1,4 +1,4 @@
-.spinner {
+.Spinner {
   --spinner-size: 24px;
   --spinner-stroke: 3px;
   --spinner-color: var(--color-primary);
@@ -22,17 +22,17 @@
   animation: spin 0.8s linear infinite;
 }
 
-.size-s {
+.Spinner[data-size="s"] {
   --spinner-size: 16px;
   --spinner-stroke: 2px;
 }
 
-.size-m {
+.Spinner[data-size="m"] {
   --spinner-size: 24px;
   --spinner-stroke: 3px;
 }
 
-.size-l {
+.Spinner[data-size="l"] {
   --spinner-size: 32px;
   --spinner-stroke: 4px;
 }

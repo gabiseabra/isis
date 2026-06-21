@@ -1,5 +1,6 @@
+import { createRecord } from "@isis/common/utils/object";
 import type { Meta, StoryObj } from "@storybook/react";
-import { Row } from "../layout/FlexBox";
+import { Table } from "../layout/Table";
 import { Spinner, type SpinnerProps } from "./Spinner";
 
 type SpinnerStoryProps = Pick<SpinnerProps, "size">;
@@ -34,10 +35,17 @@ export const Sizes: Story = {
     },
   },
   render: (props) => (
-    <Row gap={2}>
-      {spinnerSizes.map((size) => (
-        <Spinner key={size} {...props} size={size} />
-      ))}
-    </Row>
+    <Table
+      variant="unstyled"
+      gap={2}
+      render={(data) => data}
+      header={<Table.Header />}
+      columns={spinnerSizes.map((size) => ({ key: size, title: size }))}
+      rows={[
+        createRecord(spinnerSizes, (size) => (
+          <Spinner key={size} {...props} size={size} />
+        )),
+      ]}
+    />
   ),
 };

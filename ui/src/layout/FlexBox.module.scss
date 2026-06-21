@@ -1,11 +1,12 @@
-.row {
+.FlexBox {
   display: flex;
-  flex-direction: row;
   gap: var(--space);
 }
 
-.col {
-  display: flex;
+.FlexBox[data-direction="row"] {
+  flex-direction: row;
+}
+
+.FlexBox[data-direction="column"] {
   flex-direction: column;
-  gap: var(--space);
 }

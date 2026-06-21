@@ -60,6 +60,16 @@ type Story = StoryObj<SuspenseBoundaryStoryProps>;
 
 export default meta;
 
+function DemoResourceContent({
+  resource,
+}: {
+  resource: ReturnType<typeof createDemoResource> | null;
+}) {
+  if (resource) return resource.read();
+
+  return <Text color="muted">Choose a load path.</Text>;
+}
+
 function SuspenseBoundaryStory({ page = false }: { page?: boolean }) {
   const [demo, setDemo] = useState<{
     key: number;
@@ -81,11 +91,7 @@ function SuspenseBoundaryStory({ page = false }: { page?: boolean }) {
     }
   };
 
-  const content = demo.resource ? (
-    demo.resource.read()
-  ) : (
-    <Text color="muted">Choose a load path.</Text>
-  );
+  const content = <DemoResourceContent resource={demo.resource} />;
 
   return (
     <Col p={4} gap={2}>

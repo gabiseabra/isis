@@ -120,7 +120,8 @@ export function Toast({
 }: ToastProps) {
   return (
     <RxToast.Root
-      className={[styles.Root, styles[type]].join(" ")}
+      className={styles.Root}
+      data-type={type}
       open={open}
       onOpenChange={onClose}
       onPause={onPause}
@@ -162,9 +163,8 @@ export function Toast({
       {duration !== Infinity && (
         <span className={styles.ProgressTrack} aria-hidden="true">
           <span
-            className={[styles.Progress, paused && styles.paused]
-              .filter(Boolean)
-              .join(" ")}
+            className={styles.Progress}
+            data-paused={paused || undefined}
             style={{ animationDuration: `${duration || 5000}ms` }}
           />
         </span>

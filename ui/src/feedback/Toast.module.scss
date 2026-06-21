@@ -72,7 +72,7 @@
   animation: toast-progress linear forwards;
 }
 
-.paused {
+.Progress[data-paused="true"] {
   animation-play-state: paused;
 }
 
@@ -86,23 +86,23 @@
   color: var(--color-text);
 }
 
-.neutral {
+.Root[data-type="neutral"] {
   --toast-color: var(--color-text);
 }
 
-.success {
+.Root[data-type="success"] {
   --toast-color: var(--color-green);
 }
 
-.warning {
+.Root[data-type="warning"] {
   --toast-color: var(--color-orange);
 }
 
-.error {
+.Root[data-type="error"] {
   --toast-color: var(--color-red);
 }
 
-.info {
+.Root[data-type="info"] {
   --toast-color: var(--color-blue);
 }
 

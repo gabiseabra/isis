@@ -8,9 +8,8 @@ export type CardProps = ColProps & {
 export function Card({ className, elevation = 0, ...props }: CardProps) {
   return (
     <Col
-      className={[styles.Card, styles[`elevation-${elevation}`], className]
-        .filter(Boolean)
-        .join(" ")}
+      className={[styles.Card, className].filter(Boolean).join(" ")}
+      data-elevation={elevation}
       {...props}
     />
   );

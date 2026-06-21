@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { FaHeart } from "react-icons/fa";
 import { Button } from "../form/Button";
-import { Row } from "../layout/FlexBox";
+import { Col } from "../layout/FlexBox";
 import { ToastProvider, useToast, type ToastProps } from "./Toast";
 
 type ToastStoryProps = Pick<ToastProps, "type" | "title" | "duration"> & {
@@ -81,11 +81,11 @@ export const Types: Story = {
   },
   render: (props) => (
     <ToastProvider>
-      <Row gap={2} wrap>
+      <Col gap={2}>
         {toastTypes.map((type) => (
           <ToastTrigger key={type} {...props} type={type} />
         ))}
-      </Row>
+      </Col>
     </ToastProvider>
   ),
 };
