@@ -1,14 +1,16 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { FaBook, FaHeart, FaShoppingCart } from "react-icons/fa";
-import { Row } from "../layout/FlexBox";
+import { FaBook, FaHeart, FaShoppingCart, FaThumbsUp } from "react-icons/fa";
+import { Col, Row } from "../layout/FlexBox";
 import { IconControl, type IconControlProps } from "./IconControl";
 
-type IconControlStoryArgs = Pick<
+type IconControlStoryProps = Pick<
   IconControlProps,
   "as" | "size" | "color" | "badge" | "disabled" | "title"
 >;
 
-const meta = {
+const iconControlSizes = ["xs", "s", "m", "l", "xl", "auto"] as const;
+
+const meta: Meta<IconControlStoryProps> = {
   title: "Display/IconControl",
   args: {
     as: "span",
@@ -18,11 +20,6 @@ const meta = {
     disabled: false,
     title: "",
   },
-  render: (args) => (
-    <IconControl {...args}>
-      <FaBook />
-    </IconControl>
-  ),
   argTypes: {
     as: {
       control: "select",
@@ -30,7 +27,7 @@ const meta = {
     },
     size: {
       control: "select",
-      options: ["xs", "s", "m", "l", "xl", "auto"],
+      options: iconControlSizes,
     },
     color: {
       control: "select",
@@ -64,29 +61,32 @@ const meta = {
       },
     },
   },
-  decorators: [
-    (Story) => (
-      <Row p={4} gap={1}>
-        <Story />
-      </Row>
-    ),
-  ],
-} satisfies Meta<IconControlStoryArgs>;
+};
 
-type Story = StoryObj<typeof meta>;
+type Story = StoryObj<IconControlStoryProps>;
 
 export default meta;
 
-export const Default: Story = {};
+export const Default: Story = {
+  render: (props) => (
+    <IconControl {...props}>
+      <FaBook />
+    </IconControl>
+  ),
+};
+
+export const Emoji: Story = {
+  render: (props) => <IconControl {...props}>❤️</IconControl>,
+};
 
 export const WithBadge: Story = {
   args: {
     as: "span",
     badge: "3",
   },
-  render: (args) => (
-    <IconControl {...args}>
-      <FaShoppingCart />
+  render: (props) => (
+    <IconControl {...props}>
+      <FaThumbsUp />
     </IconControl>
   ),
 };
@@ -102,8 +102,8 @@ export const IconButton: Story = {
       exclude: ["as"],
     },
   },
-  render: (args) => (
-    <IconControl {...args} as="button" onClick={() => undefined}>
+  render: (props) => (
+    <IconControl {...props} as="button" onClick={() => undefined}>
       <FaHeart />
     </IconControl>
   ),
@@ -115,13 +115,15 @@ export const Sizes: Story = {
       exclude: ["size"],
     },
   },
-  render: (args) => (
-    <>
-      {(["xs", "s", "m", "l", "xl"] as const).map((size) => (
-        <IconControl key={size} {...args} size={size}>
-          <FaBook />
-        </IconControl>
+  render: (props) => (
+    <Row alignY="stretch" gap={2}>
+      {iconControlSizes.map((size) => (
+        <Col>
+          <IconControl key={size} {...props} size={size}>
+            <FaBook />
+          </IconControl>
+        </Col>
       ))}
-    </>
+    </Row>
   ),
 };

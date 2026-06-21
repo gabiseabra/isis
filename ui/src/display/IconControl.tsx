@@ -36,43 +36,25 @@ export function IconControl({
   onClick,
   ...props
 }: IconControlProps) {
-  // apply PX size inline for RSS feed
-  const pxSize = {
-    xs: 12,
-    s: 16,
-    m: 24,
-    l: 32,
-    xl: 48,
-    auto: undefined,
-  }[size];
-
   return (
     <Component
-      className={[
-        className,
-        styles.icon,
-        styles[`size-${size}`],
-        color && styles[`color-${color}`],
-        disabled && styles.disabled,
-        onClick && !disabled && !readOnly && styles.clickable,
-      ]
-        .filter(Boolean)
-        .join(" ")}
+      className={[className, styles.Root].filter(Boolean).join(" ")}
       style={{
-        display: "inline-block",
-        width: pxSize,
-        height: pxSize,
         ...style,
         ...css.getPaddingStyles(props),
         ...css.getMarginStyles(props),
       }}
       onClick={disabled || readOnly ? undefined : onClick}
       disabled={disabled}
+      data-size={size}
+      data-color={color}
+      data-disabled={disabled || undefined}
+      data-clickable={(onClick && !disabled && !readOnly) || undefined}
       {...omit(props, [...css.paddingProps, ...css.marginProps])}
     >
       {children}
 
-      {!!badge && <span className={styles.badge}>{badge}</span>}
+      {!!badge && <span className={styles.Badge}>{badge}</span>}
     </Component>
   );
 }

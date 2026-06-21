@@ -1,6 +1,6 @@
 @use "../../styles/mixins/color" as color;
 
-.icon {
+.Root {
   --icon-color: currentColor;
   --icon-background: var(--color-surface);
 
@@ -11,8 +11,8 @@
   align-items: center;
   flex-shrink: 0;
 
-  line-height: 0;
   font-size: var(--icon-size);
+  line-height: var(--icon-size);
   padding: 0;
 
   background: transparent;
@@ -20,7 +20,7 @@
   color: var(--icon-color);
 
   width: var(--icon-size);
-  height: 0;
+  height: var(--icon-size);
   box-sizing: border-box;
 
   &:focus,
@@ -28,14 +28,14 @@
     outline: none;
   }
 
-  & > :not(.badge) {
+  & > :not(.Badge) {
     display: block;
     width: 100%;
     height: 100%;
   }
 }
 
-.badge {
+.Badge {
   position: absolute;
   left: calc(50% + var(--icon-size) / 2);
   top: calc(50% + var(--icon-size) / 2);
@@ -44,63 +44,77 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  height: var(--badge-size);
-  min-width: var(--badge-size);
+  height: var(--icon-badge-size);
+  min-width: var(--icon-badge-size);
   width: auto;
-  border-radius: calc(var(--badge-size) / 2);
+  border-radius: calc(var(--icon-badge-size) / 2);
   background: var(--icon-color);
   color: var(--icon-background);
-  font-size: calc(var(--badge-size) * 0.85);
+  font-size: calc(var(--icon-badge-size) * 0.85);
   line-height: 1;
 }
 
-.clickable {
+.Root[data-clickable] {
   cursor: pointer;
 }
 
 @each $name, $_ in color.$colors-codes {
-  .#{"color-" + $name} {
+  .Root[data-color="#{$name}"] {
     --icon-color: var(#{"--color-" + $name});
     --icon-background: var(#{"--bg-" + $name});
   }
 }
 
-.color-muted {
+.Root[data-color="muted"] {
   --icon-color: var(--color-muted);
   --icon-background: var(--color-surface);
 }
 
-.disabled {
+.Root[data-disabled] {
   --icon-color: var(--color-disabled);
   --icon-background: var(--color-surface);
 }
 
-.size-xs {
-  --icon-size: 14px;
-  --badge-size: 10px;
+.Root[data-size="xs"] {
+  --icon-size: 12px;
+  --icon-badge-size: 10px;
 }
 
-.size-s {
-  --icon-size: 18px;
-  --badge-size: 12px;
+.Root[data-size="s"] {
+  --icon-size: 16px;
+  --icon-badge-size: 12px;
 }
 
-.size-m {
+.Root[data-size="m"] {
   --icon-size: 24px;
-  --badge-size: 14px;
+  --icon-badge-size: 14px;
 }
 
-.size-l {
+.Root[data-size="l"] {
   --icon-size: 32px;
-  --badge-size: 16px;
+  --icon-badge-size: 16px;
 }
 
-.size-xl {
-  --icon-size: 64px;
-  --badge-size: 24px;
+.Root[data-size="xl"] {
+  --icon-size: 48px;
+  --icon-badge-size: 24px;
 }
 
-button.icon {
+.Root[data-size="auto"] {
+  --icon-size: auto;
+  --icon-badge-size: 33.333%;
+  width: auto;
+  height: 100%;
+  aspect-ratio: 1;
+}
+
+// xs: 12,
+// s: 16,
+// m: 24,
+// l: 32,
+// xl: 48,
+
+button.Root {
   border-radius: 50%;
   padding: var(--space);
   box-sizing: content-box;

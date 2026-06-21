@@ -1,11 +1,31 @@
 .Root {
+  position: relative;
   width: var(--avatar-size);
   height: var(--avatar-size);
   border-radius: 50%;
   overflow: hidden;
   background: var(--color-divider);
   color: var(--color-text);
-  font-size: var(--avatar-size);
+  font-size: calc(var(--avatar-size) / 2);
+}
+
+.Root[data-status="loading"] {
+  background: color-mix(in srgb, var(--color-muted) 15%, var(--color-surface));
+  color: transparent;
+
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      color-mix(in srgb, var(--color-surface) 25%, transparent),
+      transparent
+    );
+    transform: translateX(-100%);
+    animation: avatar-shimmer 1400ms ease-in-out infinite;
+  }
 }
 
 .Image {
@@ -14,12 +34,24 @@
   object-fit: cover;
 }
 
-.size-s {
+.Root[data-size="s"] {
   --avatar-size: 16px;
 }
-.size-m {
+.Root[data-size="m"] {
   --avatar-size: 32px;
 }
-.size-l {
+.Root[data-size="l"] {
   --avatar-size: 64px;
+}
+
+@keyframes avatar-shimmer {
+  to {
+    transform: translateX(100%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .Root[data-status="loading"]::after {
+    animation: none;
+  }
 }
