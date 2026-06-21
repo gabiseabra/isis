@@ -8,7 +8,7 @@ export type ButtonProps = Omit<ComponentProps<"button">, "color"> & {
   loading?: boolean;
   right?: ReactNode;
   variant?: "primary" | "secondary" | "link";
-  color?: Color;
+  color?: Color | "currentColor";
   size?: "l" | "m" | "s";
 };
 

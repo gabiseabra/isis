@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { Row } from "../layout/FlexBox";
+import { Col, Row } from "../layout/FlexBox";
 import { Badge, type BadgeProps } from "./Badge";
 
 type BadgeStoryProps = {
@@ -80,7 +80,7 @@ export const Colors: Story = {
     },
   },
   render: (props) => (
-    <Row gap={2} wrap>
+    <Col gap={2}>
       {badgeColors.map((color) => (
         <Badge
           key={color}
@@ -92,7 +92,7 @@ export const Colors: Story = {
           {color}
         </Badge>
       ))}
-    </Row>
+    </Col>
   ),
 };
 

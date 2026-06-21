@@ -2,10 +2,10 @@ import { ReactNode } from "react";
 import { BiSearch } from "react-icons/bi";
 import { IconControl } from "../display/IconControl";
 import { Text } from "../display/Text";
-import { Col, Row } from "../layout/FlexBox";
+import { Col } from "../layout/FlexBox";
 import { Color } from "../utils/css";
 
-type EmptyStateProps = {
+export type EmptyStateProps = {
   color?: Color | "muted";
   size: "m" | "l";
   icon?: ReactNode;

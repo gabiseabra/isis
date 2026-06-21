@@ -130,6 +130,11 @@
   --button-bg: var(--color-background);
 }
 
+.color-currentColor {
+  --button-color: currentColor;
+  --button-bg: currentColor;
+}
+
 .size-s {
   --button-height: 26px;
 }

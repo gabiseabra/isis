@@ -1,12 +1,10 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { FaBoxOpen } from "react-icons/fa";
 import { Col } from "../layout/FlexBox";
-import { EmptyState } from "./EmptyState";
+import { EmptyState, EmptyStateProps } from "./EmptyState";
 
-type EmptyStateSize = "m" | "l";
-
-type EmptyStateStoryArgs = {
-  size: EmptyStateSize;
+type EmptyStateStoryProps = {
+  size: EmptyStateProps["size"];
   color: EmptyStateColor;
   title: string;
   message: string;
@@ -29,7 +27,7 @@ const colors = [
 
 type EmptyStateColor = (typeof colors)[number];
 
-const meta = {
+const meta: Meta<EmptyStateStoryProps> = {
   title: "Feedback/EmptyState",
   args: {
     size: "m",
@@ -37,9 +35,6 @@ const meta = {
     title: "Nothing to show yet",
     message: "Content will appear here once there is something available.",
   },
-  render: ({ message, ...args }) => (
-    <EmptyState {...args}>{message}</EmptyState>
-  ),
   argTypes: {
     size: {
       control: "select",
@@ -50,20 +45,17 @@ const meta = {
       options: colors,
     },
   },
-  decorators: [
-    (Story) => (
-      <Col p={4} gap={2}>
-        <Story />
-      </Col>
-    ),
-  ],
-} satisfies Meta<EmptyStateStoryArgs>;
+};
 
 type Story = StoryObj<typeof meta>;
 
 export default meta;
 
-export const Default: Story = {};
+export const Default: Story = {
+  render: ({ message, ...args }) => (
+    <EmptyState {...args}>{message}</EmptyState>
+  ),
+};
 
 export const Sizes: Story = {
   parameters: {
@@ -72,7 +64,7 @@ export const Sizes: Story = {
     },
   },
   render: ({ message, ...args }) => (
-    <Col gap={3}>
+    <Col gap={2}>
       {sizes.map((size) => (
         <EmptyState key={size} {...args} size={size}>
           {message}

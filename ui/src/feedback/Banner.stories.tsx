@@ -2,43 +2,38 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { BiX } from "react-icons/bi";
 import { FaBell } from "react-icons/fa";
 import { IconControl } from "../display/IconControl";
+import { Button } from "../form/Button";
 import { Col } from "../layout/FlexBox";
 import { Banner, type BannerProps } from "./Banner";
 
 const bannerTypes = ["neutral", "success", "warning", "error", "info"] as const;
 
-type BannerStoryArgs = Pick<BannerProps, "type" | "title"> & {
+type BannerStoryProps = Pick<BannerProps, "type" | "title"> & {
   message: string;
 };
 
-const meta = {
+const meta: Meta<BannerStoryProps> = {
   title: "Feedback/Banner",
   args: {
     type: "info",
     title: "Banner title",
     message: "Banner message",
   },
-  render: ({ message, ...args }) => <Banner {...args}>{message}</Banner>,
   argTypes: {
     type: {
       control: "select",
       options: bannerTypes,
     },
   },
-  decorators: [
-    (Story) => (
-      <Col p={4} gap={2}>
-        <Story />
-      </Col>
-    ),
-  ],
-} satisfies Meta<BannerStoryArgs>;
+};
 
 type Story = StoryObj<typeof meta>;
 
 export default meta;
 
-export const Default: Story = {};
+export const Default: Story = {
+  render: ({ message, ...args }) => <Banner {...args}>{message}</Banner>,
+};
 
 export const Types: Story = {
   parameters: {
@@ -67,15 +62,28 @@ export const WithIcon: Story = {
 
 export const WithAction: Story = {
   render: ({ message, ...args }) => (
-    <Banner
-      {...args}
-      action={
-        <IconControl as="button" size="s" color="currentColor">
-          <BiX />
-        </IconControl>
-      }
-    >
-      {message}
-    </Banner>
+    <Col gap={2}>
+      <Banner
+        {...args}
+        action={
+          <IconControl as="button" size="s" color="currentColor">
+            <BiX />
+          </IconControl>
+        }
+      >
+        {message}
+      </Banner>
+
+      <Banner
+        {...args}
+        action={
+          <Button variant="link" color="currentColor" right={<BiX />}>
+            Close
+          </Button>
+        }
+      >
+        {message}
+      </Banner>
+    </Col>
   ),
 };

@@ -2,34 +2,30 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { Row } from "../layout/FlexBox";
 import { Spinner, type SpinnerProps } from "./Spinner";
 
-type SpinnerStoryArgs = Pick<SpinnerProps, "size">;
+type SpinnerStoryProps = Pick<SpinnerProps, "size">;
 
-const meta = {
+const spinnerSizes = ["s", "m", "l"] as const;
+
+const meta: Meta<SpinnerStoryProps> = {
   title: "Feedback/Spinner",
   args: {
     size: "m",
   },
-  render: (args) => <Spinner {...args} />,
   argTypes: {
     size: {
       control: "select",
-      options: ["s", "m", "l"],
+      options: spinnerSizes,
     },
   },
-  decorators: [
-    (Story) => (
-      <Row p={4} gap={1}>
-        <Story />
-      </Row>
-    ),
-  ],
-} satisfies Meta<SpinnerStoryArgs>;
+};
 
-type Story = StoryObj<typeof meta>;
+type Story = StoryObj<SpinnerStoryProps>;
 
 export default meta;
 
-export const Default: Story = {};
+export const Default: Story = {
+  render: (props) => <Spinner {...props} />,
+};
 
 export const Sizes: Story = {
   parameters: {
@@ -37,11 +33,11 @@ export const Sizes: Story = {
       exclude: ["size"],
     },
   },
-  render: (args) => (
-    <>
-      {(["s", "m", "l"] as const).map((size) => (
-        <Spinner key={size} {...args} size={size} />
+  render: (props) => (
+    <Row gap={2}>
+      {spinnerSizes.map((size) => (
+        <Spinner key={size} {...props} size={size} />
       ))}
-    </>
+    </Row>
   ),
 };
