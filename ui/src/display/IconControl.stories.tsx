@@ -1,6 +1,7 @@
+import { createRecord } from "@isis/common/utils/object";
 import type { Meta, StoryObj } from "@storybook/react";
-import { FaBook, FaHeart, FaShoppingCart, FaThumbsUp } from "react-icons/fa";
-import { Col, Row } from "../layout/FlexBox";
+import { FaBook, FaHeart, FaThumbsUp } from "react-icons/fa";
+import { Table } from "../layout/Table";
 import { IconControl, type IconControlProps } from "./IconControl";
 
 type IconControlStoryProps = Pick<
@@ -116,14 +117,19 @@ export const Sizes: Story = {
     },
   },
   render: (props) => (
-    <Row alignY="stretch" gap={2}>
-      {iconControlSizes.map((size) => (
-        <Col>
+    <Table
+      variant="unstyled"
+      gap={2}
+      render={(data) => data}
+      header={<Table.Header />}
+      columns={iconControlSizes.map((size) => ({ key: size, title: size }))}
+      rows={[
+        createRecord(iconControlSizes, (size) => (
           <IconControl key={size} {...props} size={size}>
             <FaBook />
           </IconControl>
-        </Col>
-      ))}
-    </Row>
+        )),
+      ]}
+    />
   ),
 };

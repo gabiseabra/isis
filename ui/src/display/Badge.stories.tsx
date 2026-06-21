@@ -1,6 +1,9 @@
+import { createRecord } from "@isis/common/utils/object";
 import type { Meta, StoryObj } from "@storybook/react";
-import { Col, Row } from "../layout/FlexBox";
+import { Row } from "../layout/FlexBox";
+import { Table } from "../layout/Table";
 import { Badge, type BadgeProps } from "./Badge";
+import { Span, Text } from "./Text";
 
 type BadgeStoryProps = {
   label: string;
@@ -62,14 +65,21 @@ export const Sizes: Story = {
       exclude: ["size"],
     },
   },
-  render: ({ label, ...args }) => (
-    <Row gap={2} wrap>
-      {badgeSizes.map((size) => (
-        <Badge key={size} {...args} size={size}>
-          {label}
-        </Badge>
-      ))}
-    </Row>
+  render: ({ label, ...props }) => (
+    <Table
+      variant="unstyled"
+      gap={2}
+      render={(data) => data}
+      header={<Table.Header />}
+      columns={badgeSizes.map((size) => ({ key: size, title: size }))}
+      rows={[
+        createRecord(badgeSizes, (size) => (
+          <Badge key={size} {...props} size={size}>
+            {label}
+          </Badge>
+        )),
+      ]}
+    />
   ),
 };
 
@@ -80,19 +90,28 @@ export const Colors: Story = {
     },
   },
   render: (props) => (
-    <Col gap={2}>
-      {badgeColors.map((color) => (
-        <Badge
-          key={color}
-          active={props.active}
-          color={color}
-          size={props.size}
-          status={props.status}
-        >
-          {color}
-        </Badge>
-      ))}
-    </Col>
+    <Table
+      variant="unstyled"
+      gap={2}
+      render={(data) => data}
+      renderIndex={(_item, index) => (
+        <Table.Label align="end">{badgeColors[index]}</Table.Label>
+      )}
+      columns={[{ key: "element" }]}
+      rows={badgeColors.map((color) => ({
+        element: (
+          <Badge
+            key={color}
+            active={props.active}
+            color={color}
+            size={props.size}
+            status={props.status}
+          >
+            {color}
+          </Badge>
+        ),
+      }))}
+    />
   ),
 };
 
@@ -103,18 +122,19 @@ export const Statuses: Story = {
     },
   },
   render: (props) => (
-    <Row gap={2} wrap>
-      {badgeStatuses.map((status) => (
-        <Badge
-          key={status}
-          active={props.active}
-          color={props.color}
-          size={props.size}
-          status={status}
-        >
-          {status}
-        </Badge>
-      ))}
-    </Row>
+    <Table
+      variant="unstyled"
+      gap={2}
+      render={(data) => data}
+      header={<Table.Header />}
+      columns={badgeStatuses.map((status) => ({ key: status, title: status }))}
+      rows={[
+        createRecord(badgeStatuses, (status) => (
+          <Badge key={status} status={status} {...props}>
+            {status}
+          </Badge>
+        )),
+      ]}
+    />
   ),
 };

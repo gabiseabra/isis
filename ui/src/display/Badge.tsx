@@ -23,16 +23,11 @@ export function Badge({
 }: BadgeProps) {
   return (
     <span
-      className={[
-        className,
-        styles.Badge,
-        styles[`size-${size}`],
-        styles[`color-${color}`],
-        status && styles[`status-${status}`],
-        active && styles.active,
-      ]
-        .filter(Boolean)
-        .join(" ")}
+      className={[styles.Badge, className].filter(Boolean).join(" ")}
+      data-active={active || undefined}
+      data-color={color}
+      data-size={size}
+      data-status={status}
       {...props}
     />
   );

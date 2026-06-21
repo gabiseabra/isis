@@ -2,8 +2,10 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { BiX } from "react-icons/bi";
 import { FaBell } from "react-icons/fa";
 import { IconControl } from "../display/IconControl";
+import { Span, Text } from "../display/Text";
 import { Button } from "../form/Button";
 import { Col } from "../layout/FlexBox";
+import { Table } from "../layout/Table";
 import { Banner, type BannerProps } from "./Banner";
 
 const bannerTypes = ["neutral", "success", "warning", "error", "info"] as const;
@@ -42,13 +44,23 @@ export const Types: Story = {
     },
   },
   render: ({ message, ...args }) => (
-    <Col gap={2}>
-      {bannerTypes.map((type) => (
-        <Banner key={type} {...args} type={type} title={`${type} banner`}>
-          {message}
-        </Banner>
-      ))}
-    </Col>
+    <Table
+      variant="unstyled"
+      gap={2}
+      style={{ width: "100%" }}
+      render={(data) => data}
+      renderIndex={(_data, index) => (
+        <Table.Label align="end">{bannerTypes[index]}</Table.Label>
+      )}
+      columns={[{ key: "element" }]}
+      rows={bannerTypes.map((type) => ({
+        element: (
+          <Banner key={type} {...args} type={type} title={`${type} banner`}>
+            {message}
+          </Banner>
+        ),
+      }))}
+    />
   ),
 };
 

@@ -1,0 +1,51 @@
+.Resizable {
+  position: relative;
+  width: fit-content;
+  height: fit-content;
+  min-width: 40px;
+  min-height: 40px;
+}
+
+.Handle {
+  --resizable-handle-hit-area: calc(var(--size-divider) + var(--space) * 2);
+
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  touch-action: none;
+  user-select: none;
+  transition: filter 150ms ease-out;
+  filter: brightness(0.9);
+}
+
+.Resizable[data-direction="x"] > .Handle {
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: var(--resizable-handle-hit-area);
+  cursor: col-resize;
+}
+
+.Resizable[data-direction="x"]:dir(rtl) > .Handle {
+  right: auto;
+  left: 0;
+}
+
+.Resizable[data-direction="y"] > .Handle {
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: var(--resizable-handle-hit-area);
+  cursor: row-resize;
+}
+
+.Handle:hover {
+  filter: brightness(1);
+}
+
+.Resizable[data-resizing="true"] {
+  z-index: 1;
+  outline: 2px solid var(--bg-highlight);
+  outline-offset: 2px;
+}

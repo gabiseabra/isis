@@ -101,15 +101,23 @@
 }
 
 .Root[data-size="auto"] {
-  --icon-size: var(--icon-auto-size, 1em);
   --icon-badge-size: 33.333%;
+
+  width: auto;
+  height: 100%;
+  aspect-ratio: 1 / 1;
+
+  font-size: inherit;
+  line-height: 1;
 }
 
-// xs: 12,
-// s: 16,
-// m: 24,
-// l: 32,
-// xl: 48,
+tr:has(> td > .Root[data-size="auto"]) {
+  height: 1px;
+}
+
+td:has(> .Root[data-size="auto"]) {
+  height: inherit;
+}
 
 button.Root {
   border-radius: 50%;

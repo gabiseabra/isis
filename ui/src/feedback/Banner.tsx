@@ -30,9 +30,8 @@ export function Banner({
 }: BannerProps) {
   return (
     <Row
-      className={[styles.Banner, styles[`type-${type}`], className]
-        .filter(Boolean)
-        .join(" ")}
+      className={[styles.Banner, className].filter(Boolean).join(" ")}
+      data-type={type}
       alignY="start"
       {...props}
     >

@@ -8,8 +8,10 @@ export type TextProps = {
   as?: TextTag;
   size?: TextSize;
   color?: TextColor;
+  background?: css.Color;
   font?: TextFont;
   indent?: number;
+  align?: "left" | "right" | "center" | "start" | "end";
   disabled?: boolean;
 } & css.MarginProps &
   css.PaddingProps &
@@ -32,13 +34,17 @@ export function Text({
   as: Tag = "div",
   size,
   color,
+  background,
   font,
   indent,
+  align,
   children,
   className,
   style = {},
   ...props
 }: TextProps) {
+  const dataIndent = indent && indent >= 1 && indent <= 4 ? indent : undefined;
+
   return (
     <Tag
       ref={
@@ -48,21 +54,20 @@ export function Text({
           else ref.current = element;
         })
       }
-      className={[
-        styles.text,
-        indent && styles[`indent-${{ 1: 1, 2: 2, 3: 3, 4: 4 }[indent] ?? 0}`],
-        size && styles[`size-${size}`],
-        color && styles[`color-${color}`],
-        font && styles[`font-${font}`],
-        className,
-      ]
-        .filter(Boolean)
-        .join(" ")}
+      className={[styles.Text, className].filter(Boolean).join(" ")}
       style={{
         ...css.getPaddingStyles(props),
         ...css.getMarginStyles(props),
         ...style,
       }}
+      data-align={align}
+      data-color={color && color !== "default" ? color : undefined}
+      data-background={
+        background && background !== "default" ? background : undefined
+      }
+      data-font={font}
+      data-indent={dataIndent}
+      data-size={size}
       {...omit(props, [...css.marginProps, ...css.paddingProps])}
     >
       {children}
@@ -73,6 +78,7 @@ export function Text({
 export type Annotations = {
   size?: TextSize;
   color?: TextColor;
+  background?: css.Color;
   redacted?: boolean;
   bold?: boolean;
   italic?: boolean;
@@ -86,50 +92,39 @@ export type SpanProps = Annotations & ComponentPropsWithoutRef<"span">;
  * An inline element for text with annotations.
  * @direction inline
  */
-export function Span({ children, style, className, ...props }: SpanProps) {
-  return (
-    <span
-      style={style}
-      className={[className, Span.className(props)].filter(Boolean).join(" ")}
-      {...omit(props, [...annotationProps])}
-    >
-      {children}
-    </span>
-  );
-}
-
-Span.className = ({
+export function Span({
+  children,
+  style,
+  className,
   bold,
   italic,
   underline,
   strikethrough,
   code,
   color,
+  background,
   redacted,
   size,
-}: Annotations) => {
-  return [
-    styles.span,
-    bold && styles.bold,
-    italic && styles.italic,
-    underline && styles.underline,
-    strikethrough && styles.strikethrough,
-    code && styles.code,
-    redacted && styles.redacted,
-    size && styles[`size-${size}`],
-    color && color !== "default" && styles[`color-${color}`],
-  ]
-    .filter(Boolean)
-    .join(" ");
-};
-
-const annotationProps = [
-  "bold",
-  "italic",
-  "underline",
-  "strikethrough",
-  "code",
-  "color",
-  "redacted",
-  "size",
-] as const;
+  ...props
+}: SpanProps) {
+  return (
+    <span
+      style={style}
+      className={[styles.Span, className].filter(Boolean).join(" ")}
+      data-bold={bold || undefined}
+      data-code={code || undefined}
+      data-color={color && color !== "default" ? color : undefined}
+      data-background={
+        background && background !== "default" ? background : undefined
+      }
+      data-size={size}
+      data-italic={italic || undefined}
+      data-redacted={redacted || undefined}
+      data-strikethrough={strikethrough || undefined}
+      data-underline={underline || undefined}
+      {...props}
+    >
+      {children}
+    </span>
+  );
+}

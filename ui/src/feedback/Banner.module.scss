@@ -24,22 +24,22 @@
   color: var(--color-text);
 }
 
-.type-neutral {
+.Banner[data-type="neutral"] {
   --banner-color: var(--color-text);
 }
 
-.type-success {
+.Banner[data-type="success"] {
   --banner-color: var(--color-green);
 }
 
-.type-warning {
+.Banner[data-type="warning"] {
   --banner-color: var(--color-orange);
 }
 
-.type-error {
+.Banner[data-type="error"] {
   --banner-color: var(--color-red);
 }
 
-.type-info {
+.Banner[data-type="info"] {
   --banner-color: var(--color-blue);
 }

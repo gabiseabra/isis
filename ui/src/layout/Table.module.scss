@@ -1,0 +1,67 @@
+.Root {
+  width: 100%;
+  border-spacing: 0;
+  border-collapse: separate;
+}
+
+.Root[data-variant="unstyled"] {
+  width: auto;
+}
+
+.Root[data-variant="default"] {
+  border: 1px solid var(--color-divider);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+}
+
+.Root[data-variant="default"] th,
+.Root[data-variant="default"] td {
+  box-sizing: border-box;
+  padding: var(--space) calc(var(--space) * 2);
+  border-bottom: 1px solid var(--color-divider);
+  text-align: left;
+  vertical-align: middle;
+}
+
+.Root[data-variant="default"] th {
+  background: color-mix(
+    in srgb,
+    var(--color-background) 35%,
+    var(--color-surface)
+  );
+  color: var(--color-muted);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.Root[data-variant="default"] tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.Root[data-variant="default"] tbody tr:hover td {
+  background: color-mix(in srgb, var(--bg-highlight) 24%, transparent);
+}
+
+.Root[data-variant="default"] thead > tr > *:first-child {
+  overflow: hidden;
+  border-top-left-radius: var(--radius);
+}
+.Root[data-variant="default"] thead > tr > *:last-child {
+  overflow: hidden;
+  border-top-right-radius: var(--radius);
+}
+
+.Root[data-variant="default"] tfoot > tr > *:first-child {
+  overflow: hidden;
+  border-bottom-left-radius: var(--radius);
+}
+
+.Root[data-variant="default"] tfoot > tr > *:last-child {
+  overflow: hidden;
+  border-bottom-right-radius: var(--radius);
+}
+
+.Root th[data-index],
+.Root td[data-index] {
+  width: 0;
+}

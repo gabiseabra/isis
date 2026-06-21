@@ -34,6 +34,19 @@ export function keys<T extends object>(object: T): (keyof T)[] {
   return Object.keys(object) as (keyof T)[];
 }
 
+export function createRecord<const K extends PropertyKey, V>(
+  keys: readonly K[],
+  value: (key: K) => V,
+): Record<K, V> {
+  const out = {} as Record<K, V>;
+
+  for (const key of keys) {
+    out[key] = value(key);
+  }
+
+  return out;
+}
+
 export function equals<T extends GenericObject>(
   a: T,
   b: T,

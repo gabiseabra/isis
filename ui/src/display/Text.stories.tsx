@@ -1,21 +1,40 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { Col } from "../layout/FlexBox";
+import { Table } from "../layout/Table";
 import { Span, Text, type TextProps } from "./Text";
 
 type TextStoryArgs = Pick<
   TextProps,
-  "as" | "size" | "color" | "font" | "indent"
+  "as" | "size" | "color" | "font" | "indent" | "align"
 >;
 
-const meta = {
+const textSizes = ["caption", "body", "h1", "h2", "h3", "h4", "h5"] as const;
+const textColors = [
+  "default",
+  "gray",
+  "orange",
+  "yellow",
+  "green",
+  "blue",
+  "purple",
+  "pink",
+  "red",
+  "primary",
+  "muted",
+  "disabled",
+  "link",
+] as const;
+const textFonts = ["body", "heading", "subheading", "monospace"] as const;
+
+const meta: Meta<TextStoryArgs> = {
   title: "Display/Text",
   args: {
     as: "p",
     size: "body",
     color: "default",
     indent: 0,
+    align: "start",
   },
-  render: (args) => <Text {...args}>Text</Text>,
   argTypes: {
     as: {
       control: "select",
@@ -23,45 +42,29 @@ const meta = {
     },
     size: {
       control: "select",
-      options: ["caption", "body", "h1", "h2", "h3", "h4", "h5"],
+      options: textSizes,
     },
     color: {
       control: "select",
-      options: [
-        "default",
-        "gray",
-        "orange",
-        "yellow",
-        "green",
-        "blue",
-        "purple",
-        "pink",
-        "red",
-        "primary",
-        "muted",
-        "disabled",
-        "link",
-      ],
+      options: textColors,
     },
     font: {
       control: "select",
-      options: ["body", "heading", "subheading", "monospace"],
+      options: textFonts,
     },
     indent: {
       control: "select",
       options: [0, 1, 2, 3, 4],
     },
-  },
-  decorators: [
-    (Story) => (
-      <Col p={4}>
-        <Story />
-      </Col>
-    ),
-  ],
-} satisfies Meta<TextStoryArgs>;
 
-type Story = StoryObj<typeof meta>;
+    align: {
+      control: "select",
+      options: ["center", "left", "right", "start", "end"],
+    },
+  },
+};
+
+type Story = StoryObj<TextStoryArgs>;
 
 export default meta;
 
@@ -91,15 +94,19 @@ export const Sizes: Story = {
     },
   },
   render: (args) => (
-    <div>
-      {(["caption", "body", "h1", "h2", "h3", "h4", "h5"] as const).map(
-        (size) => (
+    <Table
+      variant="unstyled"
+      gap={2}
+      render={(data) => data}
+      columns={[{ key: "element" }]}
+      rows={textSizes.map((size) => ({
+        element: (
           <Text key={size} {...args} size={size}>
             {size}
           </Text>
         ),
-      )}
-    </div>
+      }))}
+    />
   ),
 };
 
@@ -110,29 +117,31 @@ export const Colors: Story = {
     },
   },
   render: (args) => (
-    <div>
-      {(
-        [
-          "default",
-          "gray",
-          "orange",
-          "yellow",
-          "green",
-          "blue",
-          "purple",
-          "pink",
-          "red",
-          "primary",
-          "muted",
-          "disabled",
-          "link",
-        ] as const
-      ).map((color) => (
-        <Text key={color} {...args} color={color}>
-          {color}
-        </Text>
-      ))}
-    </div>
+    <Table
+      variant="unstyled"
+      gap={2}
+      render={(data) => data}
+      header={<Table.Header />}
+      columns={[
+        { key: "color", title: "color" },
+        { key: "background", title: "background" },
+      ]}
+      rows={textColors.map((color) => ({
+        color: (
+          <Text key={color} {...args}>
+            <Span color={color}>{color}</Span>
+          </Text>
+        ),
+        background:
+          color === "muted" ||
+          color === "link" ||
+          color === "disabled" ? null : (
+            <Text key={color} {...args}>
+              <Span background={color}>{color}</Span>
+            </Text>
+          ),
+      }))}
+    />
   ),
 };
 
@@ -143,40 +152,45 @@ export const Fonts: Story = {
     },
   },
   render: (args) => (
-    <div>
-      {(["body", "heading", "subheading", "monospace"] as const).map((font) => (
-        <Text key={font} {...args} font={font}>
-          {font}
-        </Text>
-      ))}
-    </div>
+    <Table
+      variant="unstyled"
+      gap={2}
+      render={(data) => data}
+      columns={[{ key: "element" }]}
+      rows={textFonts.map((font) => ({
+        element: (
+          <Text key={font} {...args} font={font}>
+            {font}
+          </Text>
+        ),
+      }))}
+    />
   ),
 };
 
+const textAnnotations = [
+  "bold",
+  "italic",
+  "underline",
+  "strikethrough",
+  "code",
+  "redacted",
+] as const;
+
 export const Annotations: Story = {
   render: (args) => (
-    <div>
-      <Text {...args}>
-        <Span>default</Span>
-      </Text>
-      <Text {...args}>
-        <Span bold>bold</Span>
-      </Text>
-      <Text {...args}>
-        <Span italic>italic</Span>
-      </Text>
-      <Text {...args}>
-        <Span underline>underline</Span>
-      </Text>
-      <Text {...args}>
-        <Span strikethrough>strikethrough</Span>
-      </Text>
-      <Text {...args}>
-        <Span code>code</Span>
-      </Text>
-      <Text {...args}>
-        <Span redacted>redacted</Span>
-      </Text>
-    </div>
+    <Table
+      variant="unstyled"
+      gap={2}
+      render={(data) => data}
+      columns={[{ key: "element" }]}
+      rows={textAnnotations.map((annotation) => ({
+        element: (
+          <Text {...args}>
+            <Span {...{ [annotation]: true }}>default</Span>
+          </Text>
+        ),
+      }))}
+    />
   ),
 };

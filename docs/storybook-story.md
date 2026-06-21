@@ -3,6 +3,7 @@
 Status: required
 Scope: `ui/src/**/*.stories.tsx`
 Good examples: `ui/src/feedback/Banner.stories.tsx`, `ui/src/feedback/EmptyState.stories.tsx`, `ui/src/feedback/Spinner.stories.tsx`, `ui/src/form/Select.stories.tsx`, `ui/src/form/Autocomplete.stories.tsx`
+Aggregate examples: `ui/src/layout/Card.stories.tsx`, `ui/src/display/IconControl.stories.tsx`
 
 ## Purpose
 
@@ -14,7 +15,7 @@ Read this file top to bottom before editing a story. Apply each section only to 
 
 Before placing a helper/component, decide whether it is shared by multiple stories or used by one story. Shared helpers go before `meta`; one-story helpers go immediately before the story export that uses them.
 
-If placement is still unclear, follow the matching file listed in `Examples read` instead of inventing a new layout.
+If placement is still unclear, follow the matching file listed in `Good examples`, `Aggregate examples`, or the relevant section below instead of inventing a new layout.
 
 ## File shape
 
@@ -133,23 +134,69 @@ export const Default: Story = {
 
 For aggregate variant stories that render every option, exclude the controlled option so each rendered variant stays fixed.
 
-Wrap the variants in `Row`/`Col` (depending on the direction of the base component) with gap=2.
+Render multiple variants in parallel with `Table`. Use `variant="unstyled"` and `gap={2}`.
+
+- Block components: render one variant per row. Do not show a column title for the example column. Label the rows with `renderIndex`.
+- Inline components: render one variant per column. Do not show row labels. Label the columns with `columns[].title` and render `header={<Table.Header />}`.
+
+Example files for this pattern:
+
+- Block / row layout: `ui/src/layout/Card.stories.tsx` (`Elevations`).
+- Inline / column layout: `ui/src/display/IconControl.stories.tsx` (`Sizes`).
 
 ```tsx
-export const Types: Story = {
+export const Elevations: Story = {
   parameters: {
     controls: {
-      exclude: ["type"],
+      exclude: ["elevation"],
     },
   },
-  render: ({ message, ...args }) => (
-    <Col gap={2}>
-      {bannerTypes.map((type) => (
-        <Banner key={type} {...args} type={type} title={`${type} banner`}>
-          {message}
-        </Banner>
-      ))}
-    </Col>
+  render: (args) => (
+    <Table
+      variant="unstyled"
+      gap={2}
+      render={(data) => data}
+      renderIndex={(_item, index) => (
+        <Table.Label align="end">{index}</Table.Label>
+      )}
+      columns={[{ key: "element" }]}
+      rows={([0, 1, 2] as const).map((elevation) => ({
+        element: (
+          <Card key={elevation} {...args} elevation={elevation} p={3} gap={1}>
+            <Text size="h5">Elevation {elevation}</Text>
+            <Text color="muted">More elevation, more shadow and radius.</Text>
+          </Card>
+        ),
+      }))}
+    />
+  ),
+};
+```
+
+Inline component column layout, copied from `ui/src/display/IconControl.stories.tsx`:
+
+```tsx
+export const Sizes: Story = {
+  parameters: {
+    controls: {
+      exclude: ["size"],
+    },
+  },
+  render: (props) => (
+    <Table
+      variant="unstyled"
+      gap={2}
+      render={(data) => data}
+      header={<Table.Header />}
+      columns={iconControlSizes.map((size) => ({ key: size, title: size }))}
+      rows={[
+        createRecord(iconControlSizes, (size) => (
+          <IconControl key={size} {...props} size={size}>
+            <FaBook />
+          </IconControl>
+        )),
+      ]}
+    />
   ),
 };
 ```

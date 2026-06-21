@@ -1,5 +1,5 @@
 import { omit } from "@isis/common/utils/object";
-import { CSSProperties, ReactNode, useEffect, useRef, useState } from "react";
+import { CSSProperties, ReactNode } from "react";
 import * as css from "../utils/css";
 import { MarginProps, PaddingProps } from "../utils/css";
 import styles from "./IconControl.module.scss";
@@ -36,44 +36,14 @@ export function IconControl({
   onClick,
   ...props
 }: IconControlProps) {
-  const rootRef = useRef<HTMLElement | null>(null);
-  const [autoSize, setAutoSize] = useState<number>();
-
-  useEffect(() => {
-    const parent = rootRef.current?.parentElement;
-
-    if (size !== "auto" || !parent) {
-      return;
-    }
-
-    const updateAutoSize = () => {
-      setAutoSize(parent.getBoundingClientRect().height || undefined);
-    };
-
-    updateAutoSize();
-
-    const observer = new ResizeObserver(updateAutoSize);
-    observer.observe(parent);
-
-    return () => observer.disconnect();
-  }, [size]);
-
-  const rootStyle: CSSProperties & { "--icon-auto-size"?: string } = {
-    ...(size === "auto" && autoSize
-      ? { "--icon-auto-size": `${autoSize}px` }
-      : {}),
-    ...style,
-    ...css.getPaddingStyles(props),
-    ...css.getMarginStyles(props),
-  };
-
   return (
     <Component
-      ref={(element: HTMLElement | null) => {
-        rootRef.current = element;
-      }}
       className={[className, styles.Root].filter(Boolean).join(" ")}
-      style={rootStyle}
+      style={{
+        ...style,
+        ...css.getPaddingStyles(props),
+        ...css.getMarginStyles(props),
+      }}
       onClick={disabled || readOnly ? undefined : onClick}
       disabled={disabled}
       data-size={size}

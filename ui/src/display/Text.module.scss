@@ -1,59 +1,13 @@
 @use "../../styles/mixins/color" as color;
 
-.text {
+.Text {
   white-space: pre-wrap;
-}
-
-.italic {
-  font-style: italic;
-}
-
-.bold {
-  font-weight: bold;
-}
-
-.underline {
-  text-decoration: underline;
-}
-
-.strikethrough {
-  text-decoration: line-through;
-}
-
-.underline.strikethrough {
-  text-decoration: underline line-through;
-}
-
-.code {
-  color: var(--color-highlight) !important;
-  background: var(--bg-to);
-  font-family: var(--font-monospace);
-  font-size: 0.95em;
-}
-
-.redacted {
-  line-break: anywhere;
-  background-color: currentColor;
-}
-
-.text[contenteditable] {
-  * {
-    display: inline;
-    &:empty:only-child {
-      display: inline-block;
-    }
-  }
-  .span:empty::after {
-    display: inline-block;
-    content: "\200B";
-    height: 100%;
-    width: 1px;
-  }
 }
 
 // Theme palette classes
 @each $name, $_ in color.$colors-codes {
-  .#{"color-" + $name} {
+  .Text[data-color="#{$name}"],
+  .Span[data-color="#{$name}"] {
     @if ($name == "default") {
       color: currentColor;
     } @else {
@@ -61,7 +15,8 @@
     }
   }
 
-  .#{"color-" + $name + "_background"} {
+  .Text[data-background="#{$name}"],
+  .Span[data-background="#{$name}"] {
     color: var(#{"--color-" + $name});
     background-color: var(#{"--bg-" + $name});
   }
@@ -69,12 +24,14 @@
 
 // Semantic colour aliases
 @each $key in (muted, disabled, link) {
-  .#{"color-" + $key} {
+  .Text[data-color="#{$key}"],
+  .Span[data-color="#{$key}"] {
     color: var(#{"--color-" + $key});
   }
 }
 
-.color-currentColor {
+.Text[data-color="currentColor"],
+.Span[data-color="currentColor"] {
   color: currentColor;
 }
 
@@ -82,55 +39,114 @@
 @each $name,
   $size in (caption: "var(--font-size-caption)", body: "var(--font-size)")
 {
-  .#{"size-" + $name} {
+  .Text[data-size="#{$name}"],
+  .Span[data-size="#{$name}"] {
     font-size: #{$size};
   }
 }
 
-.size-caption {
+.Text[data-size="caption"],
+.Span[data-size="caption"] {
   line-height: calc(var(--line-height) * 0.75);
 }
 
-.size-h1 {
+.Text[data-size="h1"],
+.Span[data-size="h1"] {
   font-size: 2.5em;
 }
 
-.size-h2 {
+.Text[data-size="h2"],
+.Span[data-size="h2"] {
   font-size: 2em;
 }
 
-.size-h3 {
+.Text[data-size="h3"],
+.Span[data-size="h3"] {
   font-size: 1.65em;
 }
 
-.size-h4 {
+.Text[data-size="h4"],
+.Span[data-size="h4"] {
   font-size: 1.25em;
 }
 
-.size-h5 {
+.Text[data-size="h5"],
+.span[data-size="h5"] {
   font-size: 1em;
 }
 
 // Fonts
-.font-body {
+.Text[data-font="body"] {
   font-family: var(--font-body);
 }
 
-.font-heading {
+.Text[data-font="heading"] {
   font-family: var(--font-heading);
 }
 
-.font-subheading {
+.Text[data-font="subheading"] {
   font-family: var(--font-subheading);
 }
 
-.font-monospace {
+.Text[data-font="monospace"] {
   font-family: var(--font-monospace);
 }
 
 // Indents
 @for $i from 1 through 4 {
-  .#{"indent-" + $i} {
+  .Text[data-indent="#{$i}"] {
     padding-left: calc(var(--space) * $i);
   }
+}
+
+.Span[data-italic] {
+  font-style: italic;
+}
+
+.Span[data-bold] {
+  font-weight: bold;
+}
+
+.Span[data-underline] {
+  text-decoration: underline;
+}
+
+.Span[data-strikethrough] {
+  text-decoration: line-through;
+}
+
+.Span[data-underline][data-strikethrough] {
+  text-decoration: underline line-through;
+}
+
+.Span[data-code] {
+  color: var(--color-primary);
+  background: var(--bg-primary);
+  font-family: var(--font-monospace);
+  font-size: 0.95em;
+}
+
+.Span[data-redacted] {
+  line-break: anywhere;
+  background-color: currentColor;
+}
+
+.Text[data-align="center"] {
+  text-align: center;
+}
+
+.Text[data-align="left"] {
+  text-align: left;
+}
+
+.Text[data-align="right"] {
+  text-align: right;
+}
+
+.Text[data-align="start"] {
+  text-align: start;
+}
+
+.Text[data-align="end"] {
+  text-align: end;
 }

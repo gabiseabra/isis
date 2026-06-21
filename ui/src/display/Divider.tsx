@@ -19,7 +19,8 @@ export function Divider({
 
   return (
     <Component
-      className={[className, styles[`divider-${direction}`]].join(" ")}
+      className={[styles.Divider, className].join(" ")}
+      data-direction={direction}
       style={{
         ...css.getMarginStyles(props),
         ...css.getPaddingStyles(props),

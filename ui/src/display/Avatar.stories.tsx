@@ -1,8 +1,11 @@
+import { createRecord } from "@isis/common/utils/object";
 import type { Meta, StoryObj } from "@storybook/react";
-import { Row } from "../layout/FlexBox";
+import { Table } from "../layout/Table";
 import { Avatar, type AvatarProps } from "./Avatar";
 
 type AvatarStoryArgs = Pick<AvatarProps, "src" | "title" | "fallback" | "size">;
+
+const avatarSizes = ["s", "m", "l"] as const;
 
 const meta: Meta<AvatarStoryArgs> = {
   title: "Display/Avatar",
@@ -15,7 +18,7 @@ const meta: Meta<AvatarStoryArgs> = {
   argTypes: {
     size: {
       control: "select",
-      options: ["s", "m", "l"],
+      options: avatarSizes,
     },
   },
 };
@@ -47,10 +50,17 @@ export const Sizes: Story = {
     },
   },
   render: (args) => (
-    <Row gap={2}>
-      {(["s", "m", "l"] as const).map((size) => (
-        <Avatar key={size} {...args} size={size} />
-      ))}
-    </Row>
+    <Table
+      variant="unstyled"
+      gap={2}
+      render={(data) => data}
+      header={<Table.Header />}
+      columns={avatarSizes.map((size) => ({ key: size, title: size }))}
+      rows={[
+        createRecord(avatarSizes, (size) => (
+          <Avatar key={size} {...args} size={size} />
+        )),
+      ]}
+    />
   ),
 };

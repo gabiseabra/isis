@@ -15,30 +15,30 @@
 }
 
 @each $name, $_ in color.$colors-codes {
-  .#{"color-" + $name} {
+  .Badge[data-color="#{$name}"] {
     color: var(#{"--color-" + $name});
     background-color: var(#{"--bg-" + $name});
   }
 }
 
-.size-s {
+.Badge[data-size="s"] {
   --badge-size: calc(var(--font-size-caption) * 0.85);
   --badge-space: calc(var(--space) / 1.5);
 }
 
-.size-m {
+.Badge[data-size="m"] {
   --badge-size: var(--font-size-caption);
   --badge-space: var(--space);
 }
 
-.size-l {
+.Badge[data-size="l"] {
   --badge-size: calc(var(--font-size-caption) * 1.25);
   --badge-space: calc(var(--space) * 1.25);
 }
 
-.status-empty,
-.status-in-progress,
-.status-completed {
+.Badge[data-status="empty"],
+.Badge[data-status="in-progress"],
+.Badge[data-status="completed"] {
   --status-size: 6px;
 
   position: relative;
@@ -58,26 +58,26 @@
   }
 }
 
-.status-empty {
+.Badge[data-status="empty"] {
   &::before {
     border: 1px solid currentColor;
     background: transparent;
   }
 }
 
-.status-in-progress {
+.Badge[data-status="in-progress"] {
   &::before {
     border: 1px solid currentColor;
     background: linear-gradient(to right, currentColor 50%, transparent 50%);
   }
 }
 
-.status-completed {
+.Badge[data-status="completed"] {
   &::before {
     background: currentColor;
   }
 }
 
-.active {
+.Badge[data-active="true"] {
   outline: 1.5px solid currentColor;
 }
