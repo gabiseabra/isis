@@ -1,0 +1,25 @@
+.Root {
+  width: var(--avatar-size);
+  height: var(--avatar-size);
+  border-radius: 50%;
+  overflow: hidden;
+  background: var(--color-divider);
+  color: var(--color-text);
+  font-size: var(--avatar-size);
+}
+
+.Image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.size-s {
+  --avatar-size: 16px;
+}
+.size-m {
+  --avatar-size: 32px;
+}
+.size-l {
+  --avatar-size: 64px;
+}
