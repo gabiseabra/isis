@@ -101,11 +101,8 @@
 }
 
 .Root[data-size="auto"] {
-  --icon-size: auto;
+  --icon-size: var(--icon-auto-size, 1em);
   --icon-badge-size: 33.333%;
-  width: auto;
-  height: 100%;
-  aspect-ratio: 1;
 }
 
 // xs: 12,
