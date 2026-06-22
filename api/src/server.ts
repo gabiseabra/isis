@@ -2,12 +2,17 @@ import cors from "cors";
 import "dotenv/config";
 import express from "express";
 import morgan from "morgan";
+import { adminRouter } from "./orpc/admin";
+import { nodeRPCHandler } from "./orpc/handler";
+import { orpcMiddleware } from "./orpc/middleware";
 
 async function createServer() {
   const app = express();
 
   app.use(cors({ origin: (process.env.CORS_ORIGIN ?? "").split(",") }));
   app.use(morgan("dev"));
+
+  app.use(orpcMiddleware("/admin", nodeRPCHandler(adminRouter)));
 
   const server = app.listen(process.env.API_PORT, () => {
     console.log(

@@ -14,10 +14,14 @@
   ],
   "scripts": {
     "dev": "concurrently \"npm run dev -w web\" \"npm run dev -w admin\" \"npm run dev -w api\" \"npm run dev -w ui\"",
+    "lint": "eslint .",
+    "tsc": "tsc -b",
     "build": "npm run build --workspaces"
   },
   "devDependencies": {
+    "@eslint/compat": "^2.1.0",
     "@orpc/contract": "^1.14.6",
+    "@ts-safeql/eslint-plugin": "^3.6.12",
     "@typescript-eslint/eslint-plugin": "^8.61.0",
     "@typescript-eslint/parser": "^8.61.0",
     "concurrently": "^10.0.3",
@@ -28,6 +32,10 @@
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-hooks": "^7.1.1",
     "prettier": "^3.8.4",
-    "prettier-plugin-organize-imports": "^4.3.0"
+    "prettier-plugin-organize-imports": "^4.3.0",
+    "typescript": "^6.0.3"
+  },
+  "overrides": {
+    "libpg-query": "17.0.0"
   }
 }

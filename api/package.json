@@ -8,24 +8,26 @@
     "clean": "tsc -b --clean && rm -rf dist",
     "start": "node dist/server.js",
     "dev": "nodemon --watch 'src/**' --watch '../common/src/**' --ext ts,tsx,js,json --exec 'npm run build && npm run start'",
-    "db:new": "dbmate --migrations-dir ./db --schema-file ./db/schema.sql new",
-    "db:scaffold": "dbmate --migrations-dir ./db --schema-file ./db/schema.sql new",
-    "db:create": "dbmate --migrations-dir ./db --schema-file ./db/schema.sql create",
-    "db:drop": "dbmate --migrations-dir ./db --schema-file ./db/schema.sql drop",
-    "db:up": "dbmate --migrations-dir ./db --schema-file ./db/schema.sql up",
-    "db:migrate": "dbmate --migrations-dir ./db --schema-file ./db/schema.sql migrate",
-    "db:rollback": "dbmate --migrations-dir ./db --schema-file ./db/schema.sql rollback",
-    "db:status": "dbmate --migrations-dir ./db --schema-file ./db/schema.sql status",
-    "db:dump": "dbmate --migrations-dir ./db --schema-file ./db/schema.sql dump",
-    "db:load": "dbmate --migrations-dir ./db --schema-file ./db/schema.sql load",
-    "db:wait": "dbmate --migrations-dir ./db --schema-file ./db/schema.sql wait"
+    "db:new": "dbmate --migrations-dir ./src/db --schema-file ./src/db/schema.sql new",
+    "db:scaffold": "dbmate --migrations-dir ./src/db --schema-file ./src/db/schema.sql new",
+    "db:create": "dbmate --migrations-dir ./src/db --schema-file ./src/db/schema.sql create",
+    "db:drop": "dbmate --migrations-dir ./src/db --schema-file ./src/db/schema.sql drop",
+    "db:up": "dbmate --migrations-dir ./src/db --schema-file ./src/db/schema.sql up",
+    "db:migrate": "dbmate --migrations-dir ./src/db --schema-file ./src/db/schema.sql migrate",
+    "db:rollback": "dbmate --migrations-dir ./src/db --schema-file ./src/db/schema.sql rollback",
+    "db:status": "dbmate --migrations-dir ./src/db --schema-file ./src/db/schema.sql status",
+    "db:dump": "dbmate --migrations-dir ./src/db --schema-file ./src/db/schema.sql dump",
+    "db:load": "dbmate --migrations-dir ./src/db --schema-file ./src/db/schema.sql load",
+    "db:wait": "dbmate --migrations-dir ./src/db --schema-file ./src/db/schema.sql wait"
   },
   "dependencies": {
     "@isis/common": "*",
     "@orpc/server": "^1.14.6",
+    "@ts-safeql/sql-tag": "^0.2.2",
     "cors": "^2.8.6",
     "express": "^5.2.1",
     "morgan": "^1.11.0",
+    "pg": "^8.22.0",
     "zod": "^4.4.3"
   },
   "devDependencies": {
@@ -33,6 +35,7 @@
     "@types/express": "^5.0.6",
     "@types/morgan": "^1.9.10",
     "@types/node": "^25.9.3",
+    "@types/pg": "^8.20.0",
     "dbmate": "^2.33.0",
     "nodemon": "^3.1.14"
   }
