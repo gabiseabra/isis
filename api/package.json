@@ -7,7 +7,18 @@
     "build": "tsc -b",
     "clean": "tsc -b --clean && rm -rf dist",
     "start": "node dist/server.js",
-    "dev": "nodemon --watch 'src/**' --watch '../common/src/**' --ext ts,tsx,js,json --exec 'npm run build && npm run start'"
+    "dev": "nodemon --watch 'src/**' --watch '../common/src/**' --ext ts,tsx,js,json --exec 'npm run build && npm run start'",
+    "db:new": "dbmate --migrations-dir ./db --schema-file ./db/schema.sql new",
+    "db:scaffold": "dbmate --migrations-dir ./db --schema-file ./db/schema.sql new",
+    "db:create": "dbmate --migrations-dir ./db --schema-file ./db/schema.sql create",
+    "db:drop": "dbmate --migrations-dir ./db --schema-file ./db/schema.sql drop",
+    "db:up": "dbmate --migrations-dir ./db --schema-file ./db/schema.sql up",
+    "db:migrate": "dbmate --migrations-dir ./db --schema-file ./db/schema.sql migrate",
+    "db:rollback": "dbmate --migrations-dir ./db --schema-file ./db/schema.sql rollback",
+    "db:status": "dbmate --migrations-dir ./db --schema-file ./db/schema.sql status",
+    "db:dump": "dbmate --migrations-dir ./db --schema-file ./db/schema.sql dump",
+    "db:load": "dbmate --migrations-dir ./db --schema-file ./db/schema.sql load",
+    "db:wait": "dbmate --migrations-dir ./db --schema-file ./db/schema.sql wait"
   },
   "dependencies": {
     "@isis/common": "*",
@@ -22,6 +33,7 @@
     "@types/express": "^5.0.6",
     "@types/morgan": "^1.9.10",
     "@types/node": "^25.9.3",
+    "dbmate": "^2.33.0",
     "nodemon": "^3.1.14"
   }
 }
