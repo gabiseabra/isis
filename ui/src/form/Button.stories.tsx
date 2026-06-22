@@ -5,12 +5,12 @@ import { Button, type ButtonProps } from "./Button";
 
 type ButtonStoryArgs = Pick<
   ButtonProps,
-  "color" | "size" | "disabled" | "loading"
+  "color" | "size" | "disabled" | "loading" | "pressed"
 > & {
   content: string;
 };
 
-const variants = ["primary", "secondary", "link"] as const;
+const variants = ["primary", "secondary", "sheer", "link"] as const;
 const colors = [
   "default",
   "gray",
@@ -33,6 +33,7 @@ const meta: Meta<ButtonStoryArgs> = {
     size: "m",
     disabled: false,
     loading: false,
+    pressed: false,
   },
   argTypes: {
     color: {

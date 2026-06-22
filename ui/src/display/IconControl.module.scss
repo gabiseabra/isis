@@ -125,7 +125,8 @@ button.Root {
   box-sizing: content-box;
   transition: background-color 120ms ease-out;
 
-  &:not(:disabled):hover {
+  &:not(:disabled):hover,
+  &:not(:disabled)[data-pressed] {
     background-color: #00000010;
   }
 }

@@ -6,7 +6,7 @@ import { IconControl, type IconControlProps } from "./IconControl";
 
 type IconControlStoryProps = Pick<
   IconControlProps,
-  "as" | "size" | "color" | "badge" | "disabled" | "title"
+  "as" | "size" | "color" | "badge" | "disabled" | "pressed" | "title"
 >;
 
 const iconControlSizes = ["xs", "s", "m", "l", "xl", "auto"] as const;
@@ -19,6 +19,7 @@ const meta: Meta<IconControlStoryProps> = {
     color: "primary",
     badge: "",
     disabled: false,
+    pressed: false,
     title: "",
   },
   argTypes: {
@@ -55,6 +56,13 @@ const meta: Meta<IconControlStoryProps> = {
       control: "text",
     },
     disabled: {
+      control: "boolean",
+      if: {
+        arg: "as",
+        eq: "button",
+      },
+    },
+    pressed: {
       control: "boolean",
       if: {
         arg: "as",

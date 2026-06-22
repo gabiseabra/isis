@@ -63,6 +63,11 @@
     background: color-mix(in srgb, var(--button-color) 85%, var(--button-bg));
   }
 
+  &:not(:disabled):active,
+  &:not(:disabled)[data-pressed] {
+    background: color-mix(in srgb, var(--button-color) 75%, var(--button-bg));
+  }
+
   &:disabled {
     border-color: var(--color-disabled);
     background: var(--color-disabled);
@@ -85,9 +90,45 @@
     background: color-mix(in srgb, var(--button-bg) 25%, var(--color-surface));
   }
 
+  &:not(:disabled):active,
+  &:not(:disabled)[data-pressed] {
+    border-color: color-mix(
+      in srgb,
+      var(--button-color) 85%,
+      var(--color-divider)
+    );
+    background: color-mix(in srgb, var(--button-bg) 40%, var(--color-surface));
+  }
+
   &:disabled {
     border-color: var(--color-divider);
     background: var(--color-surface);
+    color: var(--color-disabled);
+    cursor: not-allowed;
+  }
+}
+
+.Button[data-variant="sheer"] {
+  border-color: transparent;
+  background: transparent;
+  color: var(--button-color);
+
+  &:not(:disabled):hover {
+    background: color-mix(in srgb, var(--button-bg) 25%, var(--color-surface));
+  }
+
+  &:not(:disabled):active,
+  &:not(:disabled)[data-pressed] {
+    background: color-mix(in srgb, var(--button-bg) 40%, var(--color-surface));
+  }
+
+  &[data-color="default"]:not(:disabled):hover,
+  &[data-color="default"]:not(:disabled):active,
+  &[data-color="default"]:not(:disabled)[data-pressed] {
+    background: #00000010;
+  }
+
+  &:disabled {
     color: var(--color-disabled);
     cursor: not-allowed;
   }
@@ -110,6 +151,12 @@
 
   &:not(:disabled):hover .Content {
     border-bottom-color: currentColor;
+  }
+
+  &:not(:disabled):active .Content,
+  &:not(:disabled)[data-pressed] .Content {
+    border-bottom-color: currentColor;
+    opacity: 0.75;
   }
 
   &:disabled {

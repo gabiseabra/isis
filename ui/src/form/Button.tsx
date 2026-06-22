@@ -6,8 +6,9 @@ import styles from "./Button.module.scss";
 export type ButtonProps = Omit<ComponentProps<"button">, "color"> & {
   left?: ReactNode;
   loading?: boolean;
+  pressed?: boolean;
   right?: ReactNode;
-  variant?: "primary" | "secondary" | "link";
+  variant?: "primary" | "secondary" | "sheer" | "link";
   color?: Color | "currentColor";
   size?: "l" | "m" | "s";
 };
@@ -20,6 +21,7 @@ export function Button({
   size = "m",
   disabled,
   loading,
+  pressed,
   left,
   right,
   children,
@@ -29,8 +31,10 @@ export function Button({
     <button
       className={[styles.Button, className].filter(Boolean).join(" ")}
       aria-busy={loading || undefined}
+      aria-pressed={pressed || undefined}
       data-color={color}
       data-loading={loading || undefined}
+      data-pressed={pressed || undefined}
       data-size={size}
       data-variant={variant}
       disabled={disabled}

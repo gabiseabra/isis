@@ -18,6 +18,7 @@ export type IconControlProps = {
   title?: string;
 
   disabled?: boolean;
+  pressed?: boolean;
   readOnly?: boolean;
   onClick?: () => void;
 } & PaddingProps &
@@ -32,6 +33,7 @@ export function IconControl({
   className,
   style,
   disabled,
+  pressed,
   readOnly,
   onClick,
   ...props
@@ -49,6 +51,7 @@ export function IconControl({
       data-size={size}
       data-color={color}
       data-disabled={disabled || undefined}
+      data-pressed={pressed || undefined}
       data-clickable={(onClick && !disabled && !readOnly) || undefined}
       {...omit(props, [...css.paddingProps, ...css.marginProps])}
     >
