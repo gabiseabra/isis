@@ -34,8 +34,5 @@
     "prettier": "^3.8.4",
     "prettier-plugin-organize-imports": "^4.3.0",
     "typescript": "^6.0.3"
-  },
-  "overrides": {
-    "libpg-query": "17.0.0"
   }
 }

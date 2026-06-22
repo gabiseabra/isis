@@ -2,7 +2,7 @@
   "name": "@isis/common",
   "version": "0.0.0",
   "main": "index.js",
-  "type": "module",
+  "type": "commonjs",
   "exports": {
     "./*": {
       "types": "./src/*.ts",

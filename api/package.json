@@ -2,7 +2,7 @@
   "name": "@isis/api",
   "version": "0.0.0",
   "main": "index.js",
-  "type": "module",
+  "type": "commonjs",
   "scripts": {
     "build": "tsc -b",
     "clean": "tsc -b --clean && rm -rf dist",

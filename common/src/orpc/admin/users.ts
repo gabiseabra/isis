@@ -1,12 +1,6 @@
 import { oc } from "@orpc/contract";
 import z from "zod";
-import { User } from "../../dto/user/user";
-
-export const LoginWithPasswordInput = z.object({
-  login: z.string(),
-  password: z.string(),
-});
-export type LoginWithPasswordInput = z.infer<typeof LoginWithPasswordInput>;
+import { User } from "../../dto/user";
 
 export const users = oc.prefix("/users").router({
   me: oc
@@ -32,7 +26,12 @@ export const users = oc.prefix("/users").router({
         status: 401,
       },
     })
-    .input(LoginWithPasswordInput)
+    .input(
+      z.object({
+        login: z.string(),
+        password: z.string(),
+      }),
+    )
     .output(
       z.object({
         user: User,
