@@ -53,14 +53,14 @@ export const Sizes: Story = {
     <Table
       variant="unstyled"
       gap={2}
-      render={(data) => data}
-      header={<Table.Header />}
-      columns={avatarSizes.map((size) => ({ key: size, title: size }))}
+      columns={avatarSizes}
       rows={[
         createRecord(avatarSizes, (size) => (
           <Avatar key={size} {...args} size={size} />
         )),
       ]}
+      cell={(row, col) => row[col]}
+      headerCell={(col) => <Table.Label>{col}</Table.Label>}
     />
   ),
 };

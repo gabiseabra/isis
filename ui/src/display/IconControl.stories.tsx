@@ -120,9 +120,7 @@ export const Sizes: Story = {
     <Table
       variant="unstyled"
       gap={2}
-      render={(data) => data}
-      header={<Table.Header />}
-      columns={iconControlSizes.map((size) => ({ key: size, title: size }))}
+      columns={iconControlSizes}
       rows={[
         createRecord(iconControlSizes, (size) => (
           <IconControl key={size} {...props} size={size}>
@@ -130,6 +128,8 @@ export const Sizes: Story = {
           </IconControl>
         )),
       ]}
+      cell={(row, col) => row[col]}
+      headerCell={(col) => <Table.Label>{col}</Table.Label>}
     />
   ),
 };

@@ -1,15 +1,14 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { type ReactNode } from "react";
 import { FaArrowRight, FaPlus } from "react-icons/fa";
-import { Row } from "../layout/FlexBox";
+import { Table } from "../layout/Table";
 import { Button, type ButtonProps } from "./Button";
 
 type ButtonStoryArgs = Pick<
   ButtonProps,
   "color" | "size" | "disabled" | "loading"
->;
-
-type ButtonVariant = NonNullable<ButtonProps["variant"]>;
+> & {
+  content: string;
+};
 
 const variants = ["primary", "secondary", "link"] as const;
 const colors = [
@@ -26,24 +25,15 @@ const colors = [
 ] as const;
 const sizes = ["s", "m", "l"] as const;
 
-const meta = {
+const meta: Meta<ButtonStoryArgs> = {
   title: "Form/Button",
   args: {
+    content: "Hello button",
     color: "primary",
     size: "m",
     disabled: false,
     loading: false,
   },
-  render: (args) => (
-    <ButtonTable
-      rows={["default"] as const}
-      render={(_, variant) => (
-        <Button {...args} variant={variant}>
-          Button
-        </Button>
-      )}
-    />
-  ),
   argTypes: {
     color: {
       control: "select",
@@ -54,35 +44,35 @@ const meta = {
       options: sizes,
     },
   },
-  decorators: [
-    (Story) => (
-      <Row p={4} gap={1}>
-        <Story />
-      </Row>
-    ),
-  ],
-} satisfies Meta<ButtonStoryArgs>;
+};
 
 type Story = StoryObj<typeof meta>;
 
 export default meta;
 
-export const Default: Story = {};
+export const Default: Story = {
+  render: ({ content, ...props }) => <Button {...props}>{content}</Button>,
+};
 
 export const Colors: Story = {
   parameters: {
     controls: {
-      exclude: ["color"],
+      exclude: ["color", "content"],
     },
   },
   render: (args) => (
-    <ButtonTable
+    <Table
+      variant="unstyled"
+      gap={2}
       rows={colors}
-      render={(color, variant) => (
+      columns={variants}
+      cell={(color, variant) => (
         <Button {...args} color={color} variant={variant}>
           Button
         </Button>
       )}
+      headerCell={(variant) => <Table.Label>{variant}</Table.Label>}
+      index={(color) => <Table.Label align="end">{color}</Table.Label>}
     />
   ),
 };
@@ -94,22 +84,30 @@ export const Sizes: Story = {
     },
   },
   render: (args) => (
-    <ButtonTable
+    <Table
+      variant="unstyled"
+      gap={2}
       rows={sizes}
-      render={(size, variant) => (
+      columns={variants}
+      cell={(size, variant) => (
         <Button {...args} size={size} variant={variant}>
           Button
         </Button>
       )}
+      headerCell={(variant) => <Table.Label>{variant}</Table.Label>}
+      index={(size) => <Table.Label align="end">{size}</Table.Label>}
     />
   ),
 };
 
 export const WithSlots: Story = {
   render: (args) => (
-    <ButtonTable
-      rows={["slots"] as const}
-      render={(_, variant) => (
+    <Table
+      variant="unstyled"
+      gap={2}
+      rows={["slots"]}
+      columns={variants}
+      cell={(_, variant) => (
         <Button
           {...args}
           left={<FaPlus />}
@@ -119,86 +117,7 @@ export const WithSlots: Story = {
           Button
         </Button>
       )}
+      headerCell={(variant) => <Table.Label>{variant}</Table.Label>}
     />
   ),
 };
-
-export const Loading: Story = {
-  args: {
-    loading: true,
-  },
-  parameters: {
-    controls: {
-      exclude: ["loading"],
-    },
-  },
-  render: (args) => (
-    <ButtonTable
-      rows={["loading"] as const}
-      render={(_, variant) => (
-        <Button {...args} variant={variant}>
-          Button
-        </Button>
-      )}
-    />
-  ),
-};
-
-export const Disabled: Story = {
-  args: {
-    disabled: true,
-  },
-  parameters: {
-    controls: {
-      exclude: ["disabled"],
-    },
-  },
-  render: (args) => (
-    <ButtonTable
-      rows={["disabled"] as const}
-      render={(_, variant) => (
-        <Button {...args} variant={variant}>
-          Button
-        </Button>
-      )}
-    />
-  ),
-};
-
-function ButtonTable<Row extends string>({
-  rows,
-  render,
-}: {
-  rows: readonly Row[];
-  render: (row: Row, variant: ButtonVariant) => ReactNode;
-}) {
-  const showRowLabel = rows.length > 1;
-
-  return (
-    <table
-      style={{
-        borderCollapse: "separate",
-        borderSpacing: "calc(var(--space) * 2) var(--space)",
-      }}
-    >
-      <thead>
-        <tr>
-          {showRowLabel && <th />}
-          {variants.map((variant) => (
-            <th key={variant}>{variant}</th>
-          ))}
-        </tr>
-      </thead>
-      <tbody>
-        {rows.map((row) => (
-          <tr key={row}>
-            {showRowLabel && <th>{row}</th>}
-            {variants.map((variant) => (
-              <td key={variant}>{render(row, variant)}</td>
-            ))}
-          </tr>
-        ))}
-      </tbody>
-    </table>
-  );
-}

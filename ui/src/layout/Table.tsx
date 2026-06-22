@@ -1,130 +1,117 @@
-import { keys } from "@isis/common/utils/object";
-import {
-  ComponentProps,
-  ComponentType,
-  createContext,
-  ReactNode,
-  useContext,
-  useMemo,
-} from "react";
+import { ComponentProps, ReactNode } from "react";
 import { Span, Text, TextProps } from "../display/Text";
 import * as css from "../utils/css";
+import { Slot } from "../utils/slot";
 import { Resizable } from "./Resizable";
 import styles from "./Table.module.scss";
 
-type Key = string | number;
-type Row = { [k in Key]: unknown };
-type Col<K extends Key> = {
-  key: K;
-  title?: string;
-  width?: number;
-};
-type Table<T extends Row> = {
-  rows: T[];
-  columns: Col<Extract<keyof T, Key>>[];
-  indexed: boolean;
+type ID = string | number;
+
+type Table<Row, Col> = {
+  rows: readonly Row[];
+  columns: readonly Col[];
 };
 
-const TableContext = createContext<Table<Row>>({
-  rows: [],
-  columns: [],
-  indexed: false,
-});
+export type TableProps<Row, Col> = ComponentProps<"table"> & {
+  // data
+  rows: Row[] | readonly Row[];
+  columns: Col[] | readonly Col[];
+  getId?: (row: Row, index: number) => ID;
 
-function useTable() {
-  return useContext(TableContext);
-}
-
-export type TableProps<T extends Row> = ComponentProps<"table"> & {
+  // variants
   variant?: "default" | "unstyled";
-  rows: T[];
-  columns: Col<Extract<keyof T, Key>>[];
-  header?: ReactNode | ((table: Table<T>) => ReactNode);
-  footer?: ReactNode | ((table: Table<T>) => ReactNode);
-  render: (
-    item: T,
-    index: number,
-    table: Table<T>,
-  ) => Record<keyof T, ReactNode>;
-  renderIndex?: (item: T, index: number, table: Table<T>) => ReactNode;
   gap?: number;
   colGap?: number;
   rowGap?: number;
+
+  // slots
+  header?: Slot<(table: Table<Row, Col>) => ReactNode>;
+  headerCell?: Slot<(col: Col, table: Table<Row, Col>) => ReactNode>;
+  footer?: Slot<(table: Table<Row, Col>) => ReactNode>;
+  cell: Slot<(row: Row, col: Col, table: Table<Row, Col>) => ReactNode>;
+  index?: Slot<(row: Row, index: number, table: Table<Row, Col>) => ReactNode>;
 };
 
-export function Table<T extends Row>({
+export function Table<Row, Col extends ID>({
   rows,
-  header,
-  footer,
   columns,
-  render,
-  renderIndex,
+  getId = (_, index) => index,
+
   variant = "default",
   gap,
   colGap = gap,
   rowGap = gap,
+
+  header,
+  headerCell,
+  footer,
+  cell,
+  index,
+
   className,
   style,
   ...props
-}: TableProps<T>) {
-  const table = useMemo<Table<T>>(
-    () => ({
-      indexed: !!renderIndex,
-      rows,
-      columns:
-        columns ??
-        (() => {
-          if (rows[0])
-            return keys(rows[0]).map((key) => ({
-              key,
-            }));
-          return [];
-        })(),
-    }),
-    [rows, columns],
-  );
+}: TableProps<Row, Col>) {
+  const table = { rows, columns };
 
   return (
-    <TableContext.Provider value={table as Table<Row>}>
-      <table
-        data-variant={variant}
-        className={[styles.Root, className].filter(Boolean).join(" ")}
-        style={{
-          borderSpacing:
-            colGap || rowGap
-              ? `${colGap ? css.space(colGap) : "0"} ${rowGap ? css.space(rowGap) : "0"}`
-              : undefined,
-          ...style,
-        }}
-        {...props}
-      >
-        {header instanceof Function ? header(table) : header}
-        <tbody>
-          {table.rows.map((item, index) => {
-            const row = render(item, index, table);
-            return (
-              <Table.Row key={index}>
-                {table.indexed && (
-                  <Table.Col style={{ width: "0" }} data-index="true">
-                    {renderIndex?.(item, index, table)}
-                  </Table.Col>
-                )}
-                {table.columns.map((col) => (
-                  <Table.Col key={col.key}>{row[col.key]}</Table.Col>
-                ))}
-              </Table.Row>
-            );
-          })}
-        </tbody>
-        {footer instanceof Function ? footer(table) : footer}
-      </table>
-    </TableContext.Provider>
+    <table
+      data-variant={variant}
+      className={[styles.Root, className].filter(Boolean).join(" ")}
+      style={{
+        borderSpacing:
+          colGap || rowGap
+            ? `${colGap ? css.space(colGap) : "0"} ${rowGap ? css.space(rowGap) : "0"}`
+            : undefined,
+        ...style,
+      }}
+      {...props}
+    >
+      {(header || headerCell) && (
+        <thead>
+          {header && Slot.render(header, table)}
+          {headerCell && (
+            <Table.Header
+              table={table}
+              cell={(col) => Slot.render(headerCell, col, table)}
+              left={index && <Table.Cell as="th" data-index />}
+            />
+          )}
+        </thead>
+      )}
+
+      <tbody>
+        {table.rows.map((row, i) => {
+          return (
+            <Table.Row key={getId(row, i)}>
+              {index && (
+                <Table.Cell as="th" data-index>
+                  {Slot.render(index, row, i, table)}
+                </Table.Cell>
+              )}
+              {table.columns.map((col) => (
+                <Table.Cell key={col}>
+                  {Slot.render(cell, row, col, table)}
+                </Table.Cell>
+              ))}
+            </Table.Row>
+          );
+        })}
+      </tbody>
+
+      {footer && <tfoot>{Slot.render(footer, table)}</tfoot>}
+    </table>
   );
 }
 
-export type TableColProps = ComponentProps<"td">;
-Table.Col = function TableCol(props: TableColProps) {
-  return <td {...props} />;
+export type TableCellProps = ComponentProps<"td"> & {
+  as?: "td" | "th";
+};
+Table.Cell = function TableCell({
+  as: Component = "td",
+  ...props
+}: TableCellProps) {
+  return <Component {...props} />;
 };
 
 export type TableRowProps = ComponentProps<"tr">;
@@ -133,65 +120,82 @@ Table.Row = function TableRow(props: TableRowProps) {
   return <tr {...props} />;
 };
 
-export type TableHeaderProps<T extends Row> = Omit<
-  ComponentProps<"thead">,
-  "children"
-> & {
-  Label?: ComponentType<{ children: ReactNode }>;
-  resizable?: (keyof T)[];
-  onResize?: (key: keyof T, width: number) => void;
-};
-
-Table.Header = function TableHeader<T extends Row>({
-  Label = Table.Label,
-  resizable,
-  onResize,
-  ...props
-}: TableHeaderProps<T>) {
-  const { columns, indexed } = useTable();
-
-  return (
-    <thead {...props}>
-      <tr>
-        {indexed && <th data-index="true" />}
-        {columns.map((col) => {
-          const canResize = resizable?.includes(col.key);
-
-          const content = (
-            <th
-              key={col.key}
-              style={{
-                "--table-column-width": col.width && `${col.width}px`,
-                position: "relative",
-                width: col.width,
-              }}
-            >
-              <Label>{col.title}</Label>
-            </th>
-          );
-
-          if (canResize)
-            return (
-              <Resizable
-                key={col.key}
-                asChild
-                direction="x"
-                onResize={(width) => onResize?.(col.key, width)}
-              >
-                {content}
-              </Resizable>
-            );
-          return content;
-        })}
-      </tr>
-    </thead>
-  );
-};
-
 Table.Label = function TableLabel({ children, ...props }: TextProps) {
   return (
     <Text size="caption" font="monospace" color="muted" {...props}>
       <Span bold>{children}</Span>
     </Text>
+  );
+};
+
+export type TableHeaderProps<Row, Col> = Omit<
+  ComponentProps<"tr">,
+  "children"
+> & {
+  table: Table<Row, Col>;
+  cell?: Slot<(col: Col) => ReactNode>;
+  left?: ReactNode;
+  right?: ReactNode;
+};
+
+Table.Header = function TableHeader<Row, Col extends ID>({
+  table,
+  left,
+  right,
+  cell = (col) => <Table.Label>{col}</Table.Label>,
+  ...props
+}: TableHeaderProps<Row, Col>) {
+  return (
+    <Table.Row {...props}>
+      {left}
+      {table.columns.map((col) => (
+        <Table.Cell as="th" key={col}>
+          {Slot.render(cell, col)}
+        </Table.Cell>
+      ))}
+    </Table.Row>
+  );
+};
+
+export type ResizableTableHeaderProps<Row, Col> = TableHeaderProps<Row, Col> & {
+  columns: { key: Col; width?: number }[];
+  onResize: (col: Col, width: number) => void;
+};
+
+Table.ResizableHeader = function ResizableTableHeader<Row, Col extends string>({
+  table,
+  cell = (col) => <Table.Label>{col}</Table.Label>,
+  columns: resizableColumns,
+  onResize,
+  left,
+  right,
+  ...props
+}: ResizableTableHeaderProps<Row, Col>) {
+  return (
+    <Table.Row {...props}>
+      {left}
+      {table.columns.map((col) => {
+        const resizable = resizableColumns.find(({ key }) => key === col);
+        return (
+          <Resizable
+            asChild
+            disabled={!resizable}
+            direction="x"
+            onResize={(width) => onResize?.(col, width)}
+          >
+            <Table.Cell
+              as="th"
+              key={col}
+              style={{
+                position: "relative",
+                width: resizable?.width,
+              }}
+            >
+              {Slot.render(cell, col)}
+            </Table.Cell>
+          </Resizable>
+        );
+      })}
+    </Table.Row>
   );
 };

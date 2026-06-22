@@ -46,7 +46,7 @@
   margin: auto;
 }
 
-.loadingState {
+.Button[data-loading] {
   cursor: progress;
 
   .Content {
@@ -54,7 +54,7 @@
   }
 }
 
-.variant-primary {
+.Button[data-variant="primary"] {
   border-color: var(--button-color);
   background: var(--button-color);
   color: color-mix(in srgb, var(--color-surface) 80%, var(--button-bg));
@@ -71,7 +71,7 @@
   }
 }
 
-.variant-secondary {
+.Button[data-variant="secondary"] {
   border-color: var(--color-divider);
   background: var(--color-surface);
   color: var(--button-color);
@@ -93,7 +93,7 @@
   }
 }
 
-.variant-link {
+.Button[data-variant="link"] {
   height: auto;
   padding: 0;
   border-color: transparent;
@@ -119,38 +119,38 @@
 }
 
 @each $name, $_ in color.$colors-codes {
-  .#{"color-" + $name} {
+  .Button[data-color="#{$name}"] {
     --button-color: var(#{"--color-" + $name});
     --button-bg: var(#{"--bg-" + $name});
   }
 }
 
-.color-default {
+.Button[data-color="default"] {
   --button-color: var(--color-text);
   --button-bg: var(--color-background);
 }
 
-.color-currentColor {
+.Button[data-color="currentColor"] {
   --button-color: currentColor;
   --button-bg: currentColor;
 }
 
-.size-s {
+.Button[data-size="s"] {
   --button-height: 26px;
 }
 
-.size-m {
+.Button[data-size="m"] {
   --button-height: 32px;
 }
 
-.size-l {
+.Button[data-size="l"] {
   --button-height: 42px;
 }
 
 @media (prefers-reduced-motion: reduce) {
   .Button,
   .Content,
-  .variant-link .Content {
+  .Button[data-variant="link"] .Content {
     transition: none;
   }
 }

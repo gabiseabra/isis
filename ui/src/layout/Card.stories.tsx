@@ -43,19 +43,15 @@ export const Elevations: Story = {
     <Table
       variant="unstyled"
       gap={2}
-      render={(data) => data}
-      renderIndex={(_item, index) => (
-        <Table.Label align="end">{index}</Table.Label>
+      rows={elevations}
+      columns={["element"]}
+      cell={(elevation) => (
+        <Card {...args} elevation={elevation} p={3} gap={1}>
+          <Text size="h5">Elevation {elevation}</Text>
+          <Text color="muted">More elevation, more shadow and radius.</Text>
+        </Card>
       )}
-      columns={[{ key: "element" }]}
-      rows={([0, 1, 2] as const).map((elevation) => ({
-        element: (
-          <Card key={elevation} {...args} elevation={elevation} p={3} gap={1}>
-            <Text size="h5">Elevation {elevation}</Text>
-            <Text color="muted">More elevation, more shadow and radius.</Text>
-          </Card>
-        ),
-      }))}
+      index={(elevation) => <Table.Label align="end">{elevation}</Table.Label>}
     />
   ),
 };

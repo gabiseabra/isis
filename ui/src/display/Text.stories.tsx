@@ -96,8 +96,7 @@ export const Sizes: Story = {
   render: (args) => (
     <Table
       variant="unstyled"
-      render={(data) => data}
-      columns={[{ key: "element" }]}
+      columns={["element"]}
       rows={textSizes.map((size) => ({
         element: (
           <Text key={size} {...args} size={size}>
@@ -105,6 +104,7 @@ export const Sizes: Story = {
           </Text>
         ),
       }))}
+      cell={(row, col) => row[col]}
     />
   ),
 };
@@ -118,12 +118,7 @@ export const Colors: Story = {
   render: (args) => (
     <Table
       variant="unstyled"
-      render={(data) => data}
-      header={<Table.Header />}
-      columns={[
-        { key: "color", title: "color" },
-        { key: "background", title: "background" },
-      ]}
+      columns={["color", "background"]}
       rows={textColors.map((color) => ({
         color: (
           <Text key={color} {...args}>
@@ -139,6 +134,7 @@ export const Colors: Story = {
             </Text>
           ),
       }))}
+      cell={(row, col) => row[col]}
     />
   ),
 };
@@ -152,8 +148,7 @@ export const Fonts: Story = {
   render: (args) => (
     <Table
       variant="unstyled"
-      render={(data) => data}
-      columns={[{ key: "element" }]}
+      columns={["element"]}
       rows={textFonts.map((font) => ({
         element: (
           <Text key={font} {...args} font={font}>
@@ -161,6 +156,7 @@ export const Fonts: Story = {
           </Text>
         ),
       }))}
+      cell={(row, col) => row[col]}
     />
   ),
 };
@@ -178,8 +174,7 @@ export const Annotations: Story = {
   render: (args) => (
     <Table
       variant="unstyled"
-      render={(data) => data}
-      columns={[{ key: "element" }]}
+      columns={["element"]}
       rows={textAnnotations.map((annotation) => ({
         element: (
           <Text {...args}>
@@ -187,6 +182,7 @@ export const Annotations: Story = {
           </Text>
         ),
       }))}
+      cell={(row, col) => row[col]}
     />
   ),
 };

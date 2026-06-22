@@ -1,9 +1,7 @@
 import { createRecord } from "@isis/common/utils/object";
 import type { Meta, StoryObj } from "@storybook/react";
-import { Row } from "../layout/FlexBox";
 import { Table } from "../layout/Table";
 import { Badge, type BadgeProps } from "./Badge";
-import { Span, Text } from "./Text";
 
 type BadgeStoryProps = {
   label: string;
@@ -69,9 +67,7 @@ export const Sizes: Story = {
     <Table
       variant="unstyled"
       gap={2}
-      render={(data) => data}
-      header={<Table.Header />}
-      columns={badgeSizes.map((size) => ({ key: size, title: size }))}
+      columns={badgeSizes}
       rows={[
         createRecord(badgeSizes, (size) => (
           <Badge key={size} {...props} size={size}>
@@ -79,6 +75,8 @@ export const Sizes: Story = {
           </Badge>
         )),
       ]}
+      cell={(row, col) => row[col]}
+      headerCell={(col) => <Table.Label>{col}</Table.Label>}
     />
   ),
 };
@@ -93,11 +91,7 @@ export const Colors: Story = {
     <Table
       variant="unstyled"
       gap={2}
-      render={(data) => data}
-      renderIndex={(_item, index) => (
-        <Table.Label align="end">{badgeColors[index]}</Table.Label>
-      )}
-      columns={[{ key: "element" }]}
+      columns={["element"]}
       rows={badgeColors.map((color) => ({
         element: (
           <Badge
@@ -111,6 +105,10 @@ export const Colors: Story = {
           </Badge>
         ),
       }))}
+      cell={(row, col) => row[col]}
+      index={(_item, index) => (
+        <Table.Label align="end">{badgeColors[index]}</Table.Label>
+      )}
     />
   ),
 };
@@ -125,16 +123,16 @@ export const Statuses: Story = {
     <Table
       variant="unstyled"
       gap={2}
-      render={(data) => data}
-      header={<Table.Header />}
-      columns={badgeStatuses.map((status) => ({ key: status, title: status }))}
+      columns={badgeStatuses}
       rows={[
         createRecord(badgeStatuses, (status) => (
-          <Badge key={status} status={status} {...props}>
+          <Badge key={status} {...props} status={status}>
             {status}
           </Badge>
         )),
       ]}
+      cell={(row, col) => row[col]}
+      headerCell={(col) => <Table.Label>{col}</Table.Label>}
     />
   ),
 };

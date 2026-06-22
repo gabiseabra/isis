@@ -27,17 +27,12 @@ export function Button({
 }: ButtonProps) {
   return (
     <button
-      className={[
-        styles.Button,
-        styles[`variant-${variant}`],
-        styles[`color-${color}`],
-        styles[`size-${size}`],
-        loading && styles.loadingState,
-        className,
-      ]
-        .filter(Boolean)
-        .join(" ")}
+      className={[styles.Button, className].filter(Boolean).join(" ")}
       aria-busy={loading || undefined}
+      data-color={color}
+      data-loading={loading || undefined}
+      data-size={size}
+      data-variant={variant}
       disabled={disabled}
       type={type}
       {...props}

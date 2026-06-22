@@ -36,7 +36,13 @@ export function Banner({
       {...props}
     >
       {(type !== "neutral" || icon) && (
-        <IconControl as="span" size="s" color="currentColor" my={1}>
+        <IconControl
+          as="span"
+          size="s"
+          color="currentColor"
+          my={1}
+          style={{ alignSelf: "start" }}
+        >
           {icon ??
             {
               success: <FaCheckCircle />,

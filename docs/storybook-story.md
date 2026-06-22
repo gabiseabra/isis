@@ -136,8 +136,8 @@ For aggregate variant stories that render every option, exclude the controlled o
 
 Render multiple variants in parallel with `Table`. Use `variant="unstyled"` and `gap={2}`.
 
-- Block components: render one variant per row. Do not show a column title for the example column. Label the rows with `renderIndex`.
-- Inline components: render one variant per column. Do not show row labels. Label the columns with `columns[].title` and render `header={<Table.Header />}`.
+- Block components: render one variant per row. Do not show a column title for the example column. Label the rows with `index`.
+- Inline components: render one variant per column. Do not show row labels. Label the columns with `headerCell`.
 
 Example files for this pattern:
 
@@ -155,11 +155,7 @@ export const Elevations: Story = {
     <Table
       variant="unstyled"
       gap={2}
-      render={(data) => data}
-      renderIndex={(_item, index) => (
-        <Table.Label align="end">{index}</Table.Label>
-      )}
-      columns={[{ key: "element" }]}
+      columns={["element"]}
       rows={([0, 1, 2] as const).map((elevation) => ({
         element: (
           <Card key={elevation} {...args} elevation={elevation} p={3} gap={1}>
@@ -168,6 +164,10 @@ export const Elevations: Story = {
           </Card>
         ),
       }))}
+      cell={(row, col) => row[col]}
+      index={(_row, index) => (
+        <Table.Label align="end">{index}</Table.Label>
+      )}
     />
   ),
 };
@@ -186,9 +186,7 @@ export const Sizes: Story = {
     <Table
       variant="unstyled"
       gap={2}
-      render={(data) => data}
-      header={<Table.Header />}
-      columns={iconControlSizes.map((size) => ({ key: size, title: size }))}
+      columns={iconControlSizes}
       rows={[
         createRecord(iconControlSizes, (size) => (
           <IconControl key={size} {...props} size={size}>
@@ -196,6 +194,8 @@ export const Sizes: Story = {
           </IconControl>
         )),
       ]}
+      cell={(row, col) => row[col]}
+      headerCell={(col) => <Table.Label>{col}</Table.Label>}
     />
   ),
 };

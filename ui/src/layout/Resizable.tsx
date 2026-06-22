@@ -7,6 +7,7 @@ import styles from "./Resizable.module.scss";
 export type ResizableProps = HTMLAttributes<HTMLElement> & {
   asChild?: boolean;
   aspectRatio?: number;
+  disabled?: boolean;
 } & (
     | {
         direction: "both";
@@ -27,24 +28,21 @@ export function Resizable({
   children,
   className,
   style,
+  disabled,
   ...props
 }: ResizableProps) {
-  const ratio = aspectRatio && aspectRatio > 0 ? aspectRatio : undefined;
-  const drag = useRef<
-    | {
-        height: number;
-        pointerX: number;
-        pointerY: number;
-        sign: 1 | -1;
-        width: number;
-      }
-    | undefined
-  >(undefined);
+  const dragRef = useRef<{
+    height: number;
+    pointerX: number;
+    pointerY: number;
+    sign: 1 | -1;
+    width: number;
+  }>(null);
   const [size, setSize] = useState<{ height?: number; width?: number }>({});
   const [resizing, setResizing] = useState(false);
 
   const stopResize = (event: PointerEvent<HTMLDivElement>) => {
-    drag.current = undefined;
+    dragRef.current = null;
     setResizing(false);
 
     if (event.currentTarget.hasPointerCapture(event.pointerId)) {
@@ -52,23 +50,13 @@ export function Resizable({
     }
   };
 
-  const rootProps = {
-    className: [styles.Resizable, className].filter(Boolean).join(" "),
-    "data-direction": props.direction,
-    "data-resizing": resizing || undefined,
-    style: {
-      ...style,
-      height: size.height ?? style?.height,
-      width: size.width ?? style?.width,
-    },
-    ...omit(props, ["direction", "onResize"]),
-  };
-
   const handle = (
     <div
       className={styles.Handle}
       onPointerCancel={stopResize}
       onPointerDown={(event) => {
+        if (disabled) return;
+
         const element = event.currentTarget.parentElement;
 
         if (!element) return;
@@ -77,7 +65,7 @@ export function Resizable({
 
         event.preventDefault();
         event.currentTarget.setPointerCapture(event.pointerId);
-        drag.current = {
+        dragRef.current = {
           height: box.height,
           pointerX: event.clientX,
           pointerY: event.clientY,
@@ -91,20 +79,26 @@ export function Resizable({
         setResizing(true);
       }}
       onPointerMove={(event) => {
-        if (!drag.current) return;
+        if (!dragRef.current) return;
 
         const deltaX =
-          drag.current.sign * (event.clientX - drag.current.pointerX);
-        const deltaY = event.clientY - drag.current.pointerY;
-        const rawHeight = Math.max(40, drag.current.height + deltaY);
-        const rawWidth = Math.max(40, drag.current.width + deltaX);
+          dragRef.current.sign * (event.clientX - dragRef.current.pointerX);
+        const deltaY = event.clientY - dragRef.current.pointerY;
+        const rawHeight = Math.max(40, dragRef.current.height + deltaY);
+        const rawWidth = Math.max(40, dragRef.current.width + deltaX);
         const nextWidth =
-          props.direction === "y" && ratio ? rawHeight * ratio : rawWidth;
+          props.direction === "y" && aspectRatio
+            ? rawHeight * aspectRatio
+            : rawWidth;
         const nextHeight =
-          props.direction !== "y" && ratio ? nextWidth / ratio : rawHeight;
+          props.direction !== "y" && aspectRatio
+            ? nextWidth / aspectRatio
+            : rawHeight;
         const nextSize = {
-          height: props.direction === "x" && !ratio ? undefined : nextHeight,
-          width: props.direction === "y" && !ratio ? undefined : nextWidth,
+          height:
+            props.direction === "x" && !aspectRatio ? undefined : nextHeight,
+          width:
+            props.direction === "y" && !aspectRatio ? undefined : nextWidth,
         };
 
         setSize(nextSize);
@@ -119,17 +113,30 @@ export function Resizable({
       }}
       onPointerUp={stopResize}
     >
-      {props.direction === "both" ? (
-        <Divider direction="both" m={1} />
-      ) : (
-        <Divider
-          direction={props.direction === "y" ? "x" : "y"}
-          mx={props.direction === "y" ? 1 : 0}
-          my={props.direction === "x" ? 1 : 0}
-        />
-      )}
+      {!disabled &&
+        (props.direction === "both" ? (
+          <Divider direction="both" m={1} />
+        ) : (
+          <Divider
+            direction={props.direction === "y" ? "x" : "y"}
+            mx={props.direction === "y" ? 1 : 0}
+            my={props.direction === "x" ? 1 : 0}
+          />
+        ))}
     </div>
   );
+
+  const rootProps = {
+    className: [styles.Resizable, className].filter(Boolean).join(" "),
+    "data-direction": props.direction,
+    "data-resizing": resizing || undefined,
+    style: {
+      ...style,
+      height: size.height ?? style?.height,
+      width: size.width ?? style?.width,
+    },
+    ...omit(props, ["direction", "onResize"]),
+  };
 
   if (asChild) {
     return (

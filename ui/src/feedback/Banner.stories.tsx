@@ -48,11 +48,7 @@ export const Types: Story = {
       variant="unstyled"
       gap={2}
       style={{ width: "100%" }}
-      render={(data) => data}
-      renderIndex={(_data, index) => (
-        <Table.Label align="end">{bannerTypes[index]}</Table.Label>
-      )}
-      columns={[{ key: "element" }]}
+      columns={["element"]}
       rows={bannerTypes.map((type) => ({
         element: (
           <Banner key={type} {...args} type={type} title={`${type} banner`}>
@@ -60,6 +56,10 @@ export const Types: Story = {
           </Banner>
         ),
       }))}
+      cell={(row, col) => row[col]}
+      index={(_data, index) => (
+        <Table.Label align="end">{bannerTypes[index]}</Table.Label>
+      )}
     />
   ),
 };
@@ -88,10 +88,13 @@ export const WithAction: Story = {
 
       <Banner
         {...args}
+        alignY="center"
         action={
-          <Button variant="link" color="currentColor" right={<BiX />}>
-            Close
-          </Button>
+          <Col alignY="center">
+            <Button variant="link" color="currentColor" right={<BiX />}>
+              Close
+            </Button>
+          </Col>
         }
       >
         {message}

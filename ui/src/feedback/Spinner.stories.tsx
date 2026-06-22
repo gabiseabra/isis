@@ -38,14 +38,14 @@ export const Sizes: Story = {
     <Table
       variant="unstyled"
       gap={2}
-      render={(data) => data}
-      header={<Table.Header />}
-      columns={spinnerSizes.map((size) => ({ key: size, title: size }))}
+      columns={spinnerSizes}
       rows={[
         createRecord(spinnerSizes, (size) => (
           <Spinner key={size} {...props} size={size} />
         )),
       ]}
+      cell={(row, col) => row[col]}
+      headerCell={(col) => <Table.Label>{col}</Table.Label>}
     />
   ),
 };
