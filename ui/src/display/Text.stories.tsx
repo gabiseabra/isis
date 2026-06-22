@@ -135,6 +135,7 @@ export const Colors: Story = {
           ),
       }))}
       cell={(row, col) => row[col]}
+      headerCell={(col) => <Table.Label>{col}</Table.Label>}
     />
   ),
 };
