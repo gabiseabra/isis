@@ -96,7 +96,6 @@ export const Sizes: Story = {
   render: (args) => (
     <Table
       variant="unstyled"
-      gap={2}
       render={(data) => data}
       columns={[{ key: "element" }]}
       rows={textSizes.map((size) => ({
@@ -119,7 +118,6 @@ export const Colors: Story = {
   render: (args) => (
     <Table
       variant="unstyled"
-      gap={2}
       render={(data) => data}
       header={<Table.Header />}
       columns={[
@@ -154,7 +152,6 @@ export const Fonts: Story = {
   render: (args) => (
     <Table
       variant="unstyled"
-      gap={2}
       render={(data) => data}
       columns={[{ key: "element" }]}
       rows={textFonts.map((font) => ({
@@ -181,7 +178,6 @@ export const Annotations: Story = {
   render: (args) => (
     <Table
       variant="unstyled"
-      gap={2}
       render={(data) => data}
       columns={[{ key: "element" }]}
       rows={textAnnotations.map((annotation) => ({
