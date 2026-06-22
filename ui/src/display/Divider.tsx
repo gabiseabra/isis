@@ -4,8 +4,8 @@ import * as css from "../utils/css";
 import styles from "./Divider.module.scss";
 
 type DividerProps = {
-  direction: "x" | "y";
-} & HTMLAttributes<HTMLElement> &
+  direction: "x" | "y" | "both";
+} & Omit<HTMLAttributes<HTMLElement>, "children"> &
   css.MarginProps &
   css.PaddingProps;
 
@@ -15,10 +15,8 @@ export function Divider({
   style,
   ...props
 }: DividerProps) {
-  const Component = direction === "x" ? "hr" : "div";
-
   return (
-    <Component
+    <div
       className={[styles.Divider, className].join(" ")}
       data-direction={direction}
       style={{
@@ -27,6 +25,14 @@ export function Divider({
         ...style,
       }}
       {...omit(props, [...css.marginProps, ...css.paddingProps])}
-    />
+    >
+      {direction === "both" && (
+        <>
+          <div data-side="x" />
+          <div data-side="y" />
+          <div data-corner />
+        </>
+      )}
+    </div>
   );
 }

@@ -40,6 +40,14 @@
   cursor: row-resize;
 }
 
+.Resizable[data-direction="both"] > .Handle {
+  right: 0;
+  bottom: 0;
+  width: 24px;
+  height: 24px;
+  cursor: nwse-resize;
+}
+
 .Handle:hover {
   filter: brightness(1);
 }

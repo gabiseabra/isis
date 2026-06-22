@@ -1,11 +1,10 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { useId, useState } from "react";
+import { useId } from "react";
 import { useSessionStorage } from "usehooks-ts";
 import { Card } from "./Card";
 import { Resizable, type ResizableProps } from "./Resizable";
 
-type ResizableStoryProps = {
-  direction: "x" | "y";
+type ResizableStoryProps = Pick<ResizableProps, "aspectRatio" | "direction"> & {
   initialWidth?: number;
   initialHeight?: number;
 };
@@ -20,7 +19,10 @@ const meta: Meta<ResizableStoryProps> = {
   argTypes: {
     direction: {
       control: "select",
-      options: ["x", "y"],
+      options: ["x", "y", "both"],
+    },
+    aspectRatio: {
+      control: "number",
     },
     initialHeight: {
       control: "number",
@@ -44,6 +46,7 @@ export default meta;
 
 function ResizableStory({
   id,
+  aspectRatio,
   direction,
   initialWidth = 300,
   initialHeight = 300,
@@ -60,9 +63,22 @@ function ResizableStory({
   return (
     <Resizable
       id={id}
-      key={direction}
-      direction={direction}
-      onResize={{ x: setWidth, y: setHeight }[direction]}
+      aspectRatio={aspectRatio}
+      {...(direction === "both"
+        ? {
+            direction: "both",
+            onResize({ width, height }) {
+              setWidth(width);
+              setHeight(height);
+            },
+          }
+        : {
+            direction,
+            onResize(size) {
+              if (direction === "x") setWidth(size);
+              if (direction === "y") setHeight(size);
+            },
+          })}
     >
       <Card style={{ width, height }} />
     </Resizable>

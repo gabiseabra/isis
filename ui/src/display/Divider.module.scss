@@ -5,13 +5,66 @@
 }
 
 .Divider[data-direction="y"] {
-  height: stretch;
+  align-self: stretch;
+  height: auto;
   width: var(--size-divider);
   margin: 0;
 }
 
 .Divider[data-direction="x"] {
+  height: var(--size-divider);
   width: auto;
   flex: 1;
   margin: 0;
+}
+
+.Divider[data-direction="both"] {
+  position: relative;
+  width: stretch;
+  height: stretch;
+  min-width: var(--divider-corner-radius, calc(var(--radius) / 2));
+  min-height: var(--divider-corner-radius, calc(var(--radius) / 2));
+  flex: 1;
+  background: transparent;
+  border-radius: 0;
+}
+
+.Divider[data-direction="both"] > [data-side],
+.Divider[data-direction="both"] > [data-corner] {
+  position: absolute;
+}
+
+.Divider[data-direction="both"] > [data-side] {
+  background: var(--color-divider);
+}
+
+.Divider[data-direction="both"] > [data-side="x"] {
+  right: var(--divider-corner-radius, calc(var(--radius) / 2));
+  bottom: 0;
+  left: 0;
+  height: var(--size-divider);
+  border-radius: var(--radius-divider) 0 0 var(--radius-divider);
+}
+
+.Divider[data-direction="both"] > [data-side="y"] {
+  top: 0;
+  right: 0;
+  bottom: var(--divider-corner-radius, calc(var(--radius) / 2));
+  width: var(--size-divider);
+  border-radius: var(--radius-divider) var(--radius-divider) 0 0;
+}
+
+.Divider[data-direction="both"] > [data-corner] {
+  right: 0;
+  bottom: 0;
+  box-sizing: border-box;
+  width: var(--divider-corner-radius, calc(var(--radius) / 2));
+  height: var(--divider-corner-radius, calc(var(--radius) / 2));
+  border: 0 solid var(--color-divider);
+  border-right-width: var(--size-divider);
+  border-bottom-width: var(--size-divider);
+  border-bottom-right-radius: var(
+    --divider-corner-radius,
+    calc(var(--radius) / 2)
+  );
 }
