@@ -4,8 +4,16 @@
     "outDir": "dist",
     "rootDir": "src",
     "module": "CommonJS",
+    "types": [
+      "node"
+    ]
   },
   "include": [
-    "src/**/*"
+    "src/**/*",
+  ],
+  "references": [
+    {
+      "path": "../common"
+    },
   ],
 }
