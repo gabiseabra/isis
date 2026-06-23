@@ -21,6 +21,7 @@
     }
   },
   "scripts": {
+    "start": "http-server ui/storybook-static -p 6663",
     "dev": "storybook dev -p 6663 --ci",
     "build": "npm run build:ts && npm run build:sb",
     "build:ts": "tsc -b",
@@ -30,6 +31,7 @@
   "dependencies": {
     "@isis/common": "*",
     "@orpc/client": "^1.14.6",
+    "http-server": "^14.1.1",
     "radix-ui": "^1.5.0",
     "react": "^19.2.7",
     "react-dom": "^19.2.7",
