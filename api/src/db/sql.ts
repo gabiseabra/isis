@@ -1,6 +1,8 @@
 import { sql as sqlTag } from "@ts-safeql/sql-tag";
 import pg, { type QueryResultRow } from "pg";
 
+pg.types.setTypeParser(pg.types.builtins.INT8, (value) => Number(value));
+
 const pool = new pg.Pool({ connectionString: process.env.DATABASE_URL });
 
 export async function sql<T extends QueryResultRow = never>(
