@@ -3,7 +3,7 @@ import { defineConfig } from "@ts-safeql/eslint-plugin";
 
 export default defineConfig({
   connections: {
-    connectionUrl: process.env.DATABASE_URL,
+    databaseUrl: process.env.DATABASE_URL,
     migrationsDir: process.env.DATABASE_URL ? undefined : "./src/db/schema",
     targets: [
       { tag: "sql", transform: "{type}" },
