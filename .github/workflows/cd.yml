@@ -1,0 +1,24 @@
+name: Deploy to Coolify
+
+on:
+  workflow_dispatch:
+
+jobs:
+  ci:
+    uses: ./.github/workflows/ci.yml
+
+  deploy:
+    needs: ci
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy api
+        run: curl --fail --request GET '${{ secrets.COOLIFY_API_WEBHOOK }}' --header 'Authorization: Bearer ${{ secrets.COOLIFY_TOKEN }}'
+
+      - name: Deploy web
+        run: curl --fail --request GET '${{ secrets.COOLIFY_WEB_WEBHOOK }}' --header 'Authorization: Bearer ${{ secrets.COOLIFY_TOKEN }}'
+
+      - name: Deploy admin
+        run: curl --fail --request GET '${{ secrets.COOLIFY_ADMIN_WEBHOOK }}' --header 'Authorization: Bearer ${{ secrets.COOLIFY_TOKEN }}'
+
+      - name: Deploy Storybook
+        run: curl --fail --request GET '${{ secrets.COOLIFY_STORYBOOK_WEBHOOK }}' --header 'Authorization: Bearer ${{ secrets.COOLIFY_TOKEN }}'
