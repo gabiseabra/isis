@@ -2,10 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { Col } from "../layout/FlexBox";
 import { Input, type InputProps } from "./Input";
 
-type InputStoryArgs = Pick<
-  InputProps,
-  "placeholder" | "type" | "disabled"
->;
+type InputStoryArgs = Pick<InputProps, "placeholder" | "type" | "disabled">;
 
 const meta = {
   title: "Form/Input",

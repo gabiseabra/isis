@@ -1,5 +1,5 @@
 import { Checkbox as CheckboxPrimitive } from "radix-ui";
-import { type ComponentProps, type ReactNode, useId } from "react";
+import { type ComponentProps, type ReactNode } from "react";
 import { GiCheckMark } from "react-icons/gi";
 import { Row } from "../layout/FlexBox";
 import styles from "./Checkbox.module.scss";

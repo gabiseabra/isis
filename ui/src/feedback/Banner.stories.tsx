@@ -2,7 +2,6 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { BiX } from "react-icons/bi";
 import { FaBell } from "react-icons/fa";
 import { IconControl } from "../display/IconControl";
-import { Span, Text } from "../display/Text";
 import { Button } from "../form/Button";
 import { Col } from "../layout/FlexBox";
 import { Table } from "../layout/Table";

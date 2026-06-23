@@ -9,7 +9,6 @@ import { IconControl } from "../display/IconControl.js";
 import { Text } from "../display/Text.js";
 import { Button } from "../form/Button.js";
 import { Col } from "../layout/FlexBox.js";
-import { Banner } from "./Banner";
 import { EmptyState } from "./EmptyState";
 import { Spinner } from "./Spinner";
 

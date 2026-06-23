@@ -153,6 +153,7 @@ Table.Header = function TableHeader<Row, Col extends ID>({
           {Slot.render(cell, col)}
         </Table.Cell>
       ))}
+      {right}
     </Table.Row>
   );
 };
@@ -196,6 +197,7 @@ Table.ResizableHeader = function ResizableTableHeader<Row, Col extends string>({
           </Resizable>
         );
       })}
+      {right}
     </Table.Row>
   );
 };

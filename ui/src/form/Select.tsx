@@ -106,10 +106,7 @@ export function Select({
   disabled,
   autoFocus,
   placeholder,
-  id,
   trigger = <Select.Trigger placeholder={placeholder} />,
-  onBlur,
-  onFocus,
   children,
   className,
   header,
@@ -208,10 +205,12 @@ export function Select({
   );
 
   const onValueChange = (values: string[]) => {
+    if (disabled) return;
     if (props.multiple) props.onValueChange?.(values);
     else if (values[0]) props.onValueChange?.(values[0]);
   };
   const onOpenChange = (open: boolean) => {
+    if (open && disabled) return;
     if (open && autoFocus) {
       options
         .find(
@@ -223,7 +222,7 @@ export function Select({
     setLocalOpen(open);
   };
   const onKeyDown = (e: KeyboardEvent<HTMLElement>) => {
-    if (e.defaultPrevented) return;
+    if (e.defaultPrevented || disabled) return;
 
     const selectedOption =
       options.find((option) => option.element === document.activeElement) ??
@@ -254,6 +253,7 @@ export function Select({
             tabIndex={0}
             className={[styles.Trigger, className].filter(Boolean).join(" ")}
             data-state={open ? "open" : "closed"}
+            data-disabled={disabled || undefined}
             onKeyDown={onKeyDown}
           >
             <Row>
