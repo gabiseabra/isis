@@ -1,6 +1,8 @@
 name: Deploy to Coolify
 
 on:
+  push:
+    branches: [ "actions" ]
   workflow_dispatch:
 
 jobs:
