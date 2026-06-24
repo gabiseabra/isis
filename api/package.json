@@ -8,6 +8,7 @@
     "clean": "tsc -b --clean && rm -rf dist",
     "start": "node dist/server.js",
     "dev": "nodemon --watch 'src/**' --watch '../common/src/**' --ext ts,tsx,js,json --exec 'npm run build && npm run start'",
+    "create-user": "tsx src/cli/index.ts create-user",
     "db:new": "dbmate --migrations-dir ./src/db/migrations --schema-file ./src/db/schema/schema.sql new",
     "db:scaffold": "dbmate --migrations-dir ./src/db/migrations --schema-file ./src/db/schema/schema.sql new",
     "db:status": "dbmate --migrations-dir ./src/db/migrations --schema-file ./src/db/schema/schema.sql status",
@@ -27,10 +28,12 @@
     "@isis/common": "*",
     "@orpc/server": "^1.14.6",
     "@ts-safeql/sql-tag": "^0.2.2",
+    "argon2": "^0.44.0",
     "cors": "^2.8.6",
     "express": "^5.2.1",
     "morgan": "^1.11.0",
     "pg": "^8.22.0",
+    "ts-functional-pipe": "^3.1.2",
     "zod": "^4.4.3"
   },
   "devDependencies": {
@@ -40,6 +43,7 @@
     "@types/node": "^25.9.4",
     "@types/pg": "^8.20.0",
     "dbmate": "^2.33.0",
-    "nodemon": "^3.1.14"
+    "nodemon": "^3.1.14",
+    "tsx": "^4.22.4"
   }
 }

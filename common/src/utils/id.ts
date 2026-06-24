@@ -1,7 +1,7 @@
 export type ID<T extends string = string> = `id://${T}/${number}`;
 
 export const ID = {
-  create<T extends string>(namespace: T, id: number) {
+  create<T extends string>(namespace: T, id: number): ID<T> {
     return `id://${namespace}/${id}`;
   },
   parse<T extends string>(

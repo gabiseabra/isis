@@ -17,6 +17,8 @@
     "composite": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
+    "strictNullChecks": true,
+    // "noUncheckedIndexedAccess": true
   },
   "exclude": [
     "node_modules",

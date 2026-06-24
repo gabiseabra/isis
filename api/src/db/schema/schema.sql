@@ -1,5 +1,5 @@
 
--- Dumped from database version 18.4 (Homebrew)
+-- Dumped from database version 17.10
 -- Dumped by pg_dump version 18.3
 
 SET statement_timeout = 0;
@@ -17,18 +17,6 @@ SET row_security = off;
 SET default_tablespace = '';
 
 SET default_table_access_method = heap;
-
---
--- Name: password_credentials; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.password_credentials (
-    user_id bigint NOT NULL,
-    password_hash text NOT NULL,
-    created_at timestamp with time zone DEFAULT now() NOT NULL,
-    updated_at timestamp with time zone DEFAULT now() NOT NULL
-);
-
 
 --
 -- Name: schema_migrations; Type: TABLE; Schema: public; Owner: -
@@ -59,6 +47,7 @@ CREATE TABLE public.users (
     id bigint NOT NULL,
     name text NOT NULL,
     email text NOT NULL,
+    password_hash text,
     created_at timestamp with time zone DEFAULT now() NOT NULL,
     updated_at timestamp with time zone DEFAULT now() NOT NULL
 );
@@ -76,14 +65,6 @@ ALTER TABLE public.users ALTER COLUMN id ADD GENERATED ALWAYS AS IDENTITY (
     NO MAXVALUE
     CACHE 1
 );
-
-
---
--- Name: password_credentials password_credentials_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.password_credentials
-    ADD CONSTRAINT password_credentials_pkey PRIMARY KEY (user_id);
 
 
 --
@@ -111,14 +92,6 @@ ALTER TABLE ONLY public.users
 
 
 --
--- Name: password_credentials password_credentials_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.password_credentials
-    ADD CONSTRAINT password_credentials_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
-
-
---
 -- Name: sessions sessions_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -138,5 +111,4 @@ ALTER TABLE ONLY public.sessions
 
 INSERT INTO public.schema_migrations (version) VALUES
     ('20260622073950'),
-    ('20260622074322'),
     ('20260622074501');
