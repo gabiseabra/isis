@@ -16,7 +16,7 @@ export const users = oc.prefix("/users").router({
     .input(z.void())
     .output(User),
 
-  loginWithPassword: oc
+  login: oc
     .route({
       description: "Login with email and password.",
     })
@@ -28,7 +28,7 @@ export const users = oc.prefix("/users").router({
     })
     .input(
       z.object({
-        login: z.string(),
+        email: z.string(),
         password: z.string(),
       }),
     )

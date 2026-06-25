@@ -1,10 +1,13 @@
 /// <reference types="node" />
 import { defineConfig } from "@ts-safeql/eslint-plugin";
 
+const connectionConfig = process.env.DATABASE_URL
+  ? { databaseUrl: process.env.DATABASE_URL }
+  : { migrationsDir: "./src/db/schema" };
+
 export default defineConfig({
   connections: {
-    databaseUrl: process.env.DATABASE_URL,
-    migrationsDir: process.env.DATABASE_URL ? undefined : "./src/db/schema",
+    ...connectionConfig,
     targets: [
       { tag: "sql", transform: "{type}" },
       { tag: "sqlOne", transform: "{type}" },
@@ -14,6 +17,7 @@ export default defineConfig({
         bigint: "number",
         bigserial: "number",
         int8: "number",
+        uuid: "UUID",
       },
     },
   },

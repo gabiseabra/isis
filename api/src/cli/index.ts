@@ -1,5 +1,6 @@
 import "dotenv/config";
 import z, { ZodError } from "zod";
+import { closeClient } from "../db/client";
 import { AnyCommand, Command } from "../utils/command";
 
 async function main() {
@@ -12,9 +13,11 @@ async function main() {
 }
 
 if (require.main === module)
-  main().catch((error) => {
-    if (error instanceof ZodError) console.error(z.prettifyError(error));
-    if (error instanceof Error) console.error(error.message);
-    else console.error(error);
-    process.exit(1);
-  });
+  main()
+    .finally(closeClient)
+    .catch((error) => {
+      if (error instanceof ZodError) console.error(z.prettifyError(error));
+      if (error instanceof Error) console.error(error.message);
+      else console.error(error);
+      process.exit(1);
+    });

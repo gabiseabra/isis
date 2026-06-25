@@ -1,16 +1,16 @@
 import { sql as sqlTag } from "@ts-safeql/sql-tag";
 import pg, { type QueryResultRow } from "pg";
+import { useClient } from "./client";
 
 pg.types.setTypeParser(pg.types.builtins.INT8, (value) => Number(value));
-
-const pool = new pg.Pool({ connectionString: process.env.DATABASE_URL });
 
 export async function sql<T extends QueryResultRow = never>(
   strings: TemplateStringsArray,
   ...values: unknown[]
 ) {
   const query = sqlTag(strings, ...values);
-  const { rows } = await pool.query<T>(query);
+  using client = await useClient();
+  const { rows } = await client.query<T>(query);
   return rows;
 }
 

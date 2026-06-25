@@ -14,7 +14,7 @@ export async function updatePassword(input: {
     !(!user.password_hash && !input.oldPassword) ||
     !(await argon2.verify(user.password_hash ?? "", input.oldPassword))
   )
-    throw new updatePassword.UnauthorizedError(`Invalid user or password.`);
+    throw new updatePassword.UnauthorizedError();
 
   await UserRow.updatePasswordHash({
     id: user.id,
