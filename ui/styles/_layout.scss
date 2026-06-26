@@ -7,8 +7,8 @@
   --breakpoint-s: #{layout.$breakpoint-s};
   --breakpoint-m: #{layout.$breakpoint-m};
 
-  --width-content: #{layout.$width-content};
-  --width-modal: #{layout.$width-modal};
+  --width-wide: #{layout.$width-wide};
+  --width-narrow: #{layout.$width-narrow};
   --gutter-content: #{layout.$gutter-content};
 }
 

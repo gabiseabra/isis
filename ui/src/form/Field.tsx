@@ -1,48 +1,30 @@
 import {
   createContext,
-  FocusEvent,
   useContext,
   useState,
   type ComponentProps,
   type ReactNode,
 } from "react";
+import { IconControl } from "../display/IconControl";
 import styles from "./Field.module.scss";
 
 const FieldContext = createContext<{
   id?: string;
-  isTouched: boolean;
-  isError: boolean;
-  onFocus?: () => void;
-  onBlur?: () => void;
+  required?: boolean;
+  isTouched?: boolean;
+  setTouched(): void;
 }>({
-  isTouched: false,
-  isError: false,
+  setTouched() {},
 });
 
-export function useField<Element extends HTMLElement>(props: {
-  onFocus?: (e: FocusEvent<Element>) => void;
-  onBlur?: (e: FocusEvent<Element>) => void;
-}) {
-  const ctx = useContext(FieldContext);
-
-  return {
-    ...ctx,
-    isTouched: ctx.isTouched,
-    isError: ctx.isError,
-    onFocus(e: FocusEvent<Element>) {
-      props.onFocus?.(e);
-      ctx.onFocus?.();
-    },
-    onBlur(e: FocusEvent<Element>) {
-      props.onBlur?.(e);
-      ctx.onBlur?.();
-    },
-  };
+export function useField() {
+  return useContext(FieldContext);
 }
 
 export type FieldProps = Omit<ComponentProps<"div">, "id"> & {
   id: string;
   label?: ReactNode;
+  required?: boolean;
   description?: ReactNode;
   error?: ReactNode;
 };
@@ -50,6 +32,7 @@ export type FieldProps = Omit<ComponentProps<"div">, "id"> & {
 export function Field({
   id,
   label,
+  required,
   description,
   error,
   className = "",
@@ -61,9 +44,9 @@ export function Field({
     <FieldContext.Provider
       value={{
         id,
+        required,
         isTouched,
-        isError: !!error,
-        onBlur() {
+        setTouched() {
           setIsTouched(true);
         },
       }}
@@ -75,6 +58,11 @@ export function Field({
         {label && (
           <label className={styles.Label} htmlFor={id}>
             {label}
+            {required && (
+              <IconControl size="s" color="red">
+                *
+              </IconControl>
+            )}
           </label>
         )}
 

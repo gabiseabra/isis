@@ -1,7 +1,9 @@
+@use "sass:map";
+
 $breakpoint-s: 450px;
 $breakpoint-m: 800px;
-$width-content: 800px;
-$width-modal: 600px;
+$width-narrow: 600px;
+$width-wide: 800px;
 // Min. offset from the content to the edge of the viewport
 $gutter-content: 20px;
 
@@ -23,8 +25,20 @@ $gutter-content: 20px;
   }
 }
 
-@mixin fit-content {
-  @media screen and (max-width: $width-content + ($gutter-content * 2)) {
+@mixin fit-content($width) {
+  $content-width: map.get(
+    (
+      narrow: $width-narrow,
+      wide: $width-wide,
+    ),
+    $width
+  );
+
+  @if $content-width == null {
+    @error "Invalid content width #{$width}";
+  }
+
+  @media screen and (max-width: $content-width + ($gutter-content * 2)) {
     @content;
   }
 }

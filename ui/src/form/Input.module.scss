@@ -75,6 +75,10 @@
   color: var(--color-primary);
 }
 
+.InputWrapper:has([data-touched]:invalid) {
+  border-color: var(--color-red);
+}
+
 .LeftSlot {
   padding-left: calc(var(--space) * 2);
 }

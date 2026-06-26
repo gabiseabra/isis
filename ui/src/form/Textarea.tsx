@@ -15,8 +15,8 @@ export function Textarea({
   value,
   ...props
 }: TextareaProps) {
-  const fieldProps = useField(props);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const field = useField();
 
   useEffect(() => {
     if (autoGrow && textareaRef.current) {
@@ -26,8 +26,10 @@ export function Textarea({
 
   return (
     <textarea
+      id={field.id}
+      required={field.required}
+      data-touched={field.isTouched || undefined}
       {...props}
-      {...fieldProps}
       ref={(element) => {
         textareaRef.current = element;
         if (ref instanceof Function) ref(element);
@@ -44,6 +46,10 @@ export function Textarea({
         }
 
         onInput?.(event);
+      }}
+      onBlur={(e) => {
+        props.onBlur?.(e);
+        field.setTouched();
       }}
     />
   );

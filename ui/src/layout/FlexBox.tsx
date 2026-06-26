@@ -10,6 +10,7 @@ export type RowProps = {
   wrap?: boolean;
   alignX?: CSSProperties["justifyContent"];
   alignY?: CSSProperties["alignItems"];
+  width?: "wide" | "narrow" | "auto" | number;
 } & css.PaddingProps &
   css.MarginProps &
   ComponentProps<"div">;
@@ -22,6 +23,7 @@ export function Row({
   wrap,
   alignX,
   alignY,
+  width,
   className = "",
   ...props
 }: RowProps) {
@@ -29,11 +31,13 @@ export function Row({
     <Component
       className={[styles.FlexBox, className].filter(Boolean).join(" ")}
       data-direction="row"
+      data-width={width}
       style={{
         flex,
         alignItems: alignY,
         justifyContent: alignX,
         gap: typeof gap === "number" ? css.space(gap) : undefined,
+        width: typeof width === "number" ? width : undefined,
         flexWrap: wrap ? "wrap" : undefined,
         ...css.getPaddingStyles(props),
         ...css.getMarginStyles(props),
@@ -49,6 +53,7 @@ export type ColProps = {
   flex?: number | string;
   alignX?: CSSProperties["alignItems"];
   alignY?: CSSProperties["justifyContent"];
+  width?: "wide" | "narrow" | "auto" | number;
   gap?: number;
 } & css.PaddingProps &
   css.MarginProps &
@@ -60,6 +65,7 @@ export function Col({
   gap,
   alignX,
   alignY,
+  width,
   className = "",
   style = {},
   ...props
@@ -68,11 +74,13 @@ export function Col({
     <Component
       className={[styles.FlexBox, className].filter(Boolean).join(" ")}
       data-direction="column"
+      data-width={width}
       style={{
         flex,
         alignItems: alignX,
         justifyContent: alignY,
         gap: typeof gap === "number" ? css.space(gap) : undefined,
+        width: typeof width === "number" ? width : undefined,
         ...css.getPaddingStyles(props),
         ...css.getMarginStyles(props),
         ...style,

@@ -1,6 +1,8 @@
+import "@isis/ui/styles/global.scss";
 import React from "react";
 import { createRoot } from "react-dom/client";
 import { createBrowserRouter, RouterProvider } from "react-router";
+import { RootProvider } from "./components/providers/RootProvider";
 import * as route from "./routes";
 
 const router = createBrowserRouter([route]);
@@ -12,6 +14,8 @@ if (!root) {
 
 createRoot(root).render(
   <React.StrictMode>
-    <RouterProvider router={router} />
+    <RootProvider>
+      <RouterProvider router={router} />
+    </RootProvider>
   </React.StrictMode>,
 );

@@ -53,7 +53,7 @@ export class UserRow {
     return await sql<UserRow>`
     select * from users
     where concat_ws(' ', name, email) ilike coalesce('%' || ${query.query ?? null}  || '%', '%')
-      and id = any(coalesce(${query.ids ?? []}, array[id]))
+      and id = any(coalesce(${(query.ids ?? null) as number[]}::bigint[], array[id]))
       and name = coalesce(${query.name ?? null}, name)
       and email = coalesce(${query.email ?? null}, email)
     limit ${query.limit}

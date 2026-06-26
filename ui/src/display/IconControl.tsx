@@ -5,7 +5,7 @@ import { MarginProps, PaddingProps } from "../utils/css";
 import styles from "./IconControl.module.scss";
 
 export type IconControlProps = {
-  as: "div" | "span" | "a" | "button";
+  as?: "div" | "span" | "a" | "button";
 
   size: "xs" | "s" | "m" | "l" | "xl" | "auto";
   color?: css.Color | "muted" | "currentColor";
@@ -25,7 +25,7 @@ export type IconControlProps = {
   MarginProps;
 
 export function IconControl({
-  as: Component,
+  as: Component = "span",
   size,
   color = "currentColor",
   badge,

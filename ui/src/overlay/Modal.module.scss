@@ -23,7 +23,7 @@
   transform: translate(-50%, -50%);
 
   box-sizing: border-box;
-  width: var(--width-modal);
+  width: var(--width-narrow);
   max-width: calc(100vw - var(--gutter-content) * 2);
   max-height: 90vh;
   overflow: hidden;

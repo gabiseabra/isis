@@ -67,7 +67,7 @@ export function Banner({
           </Text>
         )}
 
-        <div className={styles.Body}>{children}</div>
+        {children && <div className={styles.Body}>{children}</div>}
       </Col>
 
       {action}

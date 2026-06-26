@@ -7,7 +7,6 @@ import { Col, Row } from "../layout/FlexBox";
 import { Banner } from "./Banner";
 import { Spinner } from "./Spinner";
 import {
-  PageSuspenseBoundary,
   SuspenseBoundary,
   type SuspenseBoundaryProps,
 } from "./SuspenseBoundary";
@@ -70,7 +69,7 @@ function DemoResourceContent({
   return <Text color="muted">Choose a load path.</Text>;
 }
 
-function SuspenseBoundaryStory({ page = false }: { page?: boolean }) {
+function SuspenseBoundaryStory() {
   const [demo, setDemo] = useState<{
     key: number;
     mode: DemoMode | null;
@@ -109,47 +108,29 @@ function SuspenseBoundaryStory({ page = false }: { page?: boolean }) {
         <Button onClick={() => load(null)}>Reset</Button>
       </Row>
 
-      {page ? (
-        <Col style={{ height: 240 }}>
-          <PageSuspenseBoundary
-            key={demo.key}
-            resourceName="content"
-            onRetry={retry}
+      <SuspenseBoundary
+        key={demo.key}
+        loading={<Spinner size="m" />}
+        error={(error) => (
+          <Banner
+            type="error"
+            title="Unable to load content"
+            action={
+              <Button color="red" variant="link" onClick={retry}>
+                Retry
+              </Button>
+            }
           >
-            {content}
-          </PageSuspenseBoundary>
-        </Col>
-      ) : (
-        <SuspenseBoundary
-          key={demo.key}
-          loading={<Spinner size="m" />}
-          error={(error) => (
-            <Banner
-              type="error"
-              title="Unable to load content"
-              action={
-                <Button color="red" variant="link" onClick={retry}>
-                  Retry
-                </Button>
-              }
-            >
-              {error instanceof globalThis.Error
-                ? error.message
-                : String(error)}
-            </Banner>
-          )}
-        >
-          {content}
-        </SuspenseBoundary>
-      )}
+            {error instanceof globalThis.Error ? error.message : String(error)}
+          </Banner>
+        )}
+      >
+        {content}
+      </SuspenseBoundary>
     </Col>
   );
 }
 
 export const Default: Story = {
   render: () => <SuspenseBoundaryStory />,
-};
-
-export const PageLoader: Story = {
-  render: () => <SuspenseBoundaryStory page />,
 };

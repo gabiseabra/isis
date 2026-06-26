@@ -10,14 +10,20 @@ export type CheckboxProps = ComponentProps<typeof CheckboxPrimitive.Root> & {
 };
 
 export function Checkbox({ className, label, ...props }: CheckboxProps) {
-  const fieldProps = useField(props);
+  const field = useField();
 
   return (
     <Row alignY="center" className={styles.Checkbox}>
       <CheckboxPrimitive.Root
         className={[styles.Root, className].filter(Boolean).join(" ")}
+        id={field.id}
+        required={field.required}
+        data-touched={field.isTouched || undefined}
         {...props}
-        {...fieldProps}
+        onBlur={(e) => {
+          props.onBlur?.(e);
+          field.setTouched();
+        }}
       >
         <CheckboxPrimitive.Indicator className={styles.Indicator}>
           <GiCheckMark />

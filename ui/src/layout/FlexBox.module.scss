@@ -10,3 +10,18 @@
 .FlexBox[data-direction="column"] {
   flex-direction: column;
 }
+
+.FlexBox[data-width="auto"] {
+  width: auto;
+  box-sizing: border-box;
+}
+
+.FlexBox[data-width="wide"] {
+  width: min(var(--width-wide), calc(100vw - var(--gutter-content) * 2));
+  box-sizing: border-box;
+}
+
+.FlexBox[data-width="narrow"] {
+  width: min(var(--width-narrow), calc(100% - var(--gutter-content) * 2));
+  box-sizing: border-box;
+}

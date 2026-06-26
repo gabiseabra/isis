@@ -52,6 +52,10 @@
   resize: none;
 }
 
+.Textarea[data-touched]:invalid {
+  border-color: var(--color-red);
+}
+
 @media (prefers-reduced-motion: reduce) {
   .Textarea,
   .Textarea::placeholder {
