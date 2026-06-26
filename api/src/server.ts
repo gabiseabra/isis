@@ -16,7 +16,7 @@ async function createServer() {
 
   const server = app.listen(process.env.API_PORT, () => {
     console.log(
-      `Running a API server on http://localhost:${process.env.API_PORT ?? 6666}`,
+      `Running a API server on http://localhost:${process.env.API_PORT ?? 6660}`,
     );
   });
 

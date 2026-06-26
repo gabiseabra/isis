@@ -11,9 +11,21 @@
       "types": "./src/display/*.tsx",
       "default": "./src/display/*.tsx"
     },
+    "./feedback/*": {
+      "types": "./src/feedback/*.tsx",
+      "default": "./src/feedback/*.tsx"
+    },
+    "./form/*": {
+      "types": "./src/form/*.tsx",
+      "default": "./src/form/*.tsx"
+    },
     "./layout/*": {
       "types": "./src/layout/*.tsx",
       "default": "./src/layout/*.tsx"
+    },
+    "./overlay/*": {
+      "types": "./src/overlay/*.tsx",
+      "default": "./src/overlay/*.tsx"
     },
     "./utils/*": {
       "types": "./src/utils/*.ts",

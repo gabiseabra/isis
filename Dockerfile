@@ -18,7 +18,7 @@ FROM base AS build
 
 # Install packages needed to build node modules
 RUN apt-get update -qq && \
-    apt-get install --no-install-recommends -y build-essential ca-certificates git node-gyp pkg-config python-is-python3
+  apt-get install --no-install-recommends -y build-essential ca-certificates git node-gyp pkg-config python-is-python3
 
 # Install node modules
 COPY package-lock.json package.json ./
@@ -49,5 +49,5 @@ FROM base
 COPY --from=build /app /app
 
 # Start the server by default, this can be overwritten at runtime
-EXPOSE 6666
+EXPOSE 6660
 CMD [ "npm", "run", "start", "-w", "api" ]
