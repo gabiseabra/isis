@@ -1,8 +1,14 @@
 @use "../../styles/mixins/color" as color;
+@use "../../styles/mixins/shadow" as shadow;
 
 .Root {
+  --icon-size: 24px;
   --icon-color: currentColor;
-  --icon-background: var(--color-surface);
+  --icon-bg: transparent;
+  --icon-active-bg: #00000010;
+  --icon-badge-size: 14px;
+  --icon-badge-color: var(--color-highlight);
+  --icon-badge-bg: var(--bg-highlight);
 
   position: relative;
 
@@ -11,13 +17,15 @@
   align-items: center;
   flex-shrink: 0;
 
+  font-weight: 500;
+  font-family: var(--font-body);
   font-size: var(--icon-size);
   line-height: var(--icon-size);
   padding: 0;
 
-  background: transparent;
   border: none;
   color: var(--icon-color);
+  background: var(--icon-bg);
 
   width: var(--icon-size);
   height: var(--icon-size);
@@ -48,10 +56,12 @@
   min-width: var(--icon-badge-size);
   width: auto;
   border-radius: calc(var(--icon-badge-size) / 2);
-  background: var(--icon-color);
-  color: var(--icon-background);
-  font-size: calc(var(--icon-badge-size) * 0.85);
+  background: var(--icon-badge-bg);
+  color: var(--icon-badge-color);
+  font-size: calc(var(--icon-badge-size) * 0.8);
   line-height: 1;
+
+  @include shadow.boxShadow(1, 1.5);
 }
 
 .Root[data-clickable] {
@@ -101,7 +111,7 @@
 }
 
 .Root[data-size="auto"] {
-  --icon-badge-size: 33.333%;
+  --icon-badge-size: 45%;
 
   width: auto;
   height: 100%;
@@ -109,6 +119,13 @@
 
   font-size: inherit;
   line-height: 1;
+
+  & > .Badge {
+    border-radius: 50%;
+    line-height: 100%;
+    font-size: 100%;
+    transform: translate(0, 0);
+  }
 }
 
 tr:has(> td > .Root[data-size="auto"]) {
@@ -127,6 +144,6 @@ button.Root {
 
   &:not(:disabled):hover,
   &:not(:disabled)[data-pressed] {
-    background-color: #00000010;
+    background: var(--icon-active-bg);
   }
 }

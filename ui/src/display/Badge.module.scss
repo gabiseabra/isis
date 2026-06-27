@@ -3,15 +3,16 @@
 .Badge {
   display: inline-flex;
   align-items: center;
-  justify-self: baseline;
-  align-self: baseline;
+  // justify-self: baseline;
+  // align-self: baseline;
 
   padding: calc(var(--badge-space) * 0.75) var(--badge-space);
   font-size: var(--badge-size);
   line-height: var(--badge-size);
   border-radius: var(--radius);
   font-family: var(--font-body);
-  font-weight: normal;
+  font-weight: 500;
+  // font-family: var(--font-monospace);
 }
 
 @each $name, $_ in color.$colors-codes {
