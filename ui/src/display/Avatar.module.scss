@@ -10,7 +10,7 @@
 }
 
 .Root[data-status="loading"] {
-  background: color-mix(in srgb, var(--color-muted) 15%, var(--color-surface));
+  background: var(--color-surface-2);
   color: transparent;
 
   &::after {
@@ -20,7 +20,7 @@
     background: linear-gradient(
       90deg,
       transparent,
-      color-mix(in srgb, var(--color-surface) 25%, transparent),
+      color-mix(in srgb, var(--color-surface-0) 40%, transparent),
       transparent
     );
     transform: translateX(-100%);

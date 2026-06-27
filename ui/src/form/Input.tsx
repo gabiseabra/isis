@@ -2,17 +2,24 @@ import { type ComponentProps, type ReactNode } from "react";
 import { useField } from "./Field";
 import styles from "./Input.module.scss";
 
-export type InputProps = ComponentProps<"input"> & {
+export type InputProps = Omit<ComponentProps<"input">, "size"> & {
+  size?: "s" | "m" | "l";
   left?: ReactNode;
   right?: ReactNode;
   onChangeValue?: (value: string) => void;
 };
 
-export function Input({ className = "", left, right, ...props }: InputProps) {
+export function Input({
+  size = "m",
+  className = "",
+  left,
+  right,
+  ...props
+}: InputProps) {
   const field = useField();
 
   return (
-    <span className={styles.InputWrapper}>
+    <span className={styles.InputWrapper} data-size={size}>
       {!!left && (
         <span className={[styles.Slot, styles.LeftSlot].join(" ")}>{left}</span>
       )}

@@ -60,6 +60,7 @@ export function Banner({
             as="h3"
             size="body"
             color="currentColor"
+            font="sans-serif"
             className={styles.Title}
             m={0}
           >

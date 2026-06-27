@@ -11,7 +11,7 @@
   overflow: visible;
   border: 1px solid var(--color-divider);
   border-radius: calc(var(--radius) * 1.25);
-  background: var(--color-surface);
+  background: var(--color-surface-0);
   color: var(--color-text);
   transform-origin: var(--radix-popover-content-transform-origin);
   @include shadow.dropShadow(1.5);
@@ -33,7 +33,7 @@
     --popover-tip-height: 5px;
     border: 0;
     background: rgb(21 20 30 / 64%);
-    color: var(--color-surface);
+    color: var(--color-surface-0);
     -webkit-backdrop-filter: blur(12px);
     backdrop-filter: blur(12px);
   }
@@ -52,8 +52,8 @@
   display: block;
   width: var(--popover-tip-width);
   height: var(--popover-tip-height);
-  fill: var(--color-surface);
-  filter: drop-shadow(0 -1px 0 var(--color-surface));
+  fill: var(--color-surface-0);
+  filter: drop-shadow(0 -1px 0 var(--color-surface-0));
   pointer-events: none;
   stroke: var(--color-divider);
   stroke-dasharray: 0 30 100;

@@ -7,7 +7,7 @@
 
   position: relative;
   min-width: var(--nav-width);
-  background: var(--color-surface);
+  background: var(--color-surface-0);
   padding: var(--space);
 
   @include shadow.dropShadow(2, 0.5);
@@ -24,8 +24,8 @@
   right: 0;
   transform: translateX(50%);
 
-  --icon-bg: var(--color-surface);
-  --icon-active-bg: color-mix(in srgb, var(--color-surface) 80%, white);
+  --icon-bg: var(--color-surface-1);
+  --icon-active-bg: var(--color-surface-0);
   border: 1px solid var(--color-divider);
 
   opacity: 0;

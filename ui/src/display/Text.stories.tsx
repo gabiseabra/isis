@@ -24,7 +24,14 @@ const textColors = [
   "disabled",
   "link",
 ] as const;
-const textFonts = ["body", "heading", "subheading", "monospace"] as const;
+const textFonts = [
+  "body",
+  "heading",
+  "subheading",
+  "monospace",
+  "serif",
+  "sans-serif",
+] as const;
 
 const meta: Meta<TextStoryArgs> = {
   title: "Display/Text",

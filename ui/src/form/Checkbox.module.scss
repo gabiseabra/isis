@@ -14,7 +14,7 @@
   aspect-ratio: 1;
   border: 1px solid color-mix(in srgb, var(--color-divider) 75%, transparent);
   border-radius: calc(var(--radius) / 2);
-  background: var(--color-surface);
+  background: var(--color-surface-0);
   cursor: pointer;
   transition: all 140ms ease-out;
   color: var(--bg-primary);
@@ -42,9 +42,9 @@
   }
 
   &:disabled {
-    color: var(--color-surface);
+    color: var(--color-surface-0);
     border-color: color-mix(in srgb, var(--color-divider) 75%, transparent);
-    background: var(--color-surface);
+    background: var(--color-surface-1);
     cursor: not-allowed;
   }
 

@@ -1,7 +1,11 @@
 import type { Meta, StoryObj } from "@storybook/react";
+import { BiSearch } from "react-icons/bi";
 import { useSessionStorage } from "usehooks-ts";
 import { Badge } from "../display/Badge";
 import { Text } from "../display/Text";
+import { EmptyState } from "../feedback/EmptyState";
+import { Input } from "../form/Input";
+import { Row } from "./FlexBox";
 import { Table, type TableProps } from "./Table";
 
 const columns = ["name", "email", "role"] as const;
@@ -54,7 +58,7 @@ export const Default: Story = {
   ),
 };
 
-export const WithHeader: Story = {
+export const WithColumnHeader: Story = {
   render: () => (
     <Table
       columns={columns}
@@ -62,6 +66,39 @@ export const WithHeader: Story = {
       getId={(row) => row.id}
       cell={demoCell}
       headerCell={(col) => <Table.Label>{col}</Table.Label>}
+    />
+  ),
+};
+
+export const WithHeaderAndFooter: Story = {
+  render: () => (
+    <Table
+      columns={columns}
+      rows={rows}
+      getId={(row) => row.id}
+      cell={demoCell}
+      headerCell={(col) => <Table.Label>{col}</Table.Label>}
+      header={<Input size="s" left={<BiSearch />} />}
+      footer={
+        <Text align="center" size="caption">
+          3 results
+        </Text>
+      }
+    />
+  ),
+};
+
+export const WithEmptyState: Story = {
+  render: () => (
+    <Table
+      columns={columns}
+      rows={[]}
+      getId={(row) => row.id}
+      cell={demoCell}
+      headerCell={(col) => <Table.Label>{col}</Table.Label>}
+      emptyState={
+        <EmptyState py={2} size="l" icon={<BiSearch />} title="No results" />
+      }
     />
   ),
 };
@@ -78,7 +115,7 @@ function TableWithResizableHeaderStory() {
       columns={columns}
       rows={rows}
       cell={demoCell}
-      header={(table) => (
+      thead={(table) => (
         <Table.ResizableHeader
           table={table}
           columns={columnsState}

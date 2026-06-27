@@ -10,8 +10,9 @@
 
   /* surface colors */
 
-  --color-surface: #fafafa;
-  --color-background: #e3e3e3;
+  --color-surface-0: #fcfcfc;
+  --color-surface-1: #f7f7fa;
+  --color-surface-2: #efeff3;
   --color-shadow: rgba(21, 20, 30, 0.2);
 
   /* text colors */
@@ -24,7 +25,7 @@
   --color-link: #3928bb;
   // selected text colors
   --color-highlight: rgb(41, 102, 231);
-  --bg-highlight: rgb(228, 243, 255);
+  --bg-highlight: rgba(228, 243, 255, 50%);
 
   /* notion colors */
 

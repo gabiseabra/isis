@@ -30,7 +30,7 @@ export function Checkbox({ className, label, ...props }: CheckboxProps) {
         </CheckboxPrimitive.Indicator>
       </CheckboxPrimitive.Root>
       {label && (
-        <label className={styles.Label} htmlFor={fieldProps.id ?? props.id}>
+        <label className={styles.Label} htmlFor={field.id ?? props.id}>
           {label}
         </label>
       )}

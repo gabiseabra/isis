@@ -92,6 +92,14 @@
   font-family: var(--font-monospace);
 }
 
+.Text[data-font="serif"] {
+  font-family: var(--font-serif);
+}
+
+.Text[data-font="sans-serif"] {
+  font-family: var(--font-sans-serif);
+}
+
 // Indents
 @for $i from 1 through 4 {
   .Text[data-indent="#{$i}"] {

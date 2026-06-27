@@ -14,6 +14,7 @@
   white-space: nowrap;
   cursor: pointer;
   user-select: none;
+  font-family: var(--font-sans-serif);
   transition:
     background-color 150ms ease-out,
     border-color 150ms ease-out,
@@ -57,7 +58,7 @@
 .Button[data-variant="primary"] {
   border-color: var(--button-color);
   background: var(--button-color);
-  color: color-mix(in srgb, var(--color-surface) 80%, var(--button-bg));
+  color: color-mix(in srgb, var(--color-surface-0) 80%, var(--button-bg));
 
   &:not(:disabled):hover {
     background: color-mix(in srgb, var(--button-color) 85%, var(--button-bg));
@@ -71,14 +72,14 @@
   &:disabled {
     border-color: var(--color-disabled);
     background: var(--color-disabled);
-    color: var(--color-surface);
+    color: var(--color-surface-0);
     cursor: not-allowed;
   }
 }
 
 .Button[data-variant="secondary"] {
   border-color: var(--color-divider);
-  background: var(--color-surface);
+  background: var(--color-surface-0);
   color: var(--button-color);
 
   &:not(:disabled):hover {
@@ -87,7 +88,11 @@
       var(--button-color) 75%,
       var(--color-divider)
     );
-    background: color-mix(in srgb, var(--button-bg) 25%, var(--color-surface));
+    background: color-mix(
+      in srgb,
+      var(--button-bg) 25%,
+      var(--color-surface-0)
+    );
   }
 
   &:not(:disabled):active,
@@ -97,12 +102,16 @@
       var(--button-color) 85%,
       var(--color-divider)
     );
-    background: color-mix(in srgb, var(--button-bg) 40%, var(--color-surface));
+    background: color-mix(
+      in srgb,
+      var(--button-bg) 40%,
+      var(--color-surface-0)
+    );
   }
 
   &:disabled {
     border-color: var(--color-divider);
-    background: var(--color-surface);
+    background: var(--color-surface-0);
     color: var(--color-disabled);
     cursor: not-allowed;
   }
@@ -114,12 +123,20 @@
   color: var(--button-color);
 
   &:not(:disabled):hover {
-    background: color-mix(in srgb, var(--button-bg) 25%, var(--color-surface));
+    background: color-mix(
+      in srgb,
+      var(--button-bg) 25%,
+      var(--color-surface-0)
+    );
   }
 
   &:not(:disabled):active,
   &:not(:disabled)[data-pressed] {
-    background: color-mix(in srgb, var(--button-bg) 40%, var(--color-surface));
+    background: color-mix(
+      in srgb,
+      var(--button-bg) 40%,
+      var(--color-surface-0)
+    );
   }
 
   &[data-color="default"]:not(:disabled):hover,
@@ -174,7 +191,7 @@
 
 .Button[data-color="default"] {
   --button-color: var(--color-text);
-  --button-bg: var(--color-background);
+  --button-bg: var(--color-surface-1);
 }
 
 .Button[data-color="currentColor"] {

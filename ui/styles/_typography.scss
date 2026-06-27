@@ -1,7 +1,8 @@
-@import url("https://fonts.googleapis.com/css2?family=Source+Code+Pro:ital,wght@0,200..900;1,200..900&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Ovo:ital,wght@0,200..900&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Limelight&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Goudy+Bookletter+1911&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=PT+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Inconsolata:wght@200..900&display=swap");
 
 :root {
   /* global text size & spacing variables */
@@ -13,10 +14,12 @@
   --paragraph-margin: 0.75em;
   --indentation: 1em;
 
-  --font-body: "Ovo", serif;
+  --font-body: "Ovo", Times, serif;
   --font-heading: "Limelight", "Times New Roman", Times, serif;
   --font-subheading: "Goudy Bookletter 1911", serif;
-  --font-monospace: "Source Code Pro", Courier, monospace;
+  --font-serif: "Ovo", Times, serif;
+  --font-sans-serif: "PT Sans", sans-serif;
+  --font-monospace: "Inconsolata", Courier, monospace;
 
   /* more heading options */
 

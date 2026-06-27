@@ -1,13 +1,17 @@
 @use "../../styles/mixins/shadow" as shadow;
 
 .InputWrapper {
+  --input-height: var(--line-height);
+  --input-padding-x: calc(var(--space) * 2);
+  --input-padding-y: var(--space);
+
   display: inline-flex;
   align-items: center;
   box-sizing: border-box;
   width: 100%;
   border: 1px solid var(--color-divider);
   border-radius: var(--radius);
-  background: var(--color-surface);
+  background: var(--color-surface-0);
   transition:
     border-color 150ms ease-out,
     box-shadow 300ms ease-out;
@@ -43,8 +47,8 @@
   background: transparent;
   color: currentColor;
   font: inherit;
-  line-height: var(--line-height);
-  padding: var(--space) calc(var(--space) * 2);
+  line-height: var(--input-height);
+  padding: var(--input-padding-y) var(--input-padding-x);
 
   &:focus {
     outline: none;
@@ -93,4 +97,19 @@
   .Slot {
     transition: none;
   }
+}
+
+.InputWrapper[data-size="s"] {
+  --input-height: calc(var(--line-height) * 0.75);
+  --input-padding-y: calc(var(--space) * 0.75);
+}
+
+.InputWrapper[data-size="m"] {
+  --input-height: var(--line-height);
+  --input-padding-y: var(--space);
+}
+
+.InputWrapper[data-size="l"] {
+  --input-height: calc(var(--line-height) * 1.25);
+  --input-padding-y: var(--space);
 }

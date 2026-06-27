@@ -23,7 +23,13 @@ type TextColor = css.Color | "disabled" | "muted" | "link" | "currentColor";
 
 type TextSize = "caption" | "body" | "h1" | "h2" | "h3" | "h4" | "h5";
 
-type TextFont = "body" | "heading" | "subheading" | "monospace";
+type TextFont =
+  | "body"
+  | "heading"
+  | "subheading"
+  | "monospace"
+  | "serif"
+  | "sans-serif";
 
 /**
  * A block element meant for wrapping around text.

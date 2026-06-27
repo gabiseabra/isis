@@ -2,10 +2,10 @@ import { ReactNode } from "react";
 import { BiSearch } from "react-icons/bi";
 import { IconControl } from "../display/IconControl";
 import { Text } from "../display/Text";
-import { Col } from "../layout/FlexBox";
+import { Col, ColProps } from "../layout/FlexBox";
 import { Color } from "../utils/css";
 
-export type EmptyStateProps = {
+export type EmptyStateProps = ColProps & {
   color?: Color | "muted";
   size: "m" | "l";
   icon?: ReactNode;
@@ -19,9 +19,10 @@ export function EmptyState({
   icon = <BiSearch />,
   title,
   children,
+  ...props
 }: EmptyStateProps) {
   return (
-    <Col alignX="center" gap={2}>
+    <Col alignX="center" gap={2} {...props}>
       {icon && (
         <IconControl
           as="div"

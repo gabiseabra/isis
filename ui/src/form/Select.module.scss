@@ -11,7 +11,7 @@
   padding: 0 calc(var(--space) * 2);
   border: 1px solid var(--color-divider);
   border-radius: var(--radius);
-  background: var(--color-surface);
+  background: var(--color-surface-0);
   color: var(--color-text);
   font: inherit;
   cursor: pointer;
@@ -69,7 +69,7 @@
   transform-origin: var(--radix-popper-transform-origin);
   border: 1px solid var(--color-divider);
   border-radius: var(--radius);
-  background: var(--color-surface);
+  background: var(--color-surface-0);
   @include shadow.boxShadow(3);
 
   &[data-state="open"] {
@@ -107,17 +107,18 @@
     color 150ms ease-out;
   outline: 0 solid transparent;
 
-  &[data-active],
   &:hover {
-    background: color-mix(in srgb, var(--bg-primary) 50%, var(--color-surface));
-    color: var(--color-primary);
+    background: var(--color-surface-1);
+  }
+
+  &[data-active] {
+    background: var(--bg-highlight);
+    color: var(--color-highlight);
   }
 
   &:focus {
-    outline: 1px solid var(--color-primary);
+    outline: 1px solid var(--color-highlight);
     outline-offset: 2px;
-    box-shadow: 0 0 3px 0 inset
-      color-mix(in srgb, var(--color-primary) 25%, transparent);
   }
 
   &[data-disabled] {

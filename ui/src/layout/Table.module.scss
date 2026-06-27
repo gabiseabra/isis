@@ -10,27 +10,25 @@
 
 .Root[data-variant="default"] {
   border: 1px solid var(--color-divider);
-  border-radius: var(--radius);
-  background: var(--color-surface);
+  border-radius: calc(var(--radius) * 1.5);
+  background: var(--color-surface-0);
 }
 
 .Root[data-variant="default"] th,
 .Root[data-variant="default"] td {
   box-sizing: border-box;
-  padding: var(--space) calc(var(--space) * 2);
+  padding: var(--space);
   border-bottom: 1px solid var(--color-divider);
   text-align: left;
   vertical-align: middle;
 }
 
 .Root[data-variant="default"] th {
-  background: color-mix(
-    in srgb,
-    var(--color-background) 35%,
-    var(--color-surface)
-  );
-  color: var(--color-muted);
-  font-weight: 600;
+  font-weight: unset;
+}
+
+.Root[data-variant="default"] .ColHeader {
+  background: var(--color-surface-2);
   white-space: nowrap;
 }
 
@@ -38,30 +36,41 @@
   border-bottom: 0;
 }
 
-.Root[data-variant="default"] tbody tr:hover td {
-  background: color-mix(in srgb, var(--bg-highlight) 24%, transparent);
+.Root[data-variant="default"]:not([data-empty]) tbody tr:hover td {
+  background: var(--bg-highlight);
 }
 
-.Root[data-variant="default"] thead > tr > *:first-child {
+.Root[data-variant="default"] thead > tr:first-child > *:first-child {
   overflow: hidden;
   border-top-left-radius: var(--radius);
 }
-.Root[data-variant="default"] thead > tr > *:last-child {
+.Root[data-variant="default"] thead > tr:first-child > *:last-child {
   overflow: hidden;
   border-top-right-radius: var(--radius);
 }
 
-.Root[data-variant="default"] tfoot > tr > *:first-child {
+.Root[data-variant="default"] tfoot > tr:last-child > *:first-child {
   overflow: hidden;
   border-bottom-left-radius: var(--radius);
 }
 
-.Root[data-variant="default"] tfoot > tr > *:last-child {
+.Root[data-variant="default"] tfoot > tr:last-child > *:last-child {
   overflow: hidden;
   border-bottom-right-radius: var(--radius);
+}
+
+.Root[data-variant="default"] tfoot > tr:first-child > * {
+  border-top: 1px solid var(--color-divider);
+}
+.Root[data-variant="default"] tfoot > tr:last-child > * {
+  border-bottom: none;
 }
 
 .Root th[data-index],
 .Root td[data-index] {
   width: 0;
+}
+
+.Root thead > * {
+  width: 100%;
 }

@@ -144,7 +144,13 @@ export function Toast({
       <Col className={styles.Content} my={1}>
         {title && (
           <RxToast.Title className={styles.Title} asChild>
-            <Text as="h3" size="body" color="currentColor" m={0}>
+            <Text
+              as="h3"
+              size="body"
+              color="currentColor"
+              font="sans-serif"
+              m={0}
+            >
               {title}
             </Text>
           </RxToast.Title>

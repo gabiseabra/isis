@@ -47,7 +47,7 @@ export function Avatar({
           />
         )}
         <AvatarPrimitive.Fallback asChild>
-          <Text as="div" color="currentColor" font="subheading">
+          <Text as="div" color="currentColor" font="sans-serif">
             {fallback}
           </Text>
         </AvatarPrimitive.Fallback>

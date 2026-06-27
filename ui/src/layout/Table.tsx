@@ -25,6 +25,9 @@ export type TableProps<Row, Col> = ComponentProps<"table"> & {
   rowGap?: number;
 
   // slots
+  emptyState?: Slot<(table: Table<Row, Col>) => ReactNode>;
+  thead?: Slot<(table: Table<Row, Col>) => ReactNode>;
+  tfoot?: Slot<(table: Table<Row, Col>) => ReactNode>;
   header?: Slot<(table: Table<Row, Col>) => ReactNode>;
   headerCell?: Slot<(col: Col, table: Table<Row, Col>) => ReactNode>;
   footer?: Slot<(table: Table<Row, Col>) => ReactNode>;
@@ -42,6 +45,9 @@ export function Table<Row, Col extends ID>({
   colGap = gap,
   rowGap = gap,
 
+  emptyState,
+  thead,
+  tfoot,
   header,
   headerCell,
   footer,
@@ -54,9 +60,12 @@ export function Table<Row, Col extends ID>({
 }: TableProps<Row, Col>) {
   const table = { rows, columns };
 
+  const colSpan = columns.length + (index ? 1 : 0);
+
   return (
     <table
       data-variant={variant}
+      data-empty={rows.length === 0 ? true : undefined}
       className={[styles.Root, className].filter(Boolean).join(" ")}
       style={{
         borderSpacing:
@@ -67,9 +76,18 @@ export function Table<Row, Col extends ID>({
       }}
       {...props}
     >
-      {(header || headerCell) && (
+      {(thead || header || headerCell) && (
         <thead>
-          {header && Slot.render(header, table)}
+          {Slot.render(thead, table)}
+
+          {header && (
+            <Table.Row>
+              <Table.Cell as="th" colSpan={colSpan}>
+                {Slot.render(header, table)}
+              </Table.Cell>
+            </Table.Row>
+          )}
+
           {headerCell && (
             <Table.Header
               table={table}
@@ -81,25 +99,45 @@ export function Table<Row, Col extends ID>({
       )}
 
       <tbody>
-        {table.rows.map((row, i) => {
-          return (
-            <Table.Row key={getId(row, i)}>
-              {index && (
-                <Table.Cell as="th" data-index>
-                  {Slot.render(index, row, i, table)}
-                </Table.Cell>
-              )}
-              {table.columns.map((col) => (
-                <Table.Cell key={col}>
-                  {Slot.render(cell, row, col, table)}
-                </Table.Cell>
-              ))}
-            </Table.Row>
-          );
-        })}
+        {table.rows.length === 0 && emptyState ? (
+          <Table.Row>
+            <Table.Cell as="td" colSpan={colSpan}>
+              {Slot.render(emptyState, table)}
+            </Table.Cell>
+          </Table.Row>
+        ) : (
+          table.rows.map((row, i) => {
+            return (
+              <Table.Row key={getId(row, i)}>
+                {index && (
+                  <Table.Cell as="th" data-index>
+                    {Slot.render(index, row, i, table)}
+                  </Table.Cell>
+                )}
+                {table.columns.map((col) => (
+                  <Table.Cell key={col}>
+                    {Slot.render(cell, row, col, table)}
+                  </Table.Cell>
+                ))}
+              </Table.Row>
+            );
+          })
+        )}
       </tbody>
 
-      {footer && <tfoot>{Slot.render(footer, table)}</tfoot>}
+      {(tfoot || footer) && (
+        <tfoot>
+          {Slot.render(tfoot, table)}
+
+          {footer && (
+            <Table.Row>
+              <Table.Cell as="td" colSpan={colSpan}>
+                {Slot.render(footer, table)}
+              </Table.Cell>
+            </Table.Row>
+          )}
+        </tfoot>
+      )}
     </table>
   );
 }
@@ -122,8 +160,8 @@ Table.Row = function TableRow(props: TableRowProps) {
 
 Table.Label = function TableLabel({ children, ...props }: TextProps) {
   return (
-    <Text size="caption" font="monospace" color="muted" {...props}>
-      <Span bold>{children}</Span>
+    <Text size="caption" font="sans-serif" color="muted" {...props}>
+      {children}
     </Text>
   );
 };
@@ -143,10 +181,14 @@ Table.Header = function TableHeader<Row, Col extends ID>({
   left,
   right,
   cell = (col) => <Table.Label>{col}</Table.Label>,
+  className,
   ...props
 }: TableHeaderProps<Row, Col>) {
   return (
-    <Table.Row {...props}>
+    <Table.Row
+      className={[styles.ColHeader, className].filter(Boolean).join(" ")}
+      {...props}
+    >
       {left}
       {table.columns.map((col) => (
         <Table.Cell as="th" key={col}>
@@ -170,10 +212,14 @@ Table.ResizableHeader = function ResizableTableHeader<Row, Col extends string>({
   onResize,
   left,
   right,
+  className,
   ...props
 }: ResizableTableHeaderProps<Row, Col>) {
   return (
-    <Table.Row {...props}>
+    <Table.Row
+      className={[styles.ColHeader, className].filter(Boolean).join(" ")}
+      {...props}
+    >
       {left}
       {table.columns.map((col) => {
         const resizable = resizableColumns.find(({ key }) => key === col);

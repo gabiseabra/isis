@@ -28,7 +28,7 @@
   max-height: 90vh;
   overflow: hidden;
   border-radius: calc(var(--radius) * 1.5);
-  background: var(--color-surface);
+  background: var(--color-surface-0);
   @include shadow.boxShadow(5);
 
   display: flex;
