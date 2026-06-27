@@ -9,6 +9,9 @@ export type IconControlProps = {
 
   size: "xs" | "s" | "m" | "l" | "xl" | "auto";
   color?: css.Color | "muted" | "currentColor";
+  radius?: number | `${number}%`;
+  height?: number | string;
+  width?: number | string;
 
   badge?: string;
 
@@ -28,6 +31,9 @@ export function IconControl({
   as: Component = "span",
   size,
   color = "currentColor",
+  radius,
+  width,
+  height,
   badge,
   children,
   className,
@@ -42,6 +48,9 @@ export function IconControl({
     <Component
       className={[className, styles.Root].filter(Boolean).join(" ")}
       style={{
+        borderRadius: typeof radius === "number" ? css.radius(radius) : radius,
+        height,
+        width,
         ...style,
         ...css.getPaddingStyles(props),
         ...css.getMarginStyles(props),

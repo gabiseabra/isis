@@ -3,7 +3,7 @@ import { HTMLAttributes } from "react";
 import * as css from "../utils/css";
 import styles from "./Divider.module.scss";
 
-type DividerProps = {
+export type DividerProps = {
   direction: "x" | "y" | "both";
 } & Omit<HTMLAttributes<HTMLElement>, "children"> &
   css.MarginProps &
