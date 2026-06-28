@@ -20,12 +20,14 @@ const NavContext = createContext<NavContext>({
 });
 
 export type NavProps = ComponentProps<"nav"> & {
+  collapsible?: boolean;
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
   footer?: ReactNode;
 };
 
 export function Nav({
+  collapsible,
   open: controlledOpen,
   onOpenChange,
   footer,
@@ -44,19 +46,21 @@ export function Nav({
         className={[styles.Nav, className].filter(Boolean).join(" ")}
         {...props}
       >
-        <IconControl
-          as="button"
-          size="s"
-          radius={1}
-          title={open ? "Abrir menu" : "Fechar menu"}
-          className={styles.CollapseButton}
-          onClick={() => {
-            setLocalOpen(!open);
-            onOpenChange?.(!open);
-          }}
-        >
-          <BiChevronLeft />
-        </IconControl>
+        {collapsible && (
+          <IconControl
+            as="button"
+            size="s"
+            radius={1}
+            title={open ? "Abrir menu" : "Fechar menu"}
+            className={styles.CollapseButton}
+            onClick={() => {
+              setLocalOpen(!open);
+              onOpenChange?.(!open);
+            }}
+          >
+            <BiChevronLeft />
+          </IconControl>
+        )}
 
         <Col alignY="space-between" style={{ height: "100%" }}>
           <Col className={styles.Content}>{children}</Col>

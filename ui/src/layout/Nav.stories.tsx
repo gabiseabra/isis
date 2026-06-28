@@ -80,6 +80,7 @@ export default meta;
 export const Default: Story = {
   render: () => (
     <Nav
+      collapsible
       footer={
         <Nav.Link
           size="l"

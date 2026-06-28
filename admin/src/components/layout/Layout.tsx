@@ -22,6 +22,7 @@ export function Layout({ children }: { children: ReactNode }) {
   return (
     <>
       <Nav
+        collapsible={!!userQuery.data}
         open={!!userQuery.data && navOpen}
         onOpenChange={setNavOpen}
         footer={
