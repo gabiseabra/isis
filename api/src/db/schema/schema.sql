@@ -33,6 +33,190 @@ SET default_tablespace = '';
 SET default_table_access_method = heap;
 
 --
+-- Name: authors; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.authors (
+    id bigint NOT NULL,
+    name text NOT NULL,
+    image_url text,
+    country_code character(2),
+    birth_year smallint,
+    death_year smallint,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    updated_at timestamp with time zone DEFAULT now() NOT NULL
+);
+
+
+--
+-- Name: authors_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+ALTER TABLE public.authors ALTER COLUMN id ADD GENERATED ALWAYS AS IDENTITY (
+    SEQUENCE NAME public.authors_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- Name: book_authors; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.book_authors (
+    book_id bigint NOT NULL,
+    author_id bigint NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL
+);
+
+
+--
+-- Name: book_genres; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.book_genres (
+    book_id bigint NOT NULL,
+    genre_id bigint NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL
+);
+
+
+--
+-- Name: book_languages; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.book_languages (
+    book_id bigint NOT NULL,
+    language_code character(2) NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL
+);
+
+
+--
+-- Name: books; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.books (
+    id bigint NOT NULL,
+    title text NOT NULL,
+    slug character varying(255) NOT NULL,
+    isbn13 character(13),
+    isbn10 character(10),
+    image_url text,
+    publish_year smallint,
+    publisher_id bigint,
+    created_by bigint,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    updated_at timestamp with time zone DEFAULT now() NOT NULL
+);
+
+
+--
+-- Name: books_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+ALTER TABLE public.books ALTER COLUMN id ADD GENERATED ALWAYS AS IDENTITY (
+    SEQUENCE NAME public.books_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- Name: books_tags; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.books_tags (
+    book_id bigint NOT NULL,
+    tag character varying(255) NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL
+);
+
+
+--
+-- Name: countries; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.countries (
+    code character(2) NOT NULL,
+    name text NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL
+);
+
+
+--
+-- Name: genres; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.genres (
+    id bigint NOT NULL,
+    name text NOT NULL,
+    slug character varying(255) NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    updated_at timestamp with time zone DEFAULT now() NOT NULL
+);
+
+
+--
+-- Name: genres_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+ALTER TABLE public.genres ALTER COLUMN id ADD GENERATED ALWAYS AS IDENTITY (
+    SEQUENCE NAME public.genres_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- Name: languages; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.languages (
+    code character(2) NOT NULL,
+    name text NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL
+);
+
+
+--
+-- Name: publishers; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.publishers (
+    id bigint NOT NULL,
+    name text NOT NULL,
+    country_code character(2),
+    image_url text,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    updated_at timestamp with time zone DEFAULT now() NOT NULL
+);
+
+
+--
+-- Name: publishers_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+ALTER TABLE public.publishers ALTER COLUMN id ADD GENERATED ALWAYS AS IDENTITY (
+    SEQUENCE NAME public.publishers_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
 -- Name: schema_migrations; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -82,6 +266,102 @@ ALTER TABLE public.users ALTER COLUMN id ADD GENERATED ALWAYS AS IDENTITY (
 
 
 --
+-- Name: authors authors_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.authors
+    ADD CONSTRAINT authors_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: book_authors book_authors_book_id_author_id_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.book_authors
+    ADD CONSTRAINT book_authors_book_id_author_id_key UNIQUE (book_id, author_id);
+
+
+--
+-- Name: book_genres book_genres_book_id_genre_id_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.book_genres
+    ADD CONSTRAINT book_genres_book_id_genre_id_key UNIQUE (book_id, genre_id);
+
+
+--
+-- Name: book_languages book_languages_book_id_language_code_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.book_languages
+    ADD CONSTRAINT book_languages_book_id_language_code_key UNIQUE (book_id, language_code);
+
+
+--
+-- Name: books books_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.books
+    ADD CONSTRAINT books_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: books books_slug_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.books
+    ADD CONSTRAINT books_slug_key UNIQUE (slug);
+
+
+--
+-- Name: books_tags books_tags_book_id_tag_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.books_tags
+    ADD CONSTRAINT books_tags_book_id_tag_key UNIQUE (book_id, tag);
+
+
+--
+-- Name: countries countries_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.countries
+    ADD CONSTRAINT countries_pkey PRIMARY KEY (code);
+
+
+--
+-- Name: genres genres_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.genres
+    ADD CONSTRAINT genres_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: genres genres_slug_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.genres
+    ADD CONSTRAINT genres_slug_key UNIQUE (slug);
+
+
+--
+-- Name: languages languages_code_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.languages
+    ADD CONSTRAINT languages_code_key UNIQUE (code);
+
+
+--
+-- Name: publishers publishers_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.publishers
+    ADD CONSTRAINT publishers_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: schema_migrations schema_migrations_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -114,6 +394,94 @@ ALTER TABLE ONLY public.users
 
 
 --
+-- Name: authors authors_country_code_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.authors
+    ADD CONSTRAINT authors_country_code_fkey FOREIGN KEY (country_code) REFERENCES public.countries(code) ON DELETE SET NULL;
+
+
+--
+-- Name: book_authors book_authors_author_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.book_authors
+    ADD CONSTRAINT book_authors_author_id_fkey FOREIGN KEY (author_id) REFERENCES public.authors(id) ON DELETE CASCADE;
+
+
+--
+-- Name: book_authors book_authors_book_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.book_authors
+    ADD CONSTRAINT book_authors_book_id_fkey FOREIGN KEY (book_id) REFERENCES public.books(id) ON DELETE CASCADE;
+
+
+--
+-- Name: book_genres book_genres_book_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.book_genres
+    ADD CONSTRAINT book_genres_book_id_fkey FOREIGN KEY (book_id) REFERENCES public.books(id) ON DELETE CASCADE;
+
+
+--
+-- Name: book_genres book_genres_genre_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.book_genres
+    ADD CONSTRAINT book_genres_genre_id_fkey FOREIGN KEY (genre_id) REFERENCES public.genres(id) ON DELETE CASCADE;
+
+
+--
+-- Name: book_languages book_languages_book_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.book_languages
+    ADD CONSTRAINT book_languages_book_id_fkey FOREIGN KEY (book_id) REFERENCES public.books(id) ON DELETE CASCADE;
+
+
+--
+-- Name: book_languages book_languages_language_code_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.book_languages
+    ADD CONSTRAINT book_languages_language_code_fkey FOREIGN KEY (language_code) REFERENCES public.languages(code) ON DELETE CASCADE;
+
+
+--
+-- Name: books books_created_by_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.books
+    ADD CONSTRAINT books_created_by_fkey FOREIGN KEY (created_by) REFERENCES public.users(id) ON DELETE SET NULL;
+
+
+--
+-- Name: books books_publisher_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.books
+    ADD CONSTRAINT books_publisher_id_fkey FOREIGN KEY (publisher_id) REFERENCES public.publishers(id) ON DELETE SET NULL;
+
+
+--
+-- Name: books_tags books_tags_book_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.books_tags
+    ADD CONSTRAINT books_tags_book_id_fkey FOREIGN KEY (book_id) REFERENCES public.books(id) ON DELETE CASCADE;
+
+
+--
+-- Name: publishers publishers_country_code_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.publishers
+    ADD CONSTRAINT publishers_country_code_fkey FOREIGN KEY (country_code) REFERENCES public.countries(code) ON DELETE SET NULL;
+
+
+--
 -- Name: sessions sessions_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -133,4 +501,10 @@ ALTER TABLE ONLY public.sessions
 
 INSERT INTO public.schema_migrations (version) VALUES
     ('20260622073950'),
-    ('20260622074501');
+    ('20260622074501'),
+    ('20260628100600'),
+    ('20260628100706'),
+    ('20260628180019'),
+    ('20260628180100'),
+    ('20260628190608'),
+    ('20260628191756');

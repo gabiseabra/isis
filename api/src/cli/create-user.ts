@@ -1,4 +1,4 @@
-import { UserInput } from "@isis/common/dto/user/input";
+import { CreateUserInput } from "@isis/common/dto/user/create-input";
 import { pipe } from "ts-functional-pipe";
 import z from "zod";
 import { createUser } from "../services/users/create";
@@ -10,7 +10,7 @@ import { Theme } from "../utils/theme";
 export default Command.create(
   async (options, email, password) => {
     const user = await createUser(
-      UserInput.parse({
+      CreateUserInput.parse({
         name: options.name ?? email,
         email,
         password,
