@@ -11,11 +11,11 @@
 }
 
 .Card[data-elevation="1"] {
-  --card-radius: calc(var(--radius) * 1.25);
+  --card-radius: calc(var(--radius) * 1.5);
   @include shadow.boxShadow(1.25);
 }
 
 .Card[data-elevation="2"] {
-  --card-radius: calc(var(--radius) * 1.5);
+  --card-radius: calc(var(--radius) * 2);
   @include shadow.boxShadow(2);
 }

@@ -19,7 +19,7 @@ const meta = {
     alignOffset: 0,
     content: "Additional context appears on hover.",
     side: "top",
-    sideOffset: 8,
+    sideOffset: 1,
     delay: 300,
   },
   render: (props) => (

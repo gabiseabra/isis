@@ -5,9 +5,10 @@ import { TbUfoFilled } from "react-icons/tb";
 import { createHashRouter, Outlet, RouterProvider } from "react-router";
 import { Avatar } from "../display/Avatar";
 import { Badge } from "../display/Badge";
+import { Logo } from "../display/Logo";
 import { Text } from "../display/Text";
 import { Card } from "./Card";
-import { Row } from "./FlexBox";
+import { Col, Row } from "./FlexBox";
 import { Nav } from "./Nav";
 
 const meta: Meta = {
@@ -80,7 +81,7 @@ export const Default: Story = {
   render: () => (
     <Nav
       footer={
-        <Nav.Item
+        <Nav.Link
           size="l"
           to="/profile"
           icon={
@@ -90,10 +91,20 @@ export const Default: Story = {
         />
       }
     >
-      <Nav.Item to="/" icon={<FaHome />} title="Dashboard" />
-      <Nav.Item to="/posts" icon={<FaBook />} title="Publications" />
-      <Nav.Item to="/settings" icon={<FaGear />} title="Settings">
-        <Nav.Item
+      <Nav.Item
+        size="l"
+        icon={<Logo />}
+        title={
+          <Col gap={0}>
+            <Text>Title</Text>
+            <Text size="caption">subtitle</Text>
+          </Col>
+        }
+      />
+      <Nav.Link to="/" icon={<FaHome />} title="Dashboard" />
+      <Nav.Link to="/posts" icon={<FaBook />} title="Publications" />
+      <Nav.Link to="/settings" icon={<FaGear />} title="Settings">
+        <Nav.Link
           to="/settings/eyy"
           icon={<TbUfoFilled />}
           badge={
@@ -103,8 +114,8 @@ export const Default: Story = {
           }
           title="Eyy"
         />
-        <Nav.Item to="/settings/lmao" icon={<FaCannabis />} title="Lmao" />
-      </Nav.Item>
+        <Nav.Link to="/settings/lmao" icon={<FaCannabis />} title="Lmao" />
+      </Nav.Link>
     </Nav>
   ),
 };

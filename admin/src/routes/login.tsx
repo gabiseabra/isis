@@ -2,6 +2,7 @@ import {
   extractErrorCode,
   extractErrorMessage,
 } from "@isis/common/utils/error";
+import { Text } from "@isis/ui/display/Text";
 import { Banner } from "@isis/ui/feedback/Banner";
 import { Button } from "@isis/ui/form/Button";
 import { Field } from "@isis/ui/form/Field";
@@ -39,6 +40,14 @@ export function Component() {
         }}
       >
         <Col gap={2}>
+          <Text as="h2" m={0} align="center">
+            Biblioteca Isis
+          </Text>
+
+          <Text as="h5" mt={-1} mb={2} align="center">
+            Painel de administração
+          </Text>
+
           {loginMutation.isError &&
             (extractErrorCode(loginMutation.error) === 401 ? (
               <Banner type="error" title="Login ou senha inválidos" />
@@ -57,7 +66,7 @@ export function Component() {
             />
           </Field>
 
-          <Field required id="password" label="Password">
+          <Field required id="password" label="Senha">
             <Input
               type="password"
               value={password}
@@ -72,7 +81,7 @@ export function Component() {
             size="l"
             loading={loginMutation.isPending}
           >
-            Login
+            Entrar
           </Button>
         </Col>
       </form>

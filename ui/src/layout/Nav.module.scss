@@ -66,14 +66,16 @@
   gap: var(--nav-link-gap);
 }
 
-.Item > .Link {
+.Item > .Link,
+.Item > .ItemTitle {
   border-radius: var(--radius);
   min-height: var(--nav-link-height);
   border-radius: var(--radius);
   position: relative;
 }
 
-.Item > .Link > a {
+.Item > .Link > a,
+.Item > .ItemTitle > [data-direction="row"] {
   display: inline-flex;
   flex: 1;
   min-width: 0;
@@ -101,6 +103,7 @@
   flex: 1;
   min-width: 0;
   overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .LinkBadge {
@@ -108,7 +111,8 @@
   overflow: hidden;
 }
 
-.Nav:not([data-open]) .Item > .Link > button {
+.Nav:not([data-open]) .Item > .Link > button,
+.Nav:not([data-open]) .Item > .ItemTitle > button {
   position: absolute;
   inset-inline-end: 0;
   opacity: 0;

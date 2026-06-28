@@ -22,13 +22,13 @@
     &:hover {
       border-color: color-mix(
         in srgb,
-        var(--color-primary) 50%,
+        var(--color-highlight) 50%,
         var(--color-divider)
       );
     }
 
     &:focus-within {
-      border-color: var(--color-primary);
+      border-color: var(--color-highlight);
       @include shadow.boxShadow(0.5, 0.5);
     }
   }
@@ -76,7 +76,7 @@
 }
 
 .InputWrapper:focus-within .Slot {
-  color: var(--color-primary);
+  color: var(--color-highlight);
 }
 
 .InputWrapper:has([data-touched]:invalid) {

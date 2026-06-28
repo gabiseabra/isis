@@ -43,6 +43,10 @@
 .Root[data-size="l"] {
   --avatar-size: 64px;
 }
+.Root[data-size="auto"] {
+  --avatar-size: auto;
+  font-size: 50%;
+}
 
 @keyframes avatar-shimmer {
   to {

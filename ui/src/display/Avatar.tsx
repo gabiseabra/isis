@@ -12,7 +12,7 @@ export type AvatarProps = Omit<
   src?: string;
   title: string;
   fallback?: ReactNode;
-  size: "s" | "m" | "l";
+  size: "s" | "m" | "l" | "auto";
 };
 
 export function Avatar({
@@ -30,7 +30,7 @@ export function Avatar({
   fallback ||= extractInitials(title);
 
   return (
-    <AvatarPrimitive.Root asChild {...props}>
+    <AvatarPrimitive.Root asChild title={title} {...props}>
       <Row
         alignX="center"
         alignY="center"
@@ -47,7 +47,7 @@ export function Avatar({
           />
         )}
         <AvatarPrimitive.Fallback asChild>
-          <Text as="div" color="currentColor" font="sans-serif">
+          <Text as="div" color="currentColor" font="sans-serif" align="center">
             {fallback}
           </Text>
         </AvatarPrimitive.Fallback>

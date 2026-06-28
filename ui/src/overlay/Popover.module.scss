@@ -7,10 +7,9 @@
 
   z-index: 1000;
   box-sizing: border-box;
-  width: min(280px, var(--radix-popover-content-available-width));
   overflow: visible;
   border: 1px solid var(--color-divider);
-  border-radius: calc(var(--radius) * 1.25);
+  border-radius: calc(var(--radius) * 1.5);
   background: var(--color-surface-0);
   color: var(--color-text);
   transform-origin: var(--radix-popover-content-transform-origin);
@@ -43,7 +42,7 @@
   box-sizing: border-box;
   max-height: min(280px, var(--radix-popover-content-available-height));
   overflow: auto;
-  padding: calc(var(--space) * 2);
+  padding: var(--space) calc(var(--space) * 2);
   border-radius: inherit;
   background: inherit;
 }

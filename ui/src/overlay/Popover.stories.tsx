@@ -19,7 +19,7 @@ const meta: Meta<PopoverStoryProps> = {
     alignOffset: 0,
     content: "This content opens from the centered trigger.",
     side: "bottom",
-    sideOffset: 8,
+    sideOffset: 1,
     variant: "solid",
   },
   argTypes: {
