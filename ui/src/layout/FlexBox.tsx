@@ -10,7 +10,8 @@ export type RowProps = {
   wrap?: boolean;
   alignX?: CSSProperties["justifyContent"];
   alignY?: CSSProperties["alignItems"];
-  width?: "wide" | "narrow" | "auto" | number;
+  width?: "wide" | "narrow" | "auto" | number | string;
+  height?: number | string;
 } & css.PaddingProps &
   css.MarginProps &
   ComponentProps<"div">;
@@ -24,6 +25,7 @@ export function Row({
   alignX,
   alignY,
   width,
+  height,
   className = "",
   ...props
 }: RowProps) {
@@ -31,14 +33,15 @@ export function Row({
     <Component
       className={[styles.FlexBox, className].filter(Boolean).join(" ")}
       data-direction="row"
-      data-width={width}
+      data-width={width === "wide" || width === "narrow" ? width : undefined}
       style={{
         flex,
         alignItems: alignY,
         justifyContent: alignX,
         gap: typeof gap === "number" ? css.space(gap) : undefined,
-        width: typeof width === "number" ? width : undefined,
         flexWrap: wrap ? "wrap" : undefined,
+        width: !(width === "wide" || width === "narrow") ? width : undefined,
+        height,
         ...css.getPaddingStyles(props),
         ...css.getMarginStyles(props),
         ...style,
@@ -53,7 +56,8 @@ export type ColProps = {
   flex?: number | string;
   alignX?: CSSProperties["alignItems"];
   alignY?: CSSProperties["justifyContent"];
-  width?: "wide" | "narrow" | "auto" | number;
+  width?: "wide" | "narrow" | "auto" | number | string;
+  height?: number | string;
   gap?: number;
 } & css.PaddingProps &
   css.MarginProps &
@@ -66,6 +70,7 @@ export function Col({
   alignX,
   alignY,
   width,
+  height,
   className = "",
   style = {},
   ...props
@@ -74,13 +79,14 @@ export function Col({
     <Component
       className={[styles.FlexBox, className].filter(Boolean).join(" ")}
       data-direction="column"
-      data-width={width}
+      data-width={width === "wide" || width === "narrow" ? width : undefined}
       style={{
         flex,
         alignItems: alignX,
         justifyContent: alignY,
         gap: typeof gap === "number" ? css.space(gap) : undefined,
-        width: typeof width === "number" ? width : undefined,
+        width: !(width === "wide" || width === "narrow") ? width : undefined,
+        height,
         ...css.getPaddingStyles(props),
         ...css.getMarginStyles(props),
         ...style,

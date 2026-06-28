@@ -3,14 +3,10 @@ import { Col, ColProps, Row } from "./FlexBox";
 import styles from "./Skeleton.module.scss";
 
 export type SkeletonProps = ColProps & {
-  width?: number | string;
-  height?: number | string;
   radius?: number;
 };
 
 export function Skeleton({
-  width,
-  height,
   radius = 0.5,
   className = "",
   style,
@@ -20,8 +16,6 @@ export function Skeleton({
     <Col
       className={[styles.Skeleton, className].filter(Boolean).join(" ")}
       style={{
-        width,
-        height,
         borderRadius: css.radius(radius),
         ...style,
       }}

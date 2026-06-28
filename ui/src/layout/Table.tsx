@@ -1,5 +1,5 @@
 import { ComponentProps, ReactNode } from "react";
-import { Span, Text, TextProps } from "../display/Text";
+import { Text, TextProps } from "../display/Text";
 import * as css from "../utils/css";
 import { Slot } from "../utils/slot";
 import { Resizable } from "./Resizable";
