@@ -1,14 +1,13 @@
-import { ID } from "@isis/common/utils/id";
 import argon2 from "argon2";
 import { UserRow } from "./row";
 
-export async function updatePassword(input: {
-  id: ID<"User">;
-  newPassword: string;
-  oldPassword: string;
-}) {
-  const user = await UserRow.get(ID.parse(input.id).id);
-
+export async function updatePassword(
+  user: UserRow,
+  input: {
+    newPassword: string;
+    oldPassword: string;
+  },
+) {
   if (
     !user ||
     !(!user.password_hash && !input.oldPassword) ||

@@ -3,7 +3,7 @@ import { JWT } from "./jwt";
 import { SessionRow } from "./row";
 
 export async function verifySession(token: string) {
-  const payload = JWT.parse(token);
+  const payload = JWT.parseToken(token);
 
   const session = await SessionRow.get(payload.uuid);
 
