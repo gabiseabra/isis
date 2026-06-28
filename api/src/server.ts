@@ -6,6 +6,8 @@ import { adminRouter } from "./orpc/admin";
 import { nodeRPCHandler } from "./orpc/handler";
 import { orpcMiddleware } from "./orpc/middleware";
 
+const API_PORT = 6660;
+
 async function createServer() {
   const app = express();
 
@@ -14,10 +16,8 @@ async function createServer() {
 
   app.use(orpcMiddleware("/admin", nodeRPCHandler(adminRouter)));
 
-  const server = app.listen(process.env.API_PORT, () => {
-    console.log(
-      `Running a API server on http://localhost:${process.env.API_PORT ?? 6660}`,
-    );
+  const server = app.listen(API_PORT, () => {
+    console.log(`Running a API server on http://localhost:${API_PORT}`);
   });
 
   let isShuttingDown = false;
