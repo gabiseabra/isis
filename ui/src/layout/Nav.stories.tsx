@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { FaBook, FaCannabis } from "react-icons/fa";
+import { FaBook, FaCannabis, FaHome } from "react-icons/fa";
 import { FaGear } from "react-icons/fa6";
 import { TbUfoFilled } from "react-icons/tb";
 import { createHashRouter, Outlet, RouterProvider } from "react-router";
@@ -90,8 +90,8 @@ export const Default: Story = {
         />
       }
     >
-      <Nav.Item to="/" icon={<FaBook />} title="Dashboard" />
-      <Nav.Item to="/posts" icon={<FaBook />} title="Posts" />
+      <Nav.Item to="/" icon={<FaHome />} title="Dashboard" />
+      <Nav.Item to="/posts" icon={<FaBook />} title="Publications" />
       <Nav.Item to="/settings" icon={<FaGear />} title="Settings">
         <Nav.Item
           to="/settings/eyy"

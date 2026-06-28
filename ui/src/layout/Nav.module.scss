@@ -4,13 +4,26 @@
   --nav-link-gap: var(--space);
   --nav-link-height: 32px;
   --nav-width: 200px;
+  --nav-closed-width: var(--nav-link-height);
 
   position: relative;
-  min-width: var(--nav-width);
+  width: var(--nav-closed-width);
+  min-width: var(--nav-closed-width);
   background: var(--color-surface-0);
   padding: var(--space);
+  font-size: 0.95em;
+  font-family: var(--font-sans-serif);
+  color: var(--color-text);
+  transition:
+    width 180ms ease-out,
+    min-width 180ms ease-out;
 
   @include shadow.dropShadow(2, 0.5);
+}
+
+.Nav[data-open] {
+  width: var(--nav-width);
+  min-width: var(--nav-width);
 }
 
 .Content,
@@ -18,17 +31,30 @@
   gap: var(--nav-link-gap);
 }
 
+.Content,
+.Footer {
+  overflow: hidden;
+}
+
 .CollapseButton {
   position: absolute;
+  z-index: 1;
 
   right: 0;
   transform: translateX(50%);
 
-  --icon-bg: var(--color-surface-1);
-  --icon-active-bg: var(--color-surface-0);
+  --icon-bg: var(--color-surface-0);
+  --icon-active-bg: var(--color-surface-1);
   border: 1px solid var(--color-divider);
 
   opacity: 0;
+  transition:
+    opacity 120ms ease-out,
+    transform 180ms ease-out;
+}
+
+.Nav:not([data-open]) > .CollapseButton {
+  transform: translateX(50%) rotate(180deg);
 }
 
 .Nav:hover > .CollapseButton {
@@ -44,23 +70,70 @@
   border-radius: var(--radius);
   min-height: var(--nav-link-height);
   border-radius: var(--radius);
+  position: relative;
 }
 
 .Item > .Link > a {
   display: inline-flex;
   flex: 1;
+  min-width: 0;
   height: 100%;
   align-items: center;
   gap: var(--space);
+  box-sizing: border-box;
   padding: var(--space);
   text-decoration: none;
+  color: currentColor;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.LinkIcon {
+  margin-left: 2px;
+  transition:
+    width 180ms ease-out,
+    height 180ms ease-out,
+    font-size 180ms ease-out,
+    line-height 180ms ease-out;
 }
 
 .LinkText {
   flex: 1;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.LinkBadge {
+  flex: 0 0 auto;
+  overflow: hidden;
+}
+
+.Nav:not([data-open]) .Item > .Link > button {
+  position: absolute;
+  inset-inline-end: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.ItemContent {
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  transform: translateY(calc(var(--nav-link-gap) * -1));
+  transition:
+    max-height 180ms ease-out,
+    opacity 120ms ease-out,
+    transform 180ms ease-out;
+}
+
+.Item[data-open] > .ItemContent {
+  max-height: 100vh;
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .Link:hover,
 .Link:focus {
-  background: var(--bg-highlight);
+  background: var(--color-surface-1);
+  color: var(--color-highlight);
 }
