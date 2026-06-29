@@ -1,7 +1,7 @@
 import z from "zod";
 import { ID } from "../../utils/id";
 
-export const QueryAuthorInput = z.object({
+export const QueryAuthorsInput = z.object({
   page: z.number().int().min(1),
   limit: z.number().int().min(1).max(255),
   sort: z.enum(["name", "created_at", "updated_at"]).optional(),
@@ -11,4 +11,4 @@ export const QueryAuthorInput = z.object({
   ids: z.string().refine(ID.guard("Author")).array().optional(),
 });
 
-export type QueryAuthorInput = z.infer<typeof QueryAuthorInput>;
+export type QueryAuthorsInput = z.infer<typeof QueryAuthorsInput>;

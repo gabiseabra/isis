@@ -1,6 +1,7 @@
 import { adminApi } from "@isis/common/orpc/admin";
 import { implement, type Router } from "@orpc/server";
 import { authors } from "./admin/authors";
+import { books } from "./admin/books";
 import { countries } from "./admin/countries";
 import { languages } from "./admin/languages";
 import { publishers } from "./admin/publishers";
@@ -15,4 +16,5 @@ export const adminRouter: Router<adminApi, ORPCContext> = c.router({
   languages,
   authors,
   publishers,
+  books,
 });

@@ -2,7 +2,7 @@ import { oc } from "@orpc/contract";
 import z from "zod";
 import { Author } from "../../dto/author";
 import { CreateAuthorInput } from "../../dto/author/create-input";
-import { QueryAuthorInput } from "../../dto/author/query-input";
+import { QueryAuthorsInput } from "../../dto/author/query-input";
 import { UpdateAuthorInput } from "../../dto/author/update-input";
 
 export const authors = oc.prefix("/authors").router({
@@ -31,7 +31,7 @@ export const authors = oc.prefix("/authors").router({
     .route({
       description: "Query authors.",
     })
-    .input(QueryAuthorInput)
+    .input(QueryAuthorsInput)
     .output(
       z.object({
         items: Author.array(),
