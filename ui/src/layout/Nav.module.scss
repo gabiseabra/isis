@@ -1,3 +1,4 @@
+@use "../../styles/mixins/color" as color;
 @use "../../styles/mixins/shadow" as shadow;
 
 .Nav {
@@ -68,10 +69,26 @@
 
 .Item > .Link,
 .Item > .ItemTitle {
+  --nav-link-active-color: var(--color-highlight);
+  --nav-link-active-bg: var(--color-surface-1);
+
   border-radius: var(--radius);
   min-height: var(--nav-link-height);
   border-radius: var(--radius);
   position: relative;
+}
+
+@each $name, $_ in color.$colors-codes {
+  @if ($name != "default") {
+    .Item > .Link[data-color="#{$name}"] {
+      --nav-link-active-color: var(#{"--color-" + $name});
+      --nav-link-active-bg: color-mix(
+        in srgb,
+        var(#{"--bg-" + $name}) 33.333%,
+        transparent
+      );
+    }
+  }
 }
 
 .Item > .Link > a,
@@ -136,8 +153,13 @@
   transform: translateY(0);
 }
 
-.Link:hover,
 .Link:focus {
   background: var(--color-surface-1);
   color: var(--color-highlight);
+}
+
+.Link:hover,
+.Link:active {
+  background: var(--nav-link-active-bg);
+  color: var(--nav-link-active-color);
 }

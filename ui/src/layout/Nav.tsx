@@ -8,6 +8,7 @@ import {
 import { BiChevronDown, BiChevronLeft } from "react-icons/bi";
 import { Link, LinkProps } from "react-router";
 import { IconControl } from "../display/IconControl";
+import * as css from "../utils/css";
 import { Col, Row, RowProps } from "./FlexBox";
 import styles from "./Nav.module.scss";
 
@@ -140,9 +141,10 @@ Nav.Item = function NavItem({
   );
 };
 
-export type NavLinkProps = Omit<LinkProps, "title"> & {
+export type NavLinkProps = Omit<LinkProps, "color" | "title"> & {
   size?: "s" | "m" | "l" | "xl";
   title: ReactNode;
+  color?: css.Color;
   icon?: ReactNode;
   badge?: ReactNode;
   open?: boolean;
@@ -152,6 +154,7 @@ export type NavLinkProps = Omit<LinkProps, "title"> & {
 Nav.Link = function NavLink({
   size = "s",
   title,
+  color,
   icon,
   badge,
   open: controlledOpen,
@@ -171,7 +174,11 @@ Nav.Link = function NavLink({
       className={[styles.Item, className].filter(Boolean).join(" ")}
       data-open={open || undefined}
     >
-      <Row className={styles.Link} alignY="center">
+      <Row
+        className={styles.Link}
+        alignY="center"
+        data-color={color && color !== "default" ? color : undefined}
+      >
         <Link {...props}>
           <IconControl size={nav.open ? size : "s"} className={styles.LinkIcon}>
             {icon}
