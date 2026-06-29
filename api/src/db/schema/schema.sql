@@ -129,10 +129,10 @@ ALTER TABLE public.books ALTER COLUMN id ADD GENERATED ALWAYS AS IDENTITY (
 
 
 --
--- Name: books_tags; Type: TABLE; Schema: public; Owner: -
+-- Name: book_tags; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE public.books_tags (
+CREATE TABLE public.book_tags (
     book_id bigint NOT NULL,
     tag character varying(255) NOT NULL,
     created_at timestamp with time zone DEFAULT now() NOT NULL
@@ -314,11 +314,11 @@ ALTER TABLE ONLY public.books
 
 
 --
--- Name: books_tags books_tags_book_id_tag_key; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: book_tags book_tags_book_id_tag_key; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.books_tags
-    ADD CONSTRAINT books_tags_book_id_tag_key UNIQUE (book_id, tag);
+ALTER TABLE ONLY public.book_tags
+    ADD CONSTRAINT book_tags_book_id_tag_key UNIQUE (book_id, tag);
 
 
 --
@@ -466,11 +466,11 @@ ALTER TABLE ONLY public.books
 
 
 --
--- Name: books_tags books_tags_book_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: book_tags book_tags_book_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.books_tags
-    ADD CONSTRAINT books_tags_book_id_fkey FOREIGN KEY (book_id) REFERENCES public.books(id) ON DELETE CASCADE;
+ALTER TABLE ONLY public.book_tags
+    ADD CONSTRAINT book_tags_book_id_fkey FOREIGN KEY (book_id) REFERENCES public.books(id) ON DELETE CASCADE;
 
 
 --

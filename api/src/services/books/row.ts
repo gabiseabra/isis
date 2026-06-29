@@ -56,7 +56,7 @@ export class BookRow {
     from books b
     left join book_authors ba on ba.book_id = b.id
     left join book_languages bl on bl.book_id = b.id
-    left join books_tags bt on bt.book_id = b.id
+    left join book_tags bt on bt.book_id = b.id
     where b.id = ${id}
     group by b.id;
     `;
@@ -83,7 +83,7 @@ export class BookRow {
     left join book_authors ba on ba.book_id = b.id
     left join authors a on a.id = ba.author_id
     left join book_languages bl on bl.book_id = b.id
-    left join books_tags bt on bt.book_id = b.id
+    left join book_tags bt on bt.book_id = b.id
     left join publishers p on p.id = b.publisher_id
     where b.id = any(coalesce(${(query.ids ?? null) as number[]}::bigint[], array[b.id]))
     group by b.id
