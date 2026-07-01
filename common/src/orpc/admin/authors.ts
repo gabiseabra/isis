@@ -1,23 +1,15 @@
 import { oc } from "@orpc/contract";
 import z from "zod";
 import { Author } from "../../dto/author";
-import { CreateAuthorInput } from "../../dto/author/create-input";
+import { AuthorInput } from "../../dto/author/input";
 import { QueryAuthorsInput } from "../../dto/author/query-input";
-import { UpdateAuthorInput } from "../../dto/author/update-input";
 
 export const authors = oc.prefix("/authors").router({
-  create: oc
+  upsert: oc
     .route({
-      description: "Create author.",
+      description: "Create or update author.",
     })
-    .input(CreateAuthorInput)
-    .output(Author),
-
-  update: oc
-    .route({
-      description: "Update author.",
-    })
-    .input(UpdateAuthorInput)
+    .input(AuthorInput)
     .output(Author),
 
   get: oc

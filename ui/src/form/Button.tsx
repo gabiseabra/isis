@@ -42,9 +42,13 @@ export function Button({
       {...props}
     >
       <span className={styles.Content}>
-        {!!left && <span className={styles.Slot}>{left}</span>}
+        {!!left && (
+          <span className={[styles.Slot, styles.Left].join(" ")}>{left}</span>
+        )}
         {children}
-        {!!right && <span className={styles.Slot}>{right}</span>}
+        {!!right && (
+          <span className={[styles.Slot, styles.Right].join(" ")}>{right}</span>
+        )}
       </span>
       {loading && <Spinner size="s" className={styles.Spinner} />}
     </button>

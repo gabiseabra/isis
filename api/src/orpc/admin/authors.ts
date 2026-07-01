@@ -8,21 +8,13 @@ import { requireAuth } from "../middleware/auth";
 const c = implement(adminApi.authors).$context<ORPCContext>();
 
 export const authors = c.router({
-  create: c.create.use(requireAuth).handler(async ({ input }) => {
-    const row = await AuthorRow.create(input);
-
-    return AuthorRow.toJson(row);
-  }),
-
-  update: c.update.use(requireAuth).handler(async ({ input }) => {
-    const row = await AuthorRow.update({
-      id: ID.parse(input.id).id,
-      name: input.name,
-      imageUrl: input.imageUrl,
-      countryCode: input.countryCode,
-      birthYear: input.birthYear,
-      deathYear: input.deathYear,
-    });
+  upsert: c.upsert.use(requireAuth).handler(async ({ input }) => {
+    const row = input.id
+      ? await AuthorRow.update({
+          ...input,
+          id: ID.parse(input.id).id,
+        })
+      : await AuthorRow.create(input);
 
     return AuthorRow.toJson(row);
   }),

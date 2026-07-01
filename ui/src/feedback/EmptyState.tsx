@@ -28,13 +28,12 @@ export function EmptyState({
           as="div"
           mb={1}
           color={color}
-          size={
-            (
-              {
-                m: "l",
-                l: "xl",
-              } as const
-            )[size]
+          size="auto"
+          height={
+            {
+              m: 64,
+              l: 86,
+            }[size]
           }
         >
           {icon}
@@ -44,7 +43,7 @@ export function EmptyState({
       <Text
         as="div"
         size={size === "l" ? "h4" : "body"}
-        font="heading"
+        font="sans-serif"
         color={color}
       >
         {title}

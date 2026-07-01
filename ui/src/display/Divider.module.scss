@@ -14,7 +14,7 @@
 .Divider[data-direction="x"] {
   height: var(--size-divider);
   width: auto;
-  flex: 1;
+  flex: 0 1 auto;
   margin: 0;
 }
 

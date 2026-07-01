@@ -12,12 +12,12 @@
 }
 
 .FlexBox[data-width="auto"] {
-  width: auto;
+  width: min(100%, calc(100% - var(--gutter-content) * 2));
   box-sizing: border-box;
 }
 
 .FlexBox[data-width="wide"] {
-  width: min(var(--width-wide), calc(100vw - var(--gutter-content) * 2));
+  width: min(var(--width-wide), calc(100% - var(--gutter-content) * 2));
   box-sizing: border-box;
 }
 

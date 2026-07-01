@@ -1,0 +1,18 @@
+.Pagination {
+}
+
+.Content {
+  position: relative;
+  min-width: 100px;
+}
+
+.Pagination[data-loading] .Text {
+  opacity: 0.5;
+  color: var(--color-muted);
+}
+
+.Spinner {
+  position: absolute;
+  left: calc(50% - var(--spinner-size) / 2);
+  top: calc(50% - var(--spinner-size) / 2);
+}

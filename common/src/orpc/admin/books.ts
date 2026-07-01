@@ -3,19 +3,13 @@ import z from "zod";
 import { Book } from "../../dto/book";
 import { QueryBooksInput } from "../../dto/book/query-input";
 
-const BookOutput = Book.omit({
-  authorIds: true,
-  languages: true,
-  tags: true,
-});
-
 export const books = oc.prefix("/books").router({
   get: oc
     .route({
       description: "Get book.",
     })
     .input(Book.pick({ id: true }))
-    .output(BookOutput),
+    .output(Book),
 
   query: oc
     .route({
@@ -24,7 +18,7 @@ export const books = oc.prefix("/books").router({
     .input(QueryBooksInput)
     .output(
       z.object({
-        items: BookOutput.array(),
+        items: Book.array(),
         hasNextPage: z.boolean(),
       }),
     ),

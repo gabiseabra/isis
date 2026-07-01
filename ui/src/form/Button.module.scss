@@ -39,6 +39,14 @@
   line-height: 0;
 }
 
+.Left {
+  margin-left: calc(var(--space) * -1);
+}
+
+.Right {
+  margin-right: calc(var(--space) * -1);
+}
+
 .Spinner {
   --spinner-color: currentColor;
   --spinner-track: color-mix(in srgb, currentColor 25%, transparent);
@@ -201,6 +209,7 @@
 
 .Button[data-size="s"] {
   --button-height: 26px;
+  font-size: 0.9em;
 }
 
 .Button[data-size="m"] {

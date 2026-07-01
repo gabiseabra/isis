@@ -105,7 +105,7 @@ Nav.Item = function NavItem({
       data-open={open || undefined}
     >
       <Row className={styles.ItemTitle} alignY="center">
-        <Row {...props}>
+        <Row alignY="center" {...props}>
           <IconControl size={nav.open ? size : "s"} className={styles.LinkIcon}>
             {icon}
           </IconControl>

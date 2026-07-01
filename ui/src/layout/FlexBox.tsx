@@ -29,18 +29,20 @@ export function Row({
   className = "",
   ...props
 }: RowProps) {
+  const isWidthKeyword =
+    width === "wide" || width === "narrow" || width === "auto";
   return (
     <Component
       className={[styles.FlexBox, className].filter(Boolean).join(" ")}
       data-direction="row"
-      data-width={width === "wide" || width === "narrow" ? width : undefined}
+      data-width={isWidthKeyword ? width : undefined}
       style={{
         flex,
         alignItems: alignY,
         justifyContent: alignX,
         gap: typeof gap === "number" ? css.space(gap) : undefined,
         flexWrap: wrap ? "wrap" : undefined,
-        width: !(width === "wide" || width === "narrow") ? width : undefined,
+        width: !isWidthKeyword ? width : undefined,
         height,
         ...css.getPaddingStyles(props),
         ...css.getMarginStyles(props),
@@ -75,17 +77,19 @@ export function Col({
   style = {},
   ...props
 }: ColProps) {
+  const isWidthKeyword =
+    width === "wide" || width === "narrow" || width === "auto";
   return (
     <Component
       className={[styles.FlexBox, className].filter(Boolean).join(" ")}
       data-direction="column"
-      data-width={width === "wide" || width === "narrow" ? width : undefined}
+      data-width={isWidthKeyword ? width : undefined}
       style={{
         flex,
         alignItems: alignX,
         justifyContent: alignY,
         gap: typeof gap === "number" ? css.space(gap) : undefined,
-        width: !(width === "wide" || width === "narrow") ? width : undefined,
+        width: !isWidthKeyword ? width : undefined,
         height,
         ...css.getPaddingStyles(props),
         ...css.getMarginStyles(props),

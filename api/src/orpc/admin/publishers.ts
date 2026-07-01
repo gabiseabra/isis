@@ -8,19 +8,13 @@ import { requireAuth } from "../middleware/auth";
 const c = implement(adminApi.publishers).$context<ORPCContext>();
 
 export const publishers = c.router({
-  create: c.create.use(requireAuth).handler(async ({ input }) => {
-    const row = await PublisherRow.create(input);
-
-    return PublisherRow.toJson(row);
-  }),
-
-  update: c.update.use(requireAuth).handler(async ({ input }) => {
-    const row = await PublisherRow.update({
-      id: ID.parse(input.id).id,
-      name: input.name,
-      imageUrl: input.imageUrl,
-      countryCode: input.countryCode,
-    });
+  upsert: c.upsert.use(requireAuth).handler(async ({ input }) => {
+    const row = input.id
+      ? await PublisherRow.update({
+          ...input,
+          id: ID.parse(input.id).id,
+        })
+      : await PublisherRow.create(input);
 
     return PublisherRow.toJson(row);
   }),

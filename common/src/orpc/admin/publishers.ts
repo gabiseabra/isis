@@ -1,23 +1,15 @@
 import { oc } from "@orpc/contract";
 import z from "zod";
 import { Publisher } from "../../dto/publisher";
-import { CreatePublisherInput } from "../../dto/publisher/create-input";
+import { PublisherInput } from "../../dto/publisher/input";
 import { QueryPublishersInput } from "../../dto/publisher/query-input";
-import { UpdatePublisherInput } from "../../dto/publisher/update-input";
 
 export const publishers = oc.prefix("/publishers").router({
-  create: oc
+  upsert: oc
     .route({
-      description: "Create publisher.",
+      description: "Create or update publisher.",
     })
-    .input(CreatePublisherInput)
-    .output(Publisher),
-
-  update: oc
-    .route({
-      description: "Update publisher.",
-    })
-    .input(UpdatePublisherInput)
+    .input(PublisherInput)
     .output(Publisher),
 
   get: oc

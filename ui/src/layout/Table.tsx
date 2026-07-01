@@ -1,7 +1,9 @@
-import { ComponentProps, ReactNode } from "react";
+import { ComponentProps, ReactNode, useRef } from "react";
 import { Text, TextProps } from "../display/Text";
+import { Spinner } from "../feedback/Spinner";
 import * as css from "../utils/css";
 import { Slot } from "../utils/slot";
+import { Row } from "./FlexBox";
 import { Resizable } from "./Resizable";
 import styles from "./Table.module.scss";
 
@@ -25,6 +27,7 @@ export type TableProps<Row, Col> = ComponentProps<"table"> & {
   rowGap?: number;
 
   // slots
+  loading?: boolean;
   emptyState?: Slot<(table: Table<Row, Col>) => ReactNode>;
   thead?: Slot<(table: Table<Row, Col>) => ReactNode>;
   tfoot?: Slot<(table: Table<Row, Col>) => ReactNode>;
@@ -36,7 +39,7 @@ export type TableProps<Row, Col> = ComponentProps<"table"> & {
 };
 
 export function Table<Row, Col extends ID>({
-  rows,
+  rows: currentRows,
   columns,
   getId = (_, index) => index,
 
@@ -45,6 +48,7 @@ export function Table<Row, Col extends ID>({
   colGap = gap,
   rowGap = gap,
 
+  loading,
   emptyState,
   thead,
   tfoot,
@@ -58,13 +62,22 @@ export function Table<Row, Col extends ID>({
   style,
   ...props
 }: TableProps<Row, Col>) {
-  const table = { rows, columns };
+  const table = { rows: currentRows, columns };
 
   const colSpan = columns.length + (index ? 1 : 0);
+
+  const lastRowsRef = useRef(currentRows);
+
+  if (!loading) {
+    lastRowsRef.current = currentRows;
+  }
+
+  const rows = lastRowsRef.current;
 
   return (
     <table
       data-variant={variant}
+      data-loading={loading || undefined}
       data-empty={rows.length === 0 ? true : undefined}
       className={[styles.Root, className].filter(Boolean).join(" ")}
       style={{
@@ -99,7 +112,15 @@ export function Table<Row, Col extends ID>({
       )}
 
       <tbody>
-        {table.rows.length === 0 && emptyState ? (
+        {table.rows.length === 0 && loading ? (
+          <Table.Row>
+            <Table.Cell as="td" colSpan={colSpan}>
+              <Row py={6} alignX="center">
+                <Spinner size="m" />
+              </Row>
+            </Table.Cell>
+          </Table.Row>
+        ) : table.rows.length === 0 && emptyState ? (
           <Table.Row>
             <Table.Cell as="td" colSpan={colSpan}>
               {Slot.render(emptyState, table)}
