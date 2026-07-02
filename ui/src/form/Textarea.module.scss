@@ -43,6 +43,7 @@
 
   &:disabled {
     color: var(--color-disabled);
+    background: var(--color-surface-0);
     cursor: not-allowed;
   }
 }

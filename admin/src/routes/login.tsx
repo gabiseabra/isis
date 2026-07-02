@@ -5,7 +5,6 @@ import {
 import { Text } from "@isis/ui/display/Text";
 import { Banner } from "@isis/ui/feedback/Banner";
 import { Button } from "@isis/ui/form/Button";
-import { Field } from "@isis/ui/form/Field";
 import { Input } from "@isis/ui/form/Input";
 import { Card } from "@isis/ui/layout/Card";
 import { Col } from "@isis/ui/layout/FlexBox";
@@ -57,23 +56,25 @@ export function Component() {
               </Banner>
             ))}
 
-          <Field required id="email" label="Email">
-            <Input
-              type="email"
-              value={email}
-              onChangeValue={setEmail}
-              autoComplete="email"
-            />
-          </Field>
+          <Input
+            required
+            id="email"
+            label="Email"
+            type="email"
+            value={email}
+            onChangeValue={setEmail}
+            autoComplete="email"
+          />
 
-          <Field required id="password" label="Senha">
-            <Input
-              type="password"
-              value={password}
-              onChangeValue={setPassword}
-              autoComplete="current-password"
-            />
-          </Field>
+          <Input
+            required
+            id="password"
+            label="Senha"
+            type="password"
+            value={password}
+            onChangeValue={setPassword}
+            autoComplete="current-password"
+          />
 
           <Button
             type="submit"

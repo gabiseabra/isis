@@ -89,9 +89,9 @@ export class AuthorRow {
     where concat_ws(' ', name) ilike coalesce('%' || ${query.query ?? null} || '%', '%')
       and id = any(coalesce(${(query.ids ?? null) as number[]}::bigint[], array[id]))
       and name = coalesce(${query.name ?? null}, name)
-      and country_code = coalesce(${query.countryCode ?? null}, country_code)
-      and birth_year = coalesce(${query.birthYear ?? null}, birth_year)
-      and death_year = coalesce(${query.deathYear ?? null}, death_year)
+      and country_code is not distinct from coalesce(${query.countryCode ?? null}, country_code)
+      and birth_year is not distinct from coalesce(${query.birthYear ?? null}, birth_year)
+      and death_year is not distinct from coalesce(${query.deathYear ?? null}, death_year)
     order by
       case when ${sort} = 'name' and ${order} = 'asc' then name end asc,
       case when ${sort} = 'name' and ${order} = 'desc' then name end desc,

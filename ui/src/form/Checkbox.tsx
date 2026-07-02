@@ -1,39 +1,51 @@
 import { Checkbox as CheckboxPrimitive } from "radix-ui";
-import { type ComponentProps, type ReactNode } from "react";
+import { type ComponentProps } from "react";
 import { GiCheckMark } from "react-icons/gi";
 import { Row } from "../layout/FlexBox";
 import styles from "./Checkbox.module.scss";
-import { useField } from "./Field";
+import { Field } from "./Field";
+import { BaseInputProps } from "./use-form";
 
-export type CheckboxProps = ComponentProps<typeof CheckboxPrimitive.Root> & {
-  label?: ReactNode;
-};
+export type CheckboxProps = ComponentProps<typeof CheckboxPrimitive.Root> &
+  Partial<BaseInputProps<boolean>>;
 
-export function Checkbox({ className, label, ...props }: CheckboxProps) {
-  const field = useField();
-
+export function Checkbox({
+  className,
+  value,
+  onChangeValue,
+  touched,
+  onTouch,
+  required,
+  label,
+  description,
+  error,
+  ...props
+}: CheckboxProps) {
   return (
-    <Row alignY="center" className={styles.Checkbox}>
-      <CheckboxPrimitive.Root
-        className={[styles.Root, className].filter(Boolean).join(" ")}
-        id={field.id}
-        required={field.required}
-        data-touched={field.isTouched || undefined}
-        {...props}
-        onBlur={(e) => {
-          props.onBlur?.(e);
-          field.setTouched();
-        }}
-      >
-        <CheckboxPrimitive.Indicator className={styles.Indicator}>
-          <GiCheckMark />
-        </CheckboxPrimitive.Indicator>
-      </CheckboxPrimitive.Root>
-      {label && (
-        <label className={styles.Label} htmlFor={field.id ?? props.id}>
-          {label}
-        </label>
-      )}
-    </Row>
+    <Field {...{ description, error }}>
+      <Row alignY="center" className={styles.Checkbox}>
+        <CheckboxPrimitive.Root
+          value={value}
+          onCheckedChange={onChangeValue}
+          className={[styles.Root, className].filter(Boolean).join(" ")}
+          data-touched={touched || undefined}
+          required={required}
+          {...props}
+          onBlur={(e) => {
+            props.onBlur?.(e);
+            onTouch?.();
+          }}
+        >
+          <CheckboxPrimitive.Indicator className={styles.Indicator}>
+            <GiCheckMark />
+          </CheckboxPrimitive.Indicator>
+        </CheckboxPrimitive.Root>
+        {label && (
+          <label className={styles.Label} htmlFor={props.id}>
+            {label}
+          </label>
+        )}
+      </Row>
+    </Field>
   );
 }

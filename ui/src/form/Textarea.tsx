@@ -1,10 +1,12 @@
 import { type ComponentProps, useEffect, useRef } from "react";
-import { useField } from "./Field";
+import { Field } from "./Field";
 import styles from "./Textarea.module.scss";
+import { BaseInputProps } from "./use-form";
 
-export type TextareaProps = ComponentProps<"textarea"> & {
-  autoGrow?: boolean;
-};
+export type TextareaProps = ComponentProps<"textarea"> &
+  Partial<BaseInputProps<string>> & {
+    autoGrow?: boolean;
+  };
 
 export function Textarea({
   ref,
@@ -13,10 +15,16 @@ export function Textarea({
   onInput,
   rows,
   value,
+  onChangeValue,
+  required,
+  touched,
+  onTouch,
+  label,
+  description,
+  error,
   ...props
 }: TextareaProps) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
-  const field = useField();
 
   useEffect(() => {
     if (autoGrow && textareaRef.current) {
@@ -25,33 +33,38 @@ export function Textarea({
   }, [autoGrow]);
 
   return (
-    <textarea
-      id={field.id}
-      required={field.required}
-      data-touched={field.isTouched || undefined}
-      {...props}
-      ref={(element) => {
-        textareaRef.current = element;
-        if (ref instanceof Function) ref(element);
-        else if (ref) ref.current = element;
-      }}
-      rows={rows}
-      value={value}
-      className={[styles.Textarea, autoGrow && styles.autogrow, className]
-        .filter(Boolean)
-        .join(" ")}
-      onInput={(event) => {
-        if (autoGrow) {
-          fitTextarea(event.currentTarget);
-        }
+    <Field htmlFor={props.id} {...{ label, description, error, required }}>
+      <textarea
+        required={required}
+        data-touched={touched || undefined}
+        {...props}
+        ref={(element) => {
+          textareaRef.current = element;
+          if (ref instanceof Function) ref(element);
+          else if (ref) ref.current = element;
+        }}
+        rows={rows}
+        value={value}
+        className={[styles.Textarea, autoGrow && styles.autogrow, className]
+          .filter(Boolean)
+          .join(" ")}
+        onChange={(e) => {
+          props.onChange?.(e);
+          onChangeValue?.(e.currentTarget.value);
+        }}
+        onInput={(e) => {
+          if (autoGrow) {
+            fitTextarea(e.currentTarget);
+          }
 
-        onInput?.(event);
-      }}
-      onBlur={(e) => {
-        props.onBlur?.(e);
-        field.setTouched();
-      }}
-    />
+          onInput?.(e);
+        }}
+        onBlur={(e) => {
+          props.onBlur?.(e);
+          onTouch?.();
+        }}
+      />
+    </Field>
   );
 }
 

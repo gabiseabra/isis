@@ -1,10 +1,12 @@
 import { omit } from "@isis/common/utils/object";
+import { Slot } from "radix-ui";
 import { ComponentProps, CSSProperties } from "react";
 import * as css from "../utils/css";
 import styles from "./FlexBox.module.scss";
 
 export type RowProps = {
   as?: "div" | "section" | "header" | "footer" | "main";
+  asChild?: boolean;
   flex?: number | string;
   gap?: number;
   wrap?: boolean;
@@ -18,6 +20,7 @@ export type RowProps = {
 
 export function Row({
   as: Component = "div",
+  asChild,
   style = {},
   flex,
   gap,
@@ -31,8 +34,10 @@ export function Row({
 }: RowProps) {
   const isWidthKeyword =
     width === "wide" || width === "narrow" || width === "auto";
+  const Root = asChild ? Slot.Root : Component;
+
   return (
-    <Component
+    <Root
       className={[styles.FlexBox, className].filter(Boolean).join(" ")}
       data-direction="row"
       data-width={isWidthKeyword ? width : undefined}
@@ -55,6 +60,7 @@ export function Row({
 
 export type ColProps = {
   as?: "div" | "section" | "header" | "footer" | "main";
+  asChild?: boolean;
   flex?: number | string;
   alignX?: CSSProperties["alignItems"];
   alignY?: CSSProperties["justifyContent"];
@@ -67,6 +73,7 @@ export type ColProps = {
 
 export function Col({
   as: Component = "div",
+  asChild,
   flex,
   gap,
   alignX,
@@ -79,8 +86,10 @@ export function Col({
 }: ColProps) {
   const isWidthKeyword =
     width === "wide" || width === "narrow" || width === "auto";
+  const Root = asChild ? Slot.Root : Component;
+
   return (
-    <Component
+    <Root
       className={[styles.FlexBox, className].filter(Boolean).join(" ")}
       data-direction="column"
       data-width={isWidthKeyword ? width : undefined}

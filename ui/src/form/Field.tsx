@@ -1,28 +1,9 @@
-import {
-  createContext,
-  useContext,
-  useState,
-  type ComponentProps,
-  type ReactNode,
-} from "react";
+import { type ComponentProps, type ReactNode } from "react";
 import { IconControl } from "../display/IconControl";
 import styles from "./Field.module.scss";
 
-const FieldContext = createContext<{
-  id?: string;
-  required?: boolean;
-  isTouched?: boolean;
-  setTouched(): void;
-}>({
-  setTouched() {},
-});
-
-export function useField() {
-  return useContext(FieldContext);
-}
-
-export type FieldProps = Omit<ComponentProps<"div">, "id"> & {
-  id: string;
+export type FieldProps = ComponentProps<"div"> & {
+  htmlFor?: string;
   label?: ReactNode;
   required?: boolean;
   description?: ReactNode;
@@ -30,7 +11,7 @@ export type FieldProps = Omit<ComponentProps<"div">, "id"> & {
 };
 
 export function Field({
-  id,
+  htmlFor,
   label,
   required,
   description,
@@ -39,39 +20,27 @@ export function Field({
   children,
   ...props
 }: FieldProps) {
-  const [isTouched, setIsTouched] = useState(false);
   return (
-    <FieldContext.Provider
-      value={{
-        id,
-        required,
-        isTouched,
-        setTouched() {
-          setIsTouched(true);
-        },
-      }}
+    <div
+      className={[styles.Field, className].filter(Boolean).join(" ")}
+      {...props}
     >
-      <div
-        className={[styles.Field, className].filter(Boolean).join(" ")}
-        {...props}
-      >
-        {label && (
-          <label className={styles.Label} htmlFor={id}>
-            {label}
-            {required && (
-              <IconControl size="s" color="red">
-                *
-              </IconControl>
-            )}
-          </label>
-        )}
+      {label && (
+        <label className={styles.Label} htmlFor={htmlFor}>
+          {label}
+          {required && (
+            <IconControl size="s" color="red">
+              *
+            </IconControl>
+          )}
+        </label>
+      )}
 
-        {children}
+      {children}
 
-        {description && <div className={styles.Description}>{description}</div>}
+      {description && <div className={styles.Description}>{description}</div>}
 
-        {error && <div className={styles.Error}>{error}</div>}
-      </div>
-    </FieldContext.Provider>
+      {error && <div className={styles.Error}>{error}</div>}
+    </div>
   );
 }
