@@ -1,137 +1,128 @@
-import { uniqueBy } from "@isis/common/utils/array";
-import {
-  hasNonNullableProperty,
-  hasPropertyValue,
-  isNonNullable,
-} from "@isis/common/utils/guards";
+import { groupBy, unique } from "@isis/common/utils/array";
+import { isNonNullable } from "@isis/common/utils/guards";
 import { omit } from "@isis/common/utils/object";
 import { Popover as PopoverPrimitive } from "radix-ui";
-import {
+import React, {
   ComponentProps,
-  createContext,
+  Fragment,
   KeyboardEvent,
   ReactNode,
-  Ref,
-  useContext,
-  useEffect,
-  useImperativeHandle,
+  RefObject,
   useMemo,
+  useRef,
   useState,
 } from "react";
 import { BiChevronDown } from "react-icons/bi";
 import { IconControl } from "../display/IconControl";
 import { Text } from "../display/Text";
+import { EmptyState } from "../feedback/EmptyState";
 import { Col, ColProps, Row } from "../layout/FlexBox";
 import { createBoundary, useBoundary } from "../overlay/Boundary";
 import { useOverlay } from "../overlay/OverlayProvider";
+import { Slot } from "../utils/slot";
+import { Field } from "./Field";
 import styles from "./Select.module.scss";
+import { BaseInputProps } from "./use-form";
 
-export type SelectOption = {
-  value: string;
-  textValue?: string;
+export type Select<T, G> = {
+  options: T[];
+  selectedOptions: T[];
+  groupKeys?: G[];
+  groupedOptions?: Map<G, T[]>;
+  toggle(option: T): void;
+  ref(option: T): RefObject<HTMLElement | null>;
 };
 
-export type Select = {
-  mounted: boolean;
-  trigger: HTMLElement | null;
-  content: HTMLElement | null;
-  options: (SelectOption & {
-    active: boolean;
-  })[];
-  tab: (value: string, direction: 1 | 0 | -1) => void;
-  toggle: (value: string) => void;
-  register: (option: SelectOption) => () => void;
-};
-
-const SelectContext = createContext<Select>({
-  mounted: false,
-  trigger: null,
-  content: null,
-  options: [],
-  tab() {},
-  toggle() {},
-  register: () => () => {},
-});
-
-export function useSelect() {
-  return useContext(SelectContext);
-}
-
-export function useSelectOption(base: SelectOption) {
-  const select = useSelect();
-
-  useEffect(() => select.register(base), [base.value, base.textValue]);
-
-  return {
-    active: false,
-    ...base,
-    ...select.options.find((option) => option.value === base.value),
-    onToggle() {
-      select.toggle(base.value);
-    },
-  };
-}
-
-export type SelectProps = Omit<
+export type SelectProps<ID extends string, T, G> = Omit<
   ComponentProps<typeof PopoverPrimitive.Content>,
-  "content" | "ref"
+  "content" | "children"
 > & {
-  ref?: Ref<Select>;
   disabled?: boolean;
   autoFocus?: boolean;
-  placeholder?: string;
-  trigger?: ReactNode;
-  header?: ReactNode;
-  footer?: ReactNode;
-  left?: ReactNode;
-  right?: ReactNode;
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
-  onSelectOption?: (option: SelectOption) => void;
+
+  // data
+  options: T[];
+  optionId: (option: T) => ID;
+  onSelectOption?: (option: T) => void;
+  groupKey?: (option: T) => G;
+  groupId?: (groupKey: G) => string;
+
+  // slots
+  optionText?: Slot<(option: T, select: Select<T, G>) => ReactNode>;
+  option?: Slot<(option: T, select: Select<T, G>) => ReactNode>;
+  group?: Slot<
+    (group: G, options: ReactElement[], select: Select<T, G>) => ReactNode
+  >;
+  placeholder?: Slot<(select: Select<T, G>) => ReactNode>;
+  trigger?: Slot<(select: Select<T, G>) => ReactNode>;
+  header?: Slot<(select: Select<T, G>) => ReactNode>;
+  footer?: Slot<(select: Select<T, G>) => ReactNode>;
+  left?: Slot<(select: Select<T, G>) => ReactNode>;
+  right?: Slot<(select: Select<T, G>) => ReactNode>;
+  emptyState?: Slot<(select: Select<T, G>) => ReactNode>;
 } & (
-    | {
-        multiple?: false;
-        value?: string;
-        onValueChange?: (value: string) => void;
-      }
-    | {
-        multiple: true;
-        value?: string[];
-        onValueChange?: (value: string[]) => void;
-      }
+    | ({ multiple?: false } & Partial<BaseInputProps<ID>>)
+    | ({ multiple: true } & Partial<BaseInputProps<ID[]>>)
   );
 
-export function Select({
-  ref,
+export function Select<ID extends string, T, G>({
   disabled,
   autoFocus,
-  placeholder,
-  trigger = <Select.Trigger placeholder={placeholder} />,
-  children,
   className,
+
+  open: controlledOpen,
+  onOpenChange: onControlledOpenChange,
+
+  options,
+  optionId,
+  onSelectOption,
+  groupKey,
+  groupId,
+
+  optionText = (o) => <Text>{optionId(o)}</Text>,
+  option = (o, select) => (
+    <Select.Option option={o} select={select}>
+      {Slot.render(optionText, o, select)}
+    </Select.Option>
+  ),
+  group = (g, options) => (
+    <Col>
+      <Text>{String(g)}</Text>
+
+      {options}
+    </Col>
+  ),
+  placeholder = <Text color="muted">Selecione uma opção</Text>,
+  trigger = (select) =>
+    select.selectedOptions.length
+      ? select.selectedOptions.map((o, ix) => (
+          <>
+            {ix > 0 && ", "} {Slot.render(optionText, o, select)}
+          </>
+        ))
+      : Slot.render(placeholder, select),
   header,
   footer,
   left,
   right,
-  open: controlledOpen,
-  onOpenChange: onControlledOpenChange,
-  onSelectOption,
+  emptyState = <EmptyState size="s" title="Sem resultados" />,
+
+  label,
+  description,
+  error,
+  required,
+  touched,
+  onTouch,
   ...props
-}: SelectProps) {
+}: SelectProps<ID, T, G>) {
   const overlay = useOverlay();
   const boundary = useBoundary(Select.Boundary);
-  const [triggerElement, setTriggerElement] = useState<HTMLElement | null>(
-    null,
-  );
-  const [contentElement, setContentElement] = useState<HTMLElement | null>(
-    null,
-  );
-  const [mountedOptions, setMountedOptions] = useState<
-    (SelectOption & { id: number })[]
-  >([]);
-  const [localOpen, setLocalOpen] = useState(false);
 
+  const [localOpen, setLocalOpen] = useState(false);
   const open = controlledOpen ?? localOpen;
+
   const values = useMemo(
     () =>
       props.multiple
@@ -141,128 +132,108 @@ export function Select({
           : [],
     [props.multiple, props.value],
   );
-  const options = useMemo(
-    () =>
-      uniqueBy(mountedOptions, (option) => option.value)
-        .map((option) => ({
-          ...option,
-          active: values.includes(option.value),
-          element: contentElement?.querySelector<HTMLElement>(
-            `[data-value=${option.value}]`,
-          ),
-        }))
-        .sort((a, b) => {
-          if (a.element && b.element) {
-            const position = a.element.compareDocumentPosition(b.element);
-            if (position & Node.DOCUMENT_POSITION_FOLLOWING) return -1;
-            if (position & Node.DOCUMENT_POSITION_PRECEDING) return 1;
-          }
-          if (!a.element) return 1;
-          if (!b.element) return -1;
-          return 0;
-        }),
-    [values, mountedOptions, contentElement],
-  );
-  const select = useMemo<Select>(
+
+  const elementsRef = useRef(new Map<ID, HTMLElement>());
+  const select: Select<T, G> = useMemo(
     () => ({
-      mounted: !!triggerElement && !!contentElement,
-      trigger: triggerElement,
-      content: contentElement,
       options,
-      tab(value, direction) {
-        const visibleOptions = options.filter(
-          hasNonNullableProperty("element"),
-        );
-        const currentIndex = visibleOptions.findIndex(
-          (option) => option.value === value,
-        );
-        visibleOptions[
-          (visibleOptions.length + currentIndex + direction) %
-            visibleOptions.length
-        ]?.element.focus();
+      groupIds:
+        groupKey && groupId && unique(options.map(groupKey)).map(groupId),
+      groupKeys: groupKey && unique(options.map(groupKey)),
+      groupedOptions:
+        groupKey &&
+        options
+          .map((option) => [groupKey(option), option] as const)
+          .reduce((map, [id, t]) => {
+            if (map.has(id)) map.get(id)?.push(t);
+            else map.set(id, [t]);
+            return map;
+          }, new Map<G, T[]>([])),
+      selectedOptions: values
+        .map((oid) => options.find((o) => oid === optionId(o)))
+        .filter(isNonNullable),
+      toggle(option) {
+        if (disabled) return;
+        const oid = optionId(option);
+        if (!props.multiple) {
+          if (!values.includes(oid)) props.onChangeValue?.(oid);
+        } else {
+          if (values.includes(oid))
+            props.onChangeValue?.(values.filter((id) => id !== oid));
+          else props.onChangeValue?.([...values, oid]);
+        }
+        onSelectOption?.(option);
       },
-      toggle(value) {
-        const option = options.find((option) => option.value === value);
-        if (option) onSelectOption?.(option);
-
-        if (values.includes(value))
-          onValueChange(values.filter((v) => v !== value));
-        else onValueChange([value, ...values]);
-      },
-      register(option) {
-        const id = Math.random();
-        setMountedOptions((options) => [
-          ...options.filter((option) => option.value === option.value),
-          { ...option, id },
-        ]);
-        return () =>
-          setMountedOptions((options) => [
-            ...options.filter((option) => option.id === id),
-          ]);
-      },
+      ref: (option) => ({
+        get current() {
+          return elementsRef.current.get(optionId(option)) ?? null;
+        },
+        set current(element) {
+          if (element) elementsRef.current.set(optionId(option), element);
+          else elementsRef.current.delete(optionId(option));
+        },
+      }),
     }),
-    [triggerElement, contentElement, options],
+    [options, values],
   );
 
-  const onValueChange = (values: string[]) => {
-    if (disabled) return;
-    if (props.multiple) props.onValueChange?.(values);
-    else if (values[0]) props.onValueChange?.(values[0]);
-  };
   const onOpenChange = (open: boolean) => {
     if (open && disabled) return;
     if (open && autoFocus) {
-      options
-        .find(
-          (option) => values.findIndex((value) => value === option.value) > -1,
-        )
-        ?.element?.focus();
+      // focus on first selected option
+      const firstSelected = options.find((option) =>
+        select.selectedOptions.includes(option),
+      );
+      if (firstSelected) select.ref(firstSelected).current?.focus();
     }
     onControlledOpenChange?.(open);
     setLocalOpen(open);
+    if (!open) onTouch?.();
   };
+
   const onKeyDown = (e: KeyboardEvent<HTMLElement>) => {
     if (e.defaultPrevented || disabled) return;
-
-    const selectedOption =
-      options.find((option) => option.element === document.activeElement) ??
-      options[options.length - 1];
-
-    if (!selectedOption) return;
-
+    const selectedOptionIndex = options.findIndex(
+      (option) => select.ref(option)?.current === document.activeElement,
+    );
+    if (selectedOptionIndex === -1) return;
     const isMod = e.shiftKey || e.metaKey || e.ctrlKey;
     const isOnlyShift = e.shiftKey && !e.metaKey && !e.ctrlKey;
-    if ((e.key === "ArrowUp" && !isMod) || (e.key === "Tab" && !isMod))
-      select.tab(selectedOption.value, -1);
-    else if (
-      (e.key === "ArrowDown" && !isMod) ||
-      (e.key === "Tab" && isOnlyShift)
-    )
-      select.tab(selectedOption.value, 1);
-    else return;
-    e.preventDefault();
+    const shiftOffset =
+      (e.key === "ArrowUp" && !isMod) || (e.key === "Tab" && isOnlyShift)
+        ? -1
+        : (e.key === "ArrowDown" && !isMod) || (e.key === "Tab" && !isMod)
+          ? 1
+          : null;
+    if (shiftOffset) {
+      const option =
+        options[
+          (selectedOptionIndex + shiftOffset + options.length) % options.length
+        ];
+      if (option) select.ref(option).current?.focus();
+      e.preventDefault();
+    }
   };
 
-  useImperativeHandle(ref, () => select, [select]);
-
   return (
-    <SelectContext.Provider value={select}>
+    <Field htmlFor={props.id} {...{ label, description, error, required }}>
       <PopoverPrimitive.Root open={open} onOpenChange={onOpenChange}>
-        <PopoverPrimitive.Trigger ref={setTriggerElement} asChild>
+        <PopoverPrimitive.Trigger asChild>
           <span
             tabIndex={0}
             className={[styles.Trigger, className].filter(Boolean).join(" ")}
             data-state={open ? "open" : "closed"}
             data-disabled={disabled || undefined}
+            data-touched={touched || undefined}
             onKeyDown={onKeyDown}
           >
             <Row>
-              {left}
-              {trigger}
+              {Slot.render(left, select)}
+              {Slot.render(trigger, select)}
             </Row>
 
             <Row>
-              {right}
+              {Slot.render(right, select)}
               <IconControl
                 as="span"
                 className={styles.Icon}
@@ -277,7 +248,6 @@ export function Select({
 
         <PopoverPrimitive.Portal forceMount container={overlay.root}>
           <PopoverPrimitive.Content
-            ref={setContentElement}
             align="start"
             className={styles.Content}
             onOpenAutoFocus={(e) => e.preventDefault()}
@@ -286,91 +256,82 @@ export function Select({
             collisionBoundary={boundary.element}
             data-state={open ? "open" : "closed"}
             data-values={values.length ? values.join(";") : undefined}
-            {...omit(props, ["multiple", "value", "onValueChange"])}
+            {...omit(props, ["multiple", "value", "onChangeValue"])}
             onKeyDown={(e) => {
               props.onKeyDown?.(e);
               onKeyDown(e);
             }}
           >
             <div className={styles.Viewport} role="listbox">
-              {header}
-              {children}
-              {footer}
+              {Slot.render(header, select)}
+              {select.options.length
+                ? groupBy(
+                    select.options.map(
+                      (o) =>
+                        [
+                          o,
+                          reactElement(
+                            Slot.render(option, o, select),
+                            optionId(o),
+                          ),
+                        ] as const,
+                    ),
+                    ([o]) => groupKey?.(o) ?? null,
+                  ).map(([g, items]) => (
+                    <Fragment key={(g && groupId?.(g)) ?? null}>
+                      {g
+                        ? Slot.render(
+                            group,
+                            g,
+                            items.map(([, element]) => element),
+                            select,
+                          )
+                        : items.flatMap(([, element]) => element)}
+                    </Fragment>
+                  ))
+                : Slot.render(emptyState, select)}
+              {Slot.render(footer, select)}
             </div>
           </PopoverPrimitive.Content>
         </PopoverPrimitive.Portal>
       </PopoverPrimitive.Root>
-    </SelectContext.Provider>
+    </Field>
   );
 }
 
-type SelectTriggerProps = {
-  placeholder?: ReactNode;
-  render?: (option: SelectOption) => ReactNode;
-  join?: (a: ReactNode, b: ReactNode) => ReactNode;
-};
-
-Select.Trigger = function SelectTrigger({
-  placeholder,
-  render = (option) => option.textValue ?? option.value,
-  join = (a, b) => (
-    <>
-      {a}, {b}
-    </>
-  ),
-}: SelectTriggerProps) {
-  const select = useSelect();
-  const activeOptions = select.options.filter((option) => option.active);
-  const [first, ...rest] = activeOptions;
-
-  if (!select.mounted) return <Text />;
-
-  if (!first)
-    return (
-      <Text as="div" color="muted">
-        {placeholder}
-      </Text>
-    );
-
-  return <Row gap={0}>{rest.map(render).reduce(join, render(first))}</Row>;
-};
-
-export type SelectItemProps = ComponentProps<"div"> & {
-  value: string;
+export type SelectOptionProps<T> = ComponentProps<"div"> & {
   disabled?: boolean;
-  textValue?: string;
+  option: T;
+  select?: Select<T, unknown>;
+  onToggle?: () => void;
 };
 
-Select.Item = function SelectItem({
-  value,
-  textValue,
+Select.Option = function SelectOption<T>({
   className,
   disabled,
+  select,
+  option,
   ...props
-}: SelectItemProps) {
-  const { active, onToggle } = useSelectOption({
-    value,
-    textValue,
-  });
-
+}: SelectOptionProps<T>) {
   return (
     <div
+      ref={(element) => {
+        if (select) select.ref(option).current = element;
+      }}
       tabIndex={0}
       aria-disabled={disabled || undefined}
       className={[styles.Item, className].filter(Boolean).join(" ")}
       data-disabled={disabled ? "" : undefined}
-      data-value={value}
-      data-text-value={textValue}
-      data-active={active || undefined}
+      data-selected={select?.selectedOptions.includes(option) || undefined}
       role="option"
       {...props}
       onClick={(e) => {
-        onToggle();
+        select?.toggle(option);
         props.onClick?.(e);
       }}
       onKeyDown={(e) => {
         if (e.key === "Enter" || e.key === " ") {
-          onToggle();
+          select?.toggle(option);
           e.preventDefault();
           e.stopPropagation();
         }
@@ -379,43 +340,19 @@ Select.Item = function SelectItem({
   );
 };
 
-export type SelectSectionProps = ColProps & {
+export type SelectGroupProps = ColProps & {
   label: ReactNode;
-  emptyState?: ReactNode;
 };
 
-Select.Section = function SelectSection({
-  ref,
+Select.Group = function SelectGroup({
   label,
-  emptyState,
   className,
   children,
   ...props
-}: SelectSectionProps) {
-  const [element, setElement] = useState<HTMLElement | null>(null);
-  const select = useSelect();
-
-  const visibleOptions = Array.from(
-    element?.querySelectorAll<HTMLElement>("[data-value]") ?? [],
-  )
-    .map((element) =>
-      select.options.map(
-        hasPropertyValue("value", element.dataset["value"] ?? ""),
-      ),
-    )
-    .filter(isNonNullable);
-  const activeElement = element?.querySelector("[data-active]");
-
+}: SelectGroupProps) {
   return (
     <Col
-      ref={(element) => {
-        setElement(element);
-        if (ref instanceof Function) ref(element);
-        else if (ref) ref.current = element;
-      }}
       className={[styles.Section, className].filter(Boolean).join(" ")}
-      data-active={!!activeElement}
-      data-empty={!visibleOptions.length}
       role="option"
       {...props}
     >
@@ -423,11 +360,15 @@ Select.Section = function SelectSection({
         <Text as="h5">{label}</Text>
       </Row>
 
-      {!visibleOptions.length && emptyState}
-
       <div className={styles.GroupContent}>{children}</div>
     </Col>
   );
 };
 
 Select.Boundary = createBoundary();
+
+type ReactElement = React.ReactElement & { key: string | null };
+
+function reactElement(children: ReactNode, key: string | null): ReactElement {
+  return <Fragment key={key}>{children}</Fragment>;
+}

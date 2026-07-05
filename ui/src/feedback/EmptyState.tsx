@@ -2,12 +2,12 @@ import { ReactNode } from "react";
 import { BiSearch } from "react-icons/bi";
 import { IconControl } from "../display/IconControl";
 import { Text } from "../display/Text";
-import { Col, ColProps } from "../layout/FlexBox";
+import { Col, ColProps, Row } from "../layout/FlexBox";
 import { Color } from "../utils/css";
 
 export type EmptyStateProps = ColProps & {
   color?: Color | "muted";
-  size: "m" | "l";
+  size: "s" | "m" | "l" | "xl";
   icon?: ReactNode;
   title: ReactNode;
   children?: ReactNode;
@@ -21,33 +21,37 @@ export function EmptyState({
   children,
   ...props
 }: EmptyStateProps) {
+  const TitleWrapper = size === "s" ? Row : Col;
   return (
-    <Col alignX="center" gap={2} {...props}>
-      {icon && (
-        <IconControl
-          as="div"
-          mb={1}
-          color={color}
-          size="auto"
-          height={
-            {
-              m: 64,
-              l: 86,
-            }[size]
-          }
-        >
-          {icon}
-        </IconControl>
-      )}
+    <Col alignX="center" gap={2} p={2} {...props}>
+      <TitleWrapper alignY="center">
+        {icon && (
+          <IconControl
+            as="div"
+            color={color}
+            size="auto"
+            height={
+              {
+                s: 16,
+                m: 32,
+                l: 86,
+                xl: 64,
+              }[size]
+            }
+          >
+            {icon}
+          </IconControl>
+        )}
 
-      <Text
-        as="div"
-        size={size === "l" ? "h4" : "body"}
-        font="sans-serif"
-        color={color}
-      >
-        {title}
-      </Text>
+        <Text
+          as="div"
+          size={size === "l" ? "h4" : "body"}
+          font="sans-serif"
+          color={color}
+        >
+          {title}
+        </Text>
+      </TitleWrapper>
 
       {children}
     </Col>

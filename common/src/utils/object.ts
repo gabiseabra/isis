@@ -65,3 +65,9 @@ export function autoBind<T extends object>(self: T): T {
     return self;
   }, self);
 }
+
+export function entries<T extends object>(object: T): [keyof T, T[keyof T]][] {
+  const out: [keyof T, T[keyof T]][] = [];
+  for (const key in object) out.push([key, object[key]]);
+  return out;
+}

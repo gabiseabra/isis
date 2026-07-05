@@ -3,19 +3,19 @@ import { useState } from "react";
 import { Card } from "../layout/Card";
 import { Select, type SelectProps } from "./Select";
 
-type SelectStoryProps = Pick<SelectProps, "disabled" | "placeholder">;
+const demoOptions = [
+  { value: "first", textValue: "First option" },
+  { value: "second", textValue: "Second option" },
+  { value: "third", textValue: "Third option" },
+  { value: "four", textValue: "Fourth option" },
+];
 
-const DemoOptions = () =>
-  [
-    { value: "first", textValue: "First option" },
-    { value: "second", textValue: "Second option" },
-    { value: "third", textValue: "Third option" },
-    { value: "four", textValue: "Fourth option" },
-  ].map((option) => (
-    <Select.Item key={option.value} {...option}>
-      {option.textValue}
-    </Select.Item>
-  ));
+type DemoOption = (typeof demoOptions)[number];
+
+type SelectStoryProps = Pick<
+  SelectProps<DemoOption["value"], DemoOption, never>,
+  "disabled" | "placeholder"
+>;
 
 const meta: Meta<SelectStoryProps> = {
   title: "Form/Select",
@@ -32,9 +32,15 @@ export default meta;
 function SelectStory(props: SelectStoryProps) {
   const [value, setValue] = useState("fisrt");
   return (
-    <Select {...props} value={value} onValueChange={setValue}>
-      <DemoOptions />
-    </Select>
+    <Select
+      {...props}
+      autoFocus
+      options={demoOptions}
+      optionText={(option) => option.textValue}
+      optionId={(option) => option.value}
+      value={value}
+      onChangeValue={setValue}
+    />
   );
 }
 
@@ -45,9 +51,16 @@ export const Default: Story = {
 function MultiSelectStory(props: SelectStoryProps) {
   const [values, setValues] = useState<string[]>([]);
   return (
-    <Select {...props} multiple value={values} onValueChange={setValues}>
-      <DemoOptions />
-    </Select>
+    <Select
+      {...props}
+      autoFocus
+      options={demoOptions}
+      optionText={(option) => option.textValue}
+      optionId={(option) => option.value}
+      multiple
+      value={values}
+      onChangeValue={setValues}
+    />
   );
 }
 
