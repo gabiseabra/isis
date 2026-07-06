@@ -6,7 +6,10 @@ import styles from "./Checkbox.module.scss";
 import { Field } from "./Field";
 import { BaseInputProps } from "./use-form";
 
-export type CheckboxProps = ComponentProps<typeof CheckboxPrimitive.Root> &
+export type CheckboxProps = Omit<
+  ComponentProps<typeof CheckboxPrimitive.Root>,
+  "value"
+> &
   BaseInputProps<boolean>;
 
 export function Checkbox({
@@ -25,7 +28,7 @@ export function Checkbox({
     <Field {...{ description, error }}>
       <Row alignY="center" className={styles.Checkbox}>
         <CheckboxPrimitive.Root
-          value={value}
+          checked={value}
           onCheckedChange={onChangeValue}
           className={[styles.Root, className].filter(Boolean).join(" ")}
           data-touched={touched || undefined}

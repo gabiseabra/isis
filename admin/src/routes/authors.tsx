@@ -1,18 +1,16 @@
 import { ID } from "@isis/common/utils/id";
 import { Text } from "@isis/ui/display/Text";
-import { EmptyState } from "@isis/ui/feedback/EmptyState";
 import { Button } from "@isis/ui/form/Button";
 import { Input } from "@isis/ui/form/Input";
 import { Col, Row } from "@isis/ui/layout/FlexBox";
 import { Pagination } from "@isis/ui/layout/Pagination";
-import { Table } from "@isis/ui/layout/Table";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { BiPlus, BiSearch } from "react-icons/bi";
-import { TbListSearch } from "react-icons/tb";
 import { Link, useNavigate } from "react-router";
 import { useDebounceValue } from "usehooks-ts";
 import { Loading } from "../components/layout/Loading";
+import { AuthorsTable } from "../components/tables/AuthorsTable";
 import { authLoader } from "../loaders/authLoader";
 import { orpcQuery } from "../orpc/client";
 
@@ -49,45 +47,9 @@ export function Component() {
         </Link>
       </Row>
 
-      <Table
-        columns={[
-          "id",
-          "name",
-          "birthYear",
-          "deathYear",
-          "createdAt",
-          "updatedAt",
-        ]}
+      <AuthorsTable
         rows={authorsQuery.data?.items ?? []}
         loading={authorsQuery.isFetching}
-        headerCell={(col) =>
-          ({
-            id: "ID",
-            name: "Nome",
-            birthYear: "Nascimento",
-            deathYear: "Morte",
-            createdAt: "Criado",
-            updatedAt: "Modificado",
-          })[col]
-        }
-        cell={(row, col) =>
-          ({
-            id: ID.parse(row.id).id,
-            name: row.name,
-            birthYear: row.birthYear ?? "—",
-            deathYear: row.deathYear ?? "—",
-            createdAt: row.createdAt.toLocaleDateString(),
-            updatedAt: row.updatedAt.toLocaleDateString(),
-          })[col]
-        }
-        emptyState={
-          <EmptyState
-            py={4}
-            size="l"
-            icon={<TbListSearch />}
-            title="Sem resultados"
-          />
-        }
         header={
           <Input left={<BiSearch />} value={query} onChangeValue={setQuery} />
         }

@@ -33,10 +33,13 @@ export type TableProps<Row, Col> = ComponentProps<"table"> & {
   thead?: Slot<(table: Table<Row, Col>) => ReactNode>;
   tfoot?: Slot<(table: Table<Row, Col>) => ReactNode>;
   header?: Slot<(table: Table<Row, Col>) => ReactNode>;
+  // replaces content where headerCell would fit
+  colmnHeader?: Slot<(table: Table<Row, Col>) => ReactNode>;
   headerCell?: Slot<(col: Col, table: Table<Row, Col>) => ReactNode>;
   footer?: Slot<(table: Table<Row, Col>) => ReactNode>;
   cell: Slot<(row: Row, col: Col, table: Table<Row, Col>) => ReactNode>;
   index?: Slot<(row: Row, index: number, table: Table<Row, Col>) => ReactNode>;
+  indexHeader?: Slot<(table: Table<Row, Col>) => ReactNode>;
 };
 
 export function Table<Row, Col extends ID>({
@@ -54,10 +57,12 @@ export function Table<Row, Col extends ID>({
   thead,
   tfoot,
   header,
+  colmnHeader,
   headerCell,
   footer,
   cell,
   index,
+  indexHeader,
 
   className,
   style,
@@ -103,13 +108,30 @@ export function Table<Row, Col extends ID>({
             </Table.Row>
           )}
 
-          {headerCell && (
+          {colmnHeader ? (
+            <Table.Row>
+              {index && (
+                <Table.Cell as="th" data-index>
+                  {Slot.render(indexHeader, table)}
+                </Table.Cell>
+              )}
+              <Table.Cell as="th" colSpan={colSpan - (index ? 1 : 0)}>
+                {Slot.render(colmnHeader, table)}
+              </Table.Cell>
+            </Table.Row>
+          ) : headerCell ? (
             <Table.Header
               table={table}
               cell={(col) => Slot.render(headerCell, col, table)}
-              left={index && <Table.Cell as="th" data-index />}
+              left={
+                index && (
+                  <Table.Cell as="th" data-index>
+                    {Slot.render(indexHeader, table)}
+                  </Table.Cell>
+                )
+              }
             />
-          )}
+          ) : null}
         </thead>
       )}
 
@@ -133,7 +155,7 @@ export function Table<Row, Col extends ID>({
             return (
               <Table.Row key={getId(row, i)}>
                 {index && (
-                  <Table.Cell as="th" data-index>
+                  <Table.Cell as="td" data-index>
                     {Slot.render(index, row, i, table)}
                   </Table.Cell>
                 )}
