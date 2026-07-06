@@ -7,7 +7,7 @@ import { Field } from "./Field";
 import { BaseInputProps } from "./use-form";
 
 export type CheckboxProps = ComponentProps<typeof CheckboxPrimitive.Root> &
-  Partial<BaseInputProps<boolean>>;
+  BaseInputProps<boolean>;
 
 export function Checkbox({
   className,

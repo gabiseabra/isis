@@ -17,8 +17,8 @@ export type DateInputProps = Omit<
   size?: "s" | "m" | "l";
   closeOnSelect?: boolean;
 } & (
-    | ({ mode?: "single" } & Partial<BaseInputProps<Date>>)
-    | ({ mode: "range" } & Partial<BaseInputProps<DateRange>>)
+    | ({ mode?: "single" } & BaseInputProps<Date>)
+    | ({ mode: "range" } & BaseInputProps<DateRange>)
   );
 
 export function DateInput({

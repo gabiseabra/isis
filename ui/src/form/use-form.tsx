@@ -1,3 +1,4 @@
+import { WithRequired } from "@isis/common/types/object";
 import { hash } from "@isis/common/utils/hash";
 import { keys } from "@isis/common/utils/object";
 import {
@@ -19,17 +20,17 @@ export type UseFormOptions<T extends AnySchema> = {
 };
 
 export type BaseInputProps<T> = {
-  id: string;
+  id?: string;
   label?: ReactNode;
   description?: ReactNode;
   error?: ReactNode;
 
-  required: boolean;
+  required?: boolean;
   value?: T;
-  onChangeValue(value: T): void;
+  onChangeValue?(value: T): void;
 
-  touched: boolean;
-  onTouch(): void;
+  touched?: boolean;
+  onTouch?(): void;
 };
 
 export type Form<T extends AnySchema> = {
@@ -37,7 +38,9 @@ export type Form<T extends AnySchema> = {
   touched: Set<keyof T>;
   submit(e: SubmitEvent): void;
   reset(): void;
-  register<K extends keyof T>(field: K): BaseInputProps<FormValue<T>[K]>;
+  register<K extends keyof T>(
+    field: K,
+  ): WithRequired<BaseInputProps<FormValue<T>[K]>, "id" | "onChangeValue">;
   setValue<K extends keyof T>(field: K, value: FormValue<T>[K]): void;
   getValue<K extends keyof T>(field: K): FormValue<T>[K] | undefined;
   hasUnsavedChanges: boolean;

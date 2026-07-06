@@ -6,7 +6,7 @@ import styles from "./Textarea.module.scss";
 import { BaseInputProps } from "./use-form";
 
 export type TextareaProps = ComponentProps<"textarea"> &
-  Partial<BaseInputProps<string>> & {
+  BaseInputProps<string> & {
     autoGrow?: boolean;
     variant?: "default" | "unstyled";
   } & css.PaddingProps &
