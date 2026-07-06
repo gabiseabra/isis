@@ -4,16 +4,14 @@ import { mergeConfig } from "vite";
 
 const config: StorybookConfig = {
   framework: "@storybook/react-vite",
-  stories: ["../src/**/*.mdx", "../src/**/*.stories.@(ts|tsx)"],
+  stories: ["../src/**/*.stories.@(ts|tsx)"],
   addons: ["@storybook/addon-docs"],
   core: {
     builder: "@storybook/builder-vite",
+    allowedHosts: true,
   },
   viteFinal: (config) =>
     mergeConfig(config, {
-      optimizeDeps: {
-        exclude: ["@isis/common"],
-      },
       resolve: {
         alias: {
           "@isis/common": fileURLToPath(
