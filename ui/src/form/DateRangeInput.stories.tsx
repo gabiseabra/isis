@@ -1,7 +1,6 @@
 import { type DateRange } from "@daypicker/react";
 import type { Meta, StoryObj } from "@storybook/react";
 import { useState } from "react";
-import { Col } from "../layout/FlexBox";
 import { DateRangeInput, type DateRangeInputProps } from "./DateRangeInput";
 
 type DateRangeInputStoryArgs = Pick<

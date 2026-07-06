@@ -1,4 +1,3 @@
-import "@daypicker/react/dist/style.css";
 import { useRef, useState, type ComponentProps } from "react";
 import { BiCalendar } from "react-icons/bi";
 import z from "zod";

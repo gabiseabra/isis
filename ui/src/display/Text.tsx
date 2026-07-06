@@ -1,5 +1,5 @@
 import { omit } from "@isis/common/utils/object";
-import { ComponentPropsWithoutRef, HTMLAttributes, Ref } from "react";
+import { ComponentProps, HTMLAttributes, Ref } from "react";
 import * as css from "../utils/css";
 import styles from "./Text.module.scss";
 
@@ -92,7 +92,7 @@ export type Annotations = {
   underline?: boolean;
   code?: boolean;
 };
-export type SpanProps = Annotations & ComponentPropsWithoutRef<"span">;
+export type SpanProps = Annotations & ComponentProps<"span">;
 
 /**
  * An inline element for text with annotations.
