@@ -11,18 +11,12 @@ const meta = {
     checked: false,
     disabled: false,
   },
-  render: (args) => <Checkbox {...args} />,
-  decorators: [
-    (Story) => (
-      <Col p={4} gap={1}>
-        <Story />
-      </Col>
-    ),
-  ],
 } satisfies Meta<CheckboxStoryArgs>;
 
 type Story = StoryObj<typeof meta>;
 
 export default meta;
 
-export const Default: Story = {};
+export const Default: Story = {
+  render: (args) => <Checkbox {...args} />,
+};

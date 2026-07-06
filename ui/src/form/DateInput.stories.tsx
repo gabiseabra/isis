@@ -1,10 +1,9 @@
-import { type DateRange } from "@daypicker/react";
 import type { Meta, StoryObj } from "@storybook/react";
 import { useState } from "react";
 import { Col } from "../layout/FlexBox";
 import { DateInput, type DateInputProps } from "./DateInput";
 
-type DateInputStoryProps = Pick<
+type DateInputStoryArgs = Pick<
   DateInputProps,
   "closeOnSelect" | "disabled" | "placeholder" | "size" | "variant"
 >;
@@ -29,35 +28,16 @@ const meta = {
       options: ["default", "unstyled"],
     },
   },
-  decorators: [
-    (Story) => (
-      <Col p={4} gap={1}>
-        <Story />
-      </Col>
-    ),
-  ],
-} satisfies Meta<DateInputStoryProps>;
+} satisfies Meta<DateInputStoryArgs>;
 
 type Story = StoryObj<typeof meta>;
 
 export default meta;
 
-function DateInputStory(props: DateInputStoryProps) {
+function DateInputStory(props: DateInputStoryArgs) {
   const [value, setValue] = useState<Date>();
 
   return <DateInput {...props} value={value} onChangeValue={setValue} />;
 }
 
 export const Default: Story = {};
-
-function DateRangeInputStory(props: DateInputStoryProps) {
-  const [value, setValue] = useState<DateRange>();
-
-  return (
-    <DateInput {...props} mode="range" value={value} onChangeValue={setValue} />
-  );
-}
-
-export const Range: Story = {
-  render: (args) => <DateRangeInputStory {...args} />,
-};

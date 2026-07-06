@@ -1,5 +1,4 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { Col } from "../layout/FlexBox";
 import { Table } from "../layout/Table";
 import { Input, type InputProps } from "./Input";
 
@@ -17,7 +16,6 @@ const meta = {
     disabled: false,
     variant: "default",
   },
-  render: (args) => <Input {...args} />,
   argTypes: {
     size: {
       control: "select",
@@ -32,20 +30,15 @@ const meta = {
       options: ["default", "unstyled"],
     },
   },
-  decorators: [
-    (Story) => (
-      <Col p={4} gap={1}>
-        <Story />
-      </Col>
-    ),
-  ],
 } satisfies Meta<InputStoryArgs>;
 
 type Story = StoryObj<typeof meta>;
 
 export default meta;
 
-export const Default: Story = {};
+export const Default: Story = {
+  render: (args) => <Input {...args} />,
+};
 
 export const WithSlots: Story = {
   render: (args) => <Input {...args} left="left" right="right" />,

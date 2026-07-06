@@ -1,6 +1,6 @@
 import { type ComponentProps, type ReactNode } from "react";
 import { Field, FieldProps } from "./Field";
-import styles from "./Input.module.scss";
+import { InputWrapper } from "./InputWrapper";
 import { BaseInputProps } from "./use-form";
 
 export type InputProps = Omit<ComponentProps<"input">, "size"> &
@@ -16,7 +16,6 @@ export type InputProps = Omit<ComponentProps<"input">, "size"> &
 export function Input({
   size = "m",
   variant = "default",
-  className = "",
   left,
   right,
   required,
@@ -36,18 +35,14 @@ export function Input({
       {...{ label, description, error, required }}
       {...fieldProps}
     >
-      <span
-        className={styles.InputWrapper}
-        data-size={size}
-        data-variant={variant}
+      <InputWrapper
+        size={size}
+        variant={variant}
+        disabled={props.disabled}
+        left={left}
+        right={right}
       >
-        {!!left && (
-          <span className={[styles.Slot, styles.LeftSlot].join(" ")}>
-            {left}
-          </span>
-        )}
         <input
-          className={[styles.Input, className].filter(Boolean).join(" ")}
           required={required}
           data-touched={touched || undefined}
           autoComplete="off"
@@ -61,12 +56,7 @@ export function Input({
             onTouch?.();
           }}
         />
-        {!!right && (
-          <span className={[styles.Slot, styles.RightSlot].join(" ")}>
-            {right}
-          </span>
-        )}
-      </span>
+      </InputWrapper>
     </Field>
   );
 }

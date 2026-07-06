@@ -1,26 +1,27 @@
+import { type DateRange } from "@daypicker/react";
 import "@daypicker/react/dist/style.css";
 import { useRef, useState, type ComponentProps } from "react";
 import { BiCalendar } from "react-icons/bi";
-import z from "zod";
 import { Calendar } from "../display/Calendar";
-import { FormattedDate } from "../display/FormattedDate";
+import { FormattedDateRange } from "../display/FormattedDateRange";
 import { Popover } from "../overlay/Popover";
+import { DateInput } from "./DateInput";
 import { Field, FieldProps } from "./Field";
 import { InputWrapper } from "./InputWrapper";
 import { BaseInputProps } from "./use-form";
 
-export type DateInputProps = Omit<
+export type DateRangeInputProps = Omit<
   ComponentProps<"input">,
   "size" | "value" | "defaultValue"
 > &
-  BaseInputProps<Date> & {
+  BaseInputProps<DateRange> & {
     size?: "s" | "m" | "l";
     variant?: "default" | "unstyled";
     closeOnSelect?: boolean;
     fieldProps?: Partial<FieldProps>;
   };
 
-export function DateInput({
+export function DateRangeInput({
   size = "m",
   variant = "default",
   closeOnSelect,
@@ -35,11 +36,11 @@ export function DateInput({
   value,
   onChangeValue,
   ...props
-}: DateInputProps) {
+}: DateRangeInputProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [open, setOpen] = useState(false);
   const [displayValue, setDisplayValue] = useState(
-    value ? FormattedDate.format(value) : "",
+    value && FormattedDateRange.format(value),
   );
 
   const close = () => {
@@ -62,13 +63,13 @@ export function DateInput({
         align="center"
         content={
           <Calendar
-            mode="single"
-            defaultMonth={value ?? new Date()}
+            mode="range"
+            defaultMonth={value?.from ?? value?.to ?? new Date()}
             selected={value}
-            onSelect={(date) => {
-              if (date) {
-                onChangeValue?.(date);
-                setDisplayValue(FormattedDate.format(date));
+            onSelect={(range) => {
+              if (range) {
+                onChangeValue?.(range);
+                setDisplayValue(FormattedDateRange.format(range));
                 close();
               }
             }}
@@ -95,8 +96,8 @@ export function DateInput({
             onChange={(e) => {
               const nextValue = e.currentTarget.value;
               setDisplayValue(nextValue);
-              const date = DateInput.parse(nextValue);
-              if (date) onChangeValue?.(date);
+              const range = DateRangeInput.parse(nextValue);
+              if (range) onChangeValue?.(range);
             }}
             data-touched={touched || undefined}
             autoComplete="off"
@@ -109,8 +110,13 @@ export function DateInput({
   );
 }
 
-DateInput.parse = function parseDate(value: string): Date | null {
-  const result = z.coerce.date().safeParse(value);
-  if (!result.success) return null;
-  return result.data;
+DateRangeInput.parse = function parseDateRange(
+  range: string,
+): DateRange | null {
+  const [fromValue, toValue] = range.split(/\s+[–-]\s+/, 2);
+  const from = DateInput.parse(fromValue);
+  if (!from) return null;
+
+  const to = toValue ? DateInput.parse(toValue) : null;
+  return to ? { from, to } : { from };
 };

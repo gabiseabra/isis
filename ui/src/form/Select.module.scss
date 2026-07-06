@@ -1,76 +1,5 @@
 @use "../../styles/mixins/shadow" as shadow;
 
-.Trigger {
-  display: inline-flex;
-  box-sizing: border-box;
-  width: 100%;
-  height: 32px;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space);
-  padding: 0 calc(var(--space) * 2);
-  border: 1px solid var(--color-divider);
-  border-radius: var(--radius);
-  background: var(--color-surface-0);
-  color: var(--color-text);
-  font: inherit;
-  cursor: pointer;
-  transition:
-    border-color 150ms ease-out,
-    box-shadow 300ms ease-out;
-  @include shadow.boxShadow(0);
-
-  &:not([data-disabled]):hover {
-    border-color: color-mix(
-      in srgb,
-      var(--color-highlight) 50%,
-      var(--color-divider)
-    );
-  }
-
-  &:focus,
-  &:focus-visible,
-  &[data-state="open"] {
-    outline: none;
-    border-color: var(--color-highlight);
-    @include shadow.boxShadow(0.5, 0.5);
-  }
-
-  &[data-placeholder] {
-    color: var(--color-muted);
-  }
-
-  &[data-disabled] {
-    color: var(--color-disabled);
-    cursor: not-allowed;
-  }
-
-  &:not([data-disabled]):hover .Icon,
-  &[data-state="open"] .Icon {
-    color: var(--color-highlight);
-  }
-
-  &[data-state="open"] .Icon {
-    transform: rotate(180deg);
-  }
-}
-
-.Trigger[data-variant="unstyled"] {
-  border-color: transparent;
-  border-radius: 0;
-  background: transparent;
-  box-shadow: none;
-}
-
-.Trigger[data-variant="unstyled"]:not([data-disabled]):hover,
-.Trigger[data-variant="unstyled"]:focus,
-.Trigger[data-variant="unstyled"]:focus-visible,
-.Trigger[data-variant="unstyled"][data-state="open"],
-.Trigger[data-variant="unstyled"][data-touched]:invalid {
-  border-color: transparent;
-  box-shadow: none;
-}
-
 .Icon {
   transition:
     color 150ms ease-out,
@@ -79,7 +8,7 @@
 
 .Content {
   z-index: 1000;
-  overflow: hidden;
+  overflow-y: auto;
   min-width: var(--radix-popper-anchor-width);
   max-height: min(var(--radix-popper-available-height), 320px);
   transform-origin: var(--radix-popper-transform-origin);

@@ -40,7 +40,7 @@
 
 .Body {
   box-sizing: border-box;
-  max-height: min(280px, var(--radix-popover-content-available-height));
+  max-height: var(--radix-popover-content-available-height);
   overflow: auto;
   padding: var(--space) calc(var(--space) * 2);
   border-radius: inherit;

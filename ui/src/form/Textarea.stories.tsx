@@ -22,21 +22,15 @@ const meta = {
       options: ["default", "unstyled"],
     },
   },
-  render: (args) => <Textarea {...args} />,
-  decorators: [
-    (Story) => (
-      <Col p={4} gap={1}>
-        <Story />
-      </Col>
-    ),
-  ],
 } satisfies Meta<TextareaStoryArgs>;
 
 type Story = StoryObj<typeof meta>;
 
 export default meta;
 
-export const Default: Story = {};
+export const Default: Story = {
+  render: (args) => <Textarea {...args} />,
+};
 
 export const AutoGrow: Story = {
   args: {
@@ -48,4 +42,5 @@ export const AutoGrow: Story = {
       exclude: ["autoGrow"],
     },
   },
+  render: (args) => <Textarea {...args} />,
 };

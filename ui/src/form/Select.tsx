@@ -21,6 +21,7 @@ import { createBoundary, useBoundary } from "../overlay/Boundary";
 import { useOverlay } from "../overlay/OverlayProvider";
 import { Slot } from "../utils/slot";
 import { Field, FieldProps } from "./Field";
+import { InputWrapper, InputWrapperProps } from "./InputWrapper";
 import styles from "./Select.module.scss";
 import { BaseInputProps } from "./use-form";
 
@@ -37,9 +38,10 @@ export type SelectProps<ID extends string, T, G> = Omit<
   ComponentProps<typeof PopoverPrimitive.Content>,
   "content" | "children"
 > & {
+  size?: InputWrapperProps["size"];
+  variant?: "default" | "unstyled";
   disabled?: boolean;
   autoFocus?: boolean;
-  variant?: "default" | "unstyled";
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
 
@@ -57,6 +59,7 @@ export type SelectProps<ID extends string, T, G> = Omit<
     (group: G, options: ReactElement[], select: Select<T, G>) => ReactNode
   >;
   placeholder?: Slot<(select: Select<T, G>) => ReactNode>;
+  triggerText?: Slot<(select: Select<T, G>) => ReactNode>;
   trigger?: Slot<(select: Select<T, G>) => ReactNode>;
   header?: Slot<(select: Select<T, G>) => ReactNode>;
   footer?: Slot<(select: Select<T, G>) => ReactNode>;
@@ -71,10 +74,10 @@ export type SelectProps<ID extends string, T, G> = Omit<
   );
 
 export function Select<ID extends string, T, G>({
+  size,
+  variant = "default",
   disabled,
   autoFocus,
-  variant = "default",
-  className,
 
   open: controlledOpen,
   onOpenChange: onControlledOpenChange,
@@ -85,6 +88,8 @@ export function Select<ID extends string, T, G>({
   groupKey,
   groupId,
 
+  touched,
+  onTouch,
   optionText = (o) => <Text>{optionId(o)}</Text>,
   option = (o, select) => (
     <Select.Option option={o} select={select}>
@@ -99,7 +104,7 @@ export function Select<ID extends string, T, G>({
     </Col>
   ),
   placeholder = <Text color="muted">Selecione uma opção</Text>,
-  trigger = (select) =>
+  triggerText = (select) =>
     select.selectedOptions.length
       ? select.selectedOptions.map((o, ix) => (
           <>
@@ -107,6 +112,18 @@ export function Select<ID extends string, T, G>({
           </>
         ))
       : Slot.render(placeholder, select),
+  trigger = (select) => (
+    <Select.Trigger
+      size={size}
+      variant={variant}
+      disabled={disabled}
+      empty={select.selectedOptions.length == 0}
+      left={Slot.render(left, select)}
+      right={Slot.render(right, select)}
+    >
+      {Slot.render(triggerText, select)}
+    </Select.Trigger>
+  ),
   header,
   footer,
   left,
@@ -117,8 +134,6 @@ export function Select<ID extends string, T, G>({
   description,
   error,
   required,
-  touched,
-  onTouch,
 
   fieldProps,
   ...props
@@ -183,6 +198,8 @@ export function Select<ID extends string, T, G>({
     [options, values],
   );
 
+  console.log(select);
+
   const onOpenChange = (open: boolean) => {
     if (open && disabled) return;
     if (open && autoFocus) {
@@ -228,33 +245,15 @@ export function Select<ID extends string, T, G>({
       {...fieldProps}
     >
       <PopoverPrimitive.Root open={open} onOpenChange={onOpenChange}>
-        <PopoverPrimitive.Trigger asChild>
-          <span
-            tabIndex={0}
-            className={[styles.Trigger, className].filter(Boolean).join(" ")}
-            data-state={open ? "open" : "closed"}
-            data-disabled={disabled || undefined}
-            data-touched={touched || undefined}
-            data-variant={variant}
-            onKeyDown={onKeyDown}
-          >
-            <Row>
-              {Slot.render(left, select)}
-              {Slot.render(trigger, select)}
-            </Row>
-
-            <Row>
-              {Slot.render(right, select)}
-              <IconControl
-                as="span"
-                className={styles.Icon}
-                color="muted"
-                size="s"
-              >
-                <BiChevronDown />
-              </IconControl>
-            </Row>
-          </span>
+        <PopoverPrimitive.Trigger
+          asChild
+          data-state={open ? "open" : "closed"}
+          data-disabled={disabled || undefined}
+          data-touched={touched || undefined}
+          data-variant={variant}
+          onKeyDown={onKeyDown}
+        >
+          {Slot.render(trigger, select)}
         </PopoverPrimitive.Trigger>
 
         <PopoverPrimitive.Portal forceMount container={overlay.root}>
@@ -309,6 +308,30 @@ export function Select<ID extends string, T, G>({
     </Field>
   );
 }
+
+type SelectTrigggerProps = InputWrapperProps;
+
+Select.Trigger = function SelectTrigger({
+  right,
+  ...props
+}: SelectTrigggerProps) {
+  return (
+    <InputWrapper
+      tabIndex={0}
+      style={{ cursor: props.disabled ? "not-allowed" : "pointer" }}
+      right={
+        <>
+          {right}
+
+          <IconControl className={styles.Icon} color="muted" size="s">
+            <BiChevronDown />
+          </IconControl>
+        </>
+      }
+      {...props}
+    />
+  );
+};
 
 export type SelectOptionProps<T> = ComponentProps<"div"> & {
   disabled?: boolean;

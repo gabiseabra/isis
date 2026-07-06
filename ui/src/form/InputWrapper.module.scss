@@ -18,7 +18,7 @@
   transition-delay: 0s;
   @include shadow.boxShadow(0);
 
-  &:not(:has(.Input:disabled)) {
+  &:not([data-disabled]) {
     &:hover {
       border-color: color-mix(
         in srgb,
@@ -27,37 +27,21 @@
       );
     }
 
+    &[data-active],
     &:focus-within {
       border-color: var(--color-highlight);
       @include shadow.boxShadow(0.5, 0.5);
+
+      .Slot {
+        color: var(--color-highlight);
+      }
     }
   }
 
-  &:has(.Input:disabled) {
+  &[data-disabled] {
     color: var(--color-disabled);
     background: var(--color-surface-1);
     cursor: not-allowed;
-  }
-}
-
-.Input {
-  box-sizing: border-box;
-  width: 100%;
-  min-width: 0;
-  border: none;
-  background: transparent;
-  color: currentColor;
-  font: inherit;
-  line-height: var(--input-height);
-  padding: var(--input-padding-y) var(--input-padding-x);
-  cursor: inherit;
-
-  &:focus {
-    outline: none;
-  }
-
-  &::placeholder {
-    color: var(--color-muted);
   }
 }
 
@@ -95,10 +79,6 @@
   transition-delay: 0s;
 }
 
-.InputWrapper:focus-within .Slot {
-  color: var(--color-highlight);
-}
-
 .InputWrapper:has([data-touched]:invalid) {
   border-color: var(--color-red);
 }
@@ -113,7 +93,7 @@
 
 @media (prefers-reduced-motion: reduce) {
   .InputWrapper,
-  .Input::placeholder,
+  .InputWrapper input::placeholder,
   .Slot {
     transition: none;
   }
@@ -132,4 +112,37 @@
 .InputWrapper[data-size="l"] {
   --input-height: calc(var(--line-height) * 1.25);
   --input-padding-y: var(--space);
+}
+
+.Content {
+  flex: 1;
+  width: stretch;
+  height: calc(var(--input-height));
+  padding: var(--input-padding-y) var(--input-padding-x);
+  box-sizing: content-box;
+}
+.Content > input {
+  box-sizing: border-box;
+  width: stretch;
+  min-width: 0;
+  border: none;
+  background: transparent;
+  color: currentColor;
+  font: inherit;
+  line-height: var(--input-height);
+  padding: var(--input-padding-y) var(--input-padding-x);
+  margin: calc(-1 * var(--input-padding-y)) calc(-1 * var(--input-padding-x));
+  cursor: inherit;
+
+  &:focus {
+    outline: none;
+  }
+
+  &::placeholder {
+    color: var(--color-muted);
+  }
+}
+
+.InputWrapper[data-empty] .Content {
+  color: var(--color-muted);
 }

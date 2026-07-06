@@ -12,25 +12,19 @@ const meta = {
     description: "",
     error: "",
   },
-  render: (args) => (
-    <Field id="field" {...args}>
-      <Input placeholder="Input" />
-    </Field>
-  ),
-  decorators: [
-    (Story) => (
-      <Col p={4} gap={1}>
-        <Story />
-      </Col>
-    ),
-  ],
 } satisfies Meta<FieldStoryArgs>;
 
 type Story = StoryObj<typeof meta>;
 
 export default meta;
 
-export const Default: Story = {};
+export const Default: Story = {
+  render: (args) => (
+    <Field htmlFor="field" {...args}>
+      <Input id="field" placeholder="Input" />
+    </Field>
+  ),
+};
 
 export const WithDescription: Story = {
   args: {
@@ -41,6 +35,11 @@ export const WithDescription: Story = {
       exclude: ["description"],
     },
   },
+  render: (args) => (
+    <Field htmlFor="field" {...args}>
+      <Input id="field" placeholder="Input" />
+    </Field>
+  ),
 };
 
 export const WithError: Story = {
@@ -52,4 +51,9 @@ export const WithError: Story = {
       exclude: ["error"],
     },
   },
+  render: (args) => (
+    <Field htmlFor="field" {...args}>
+      <Input id="field" placeholder="Input" />
+    </Field>
+  ),
 };
