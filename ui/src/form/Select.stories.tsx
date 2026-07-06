@@ -14,7 +14,7 @@ type DemoOption = (typeof demoOptions)[number];
 
 type SelectStoryProps = Pick<
   SelectProps<DemoOption["value"], DemoOption, never>,
-  "disabled" | "placeholder"
+  "disabled" | "placeholder" | "variant"
 >;
 
 const meta: Meta<SelectStoryProps> = {
@@ -22,6 +22,13 @@ const meta: Meta<SelectStoryProps> = {
   args: {
     placeholder: "Select option",
     disabled: false,
+    variant: "default",
+  },
+  argTypes: {
+    variant: {
+      control: "select",
+      options: ["default", "unstyled"],
+    },
   },
 };
 

@@ -66,6 +66,25 @@
   padding-right: var(--space);
 }
 
+.InputWrapper[data-variant="unstyled"] {
+  border-color: transparent;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.InputWrapper[data-variant="unstyled"]:not([data-disabled]):hover,
+.InputWrapper[data-variant="unstyled"]:not([data-disabled]):focus-within,
+.InputWrapper[data-variant="unstyled"][data-state="open"],
+.InputWrapper[data-variant="unstyled"]:has([data-touched]:invalid) {
+  border-color: transparent;
+  box-shadow: none;
+}
+
+.InputWrapper[data-variant="unstyled"][data-disabled] {
+  background: transparent;
+}
+
 .Slot {
   display: inline-flex;
   flex-shrink: 0;

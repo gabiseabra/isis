@@ -39,6 +39,7 @@ export type SelectProps<ID extends string, T, G> = Omit<
 > & {
   disabled?: boolean;
   autoFocus?: boolean;
+  variant?: "default" | "unstyled";
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
 
@@ -70,6 +71,7 @@ export type SelectProps<ID extends string, T, G> = Omit<
 export function Select<ID extends string, T, G>({
   disabled,
   autoFocus,
+  variant = "default",
   className,
 
   open: controlledOpen,
@@ -225,6 +227,7 @@ export function Select<ID extends string, T, G>({
             data-state={open ? "open" : "closed"}
             data-disabled={disabled || undefined}
             data-touched={touched || undefined}
+            data-variant={variant}
             onKeyDown={onKeyDown}
           >
             <Row>

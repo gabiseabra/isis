@@ -15,6 +15,7 @@ export type DateInputProps = Omit<
   "size" | "value" | "defaultValue"
 > & {
   size?: "s" | "m" | "l";
+  variant?: "default" | "unstyled";
   closeOnSelect?: boolean;
 } & (
     | ({ mode?: "single" } & BaseInputProps<Date>)
@@ -23,6 +24,7 @@ export type DateInputProps = Omit<
 
 export function DateInput({
   size = "m",
+  variant = "default",
   closeOnSelect,
   label,
   description,
@@ -115,6 +117,7 @@ export function DateInput({
           data-disabled={disabled || undefined}
           data-state={open ? "open" : "closed"}
           data-size={size}
+          data-variant={variant}
         >
           <input
             {...props}

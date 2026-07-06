@@ -6,7 +6,7 @@ import { DateInput, type DateInputProps } from "./DateInput";
 
 type DateInputStoryProps = Pick<
   DateInputProps,
-  "closeOnSelect" | "disabled" | "placeholder" | "size" | "minWidth"
+  "closeOnSelect" | "disabled" | "placeholder" | "size" | "variant"
 >;
 
 const meta = {
@@ -16,12 +16,17 @@ const meta = {
     placeholder: "Selecione uma data",
     disabled: false,
     closeOnSelect: false,
+    variant: "default",
   },
   render: (args) => <DateInputStory {...args} />,
   argTypes: {
     size: {
       control: "select",
       options: ["s", "m", "l"],
+    },
+    variant: {
+      control: "select",
+      options: ["default", "unstyled"],
     },
   },
   decorators: [

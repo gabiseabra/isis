@@ -55,6 +55,22 @@
   }
 }
 
+.Trigger[data-variant="unstyled"] {
+  border-color: transparent;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.Trigger[data-variant="unstyled"]:not([data-disabled]):hover,
+.Trigger[data-variant="unstyled"]:focus,
+.Trigger[data-variant="unstyled"]:focus-visible,
+.Trigger[data-variant="unstyled"][data-state="open"],
+.Trigger[data-variant="unstyled"][data-touched]:invalid {
+  border-color: transparent;
+  box-shadow: none;
+}
+
 .Icon {
   transition:
     color 150ms ease-out,
