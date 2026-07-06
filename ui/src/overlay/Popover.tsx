@@ -14,6 +14,7 @@ export type PopoverProps = Omit<
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
   variant?: "solid" | "sheer";
+  body?: ComponentProps<"div">;
 };
 
 export function Popover({
@@ -25,6 +26,8 @@ export function Popover({
   sideOffset = 1,
   alignOffset,
   className,
+  body,
+  ref,
   ...props
 }: PopoverProps) {
   const [contentElement, setContentElement] = useState<
@@ -48,8 +51,8 @@ export function Popover({
       <PopoverPrimitive.Portal container={overlay.root}>
         <PopoverPrimitive.Content
           ref={(element) => {
-            if (props.ref instanceof Function) props.ref(element);
-            else if (props.ref) props.ref.current = element;
+            if (ref instanceof Function) ref(element);
+            else if (ref) ref.current = element;
             setContentElement(element ?? undefined);
           }}
           className={[styles.Content, className].filter(Boolean).join(" ")}
@@ -60,7 +63,12 @@ export function Popover({
           alignOffset={alignOffset}
           {...props}
         >
-          <div className={styles.Body}>{content}</div>
+          <div
+            {...body}
+            className={[styles.Body, body?.className].filter(Boolean).join(" ")}
+          >
+            {content}
+          </div>
           <PopoverPrimitive.Arrow
             className={styles.Arrow}
             height="var(--popover-tip-height)"

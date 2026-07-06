@@ -41,6 +41,7 @@
     "clean": "tsc -b --clean"
   },
   "dependencies": {
+    "@daypicker/react": "^10.0.1",
     "@isis/common": "*",
     "@orpc/client": "^1.14.6",
     "http-server": "^14.1.1",

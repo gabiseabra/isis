@@ -1,0 +1,134 @@
+@use "../../styles/mixins/shadow" as shadow;
+
+.InputWrapper {
+  --input-height: var(--line-height);
+  --input-padding-x: calc(var(--space) * 2);
+  --input-padding-y: var(--space);
+
+  display: inline-flex;
+  align-items: center;
+  box-sizing: border-box;
+  width: 100%;
+  border: 1px solid var(--color-divider);
+  border-radius: var(--radius);
+  background: var(--color-surface-0);
+  transition:
+    border-color 150ms ease-out,
+    box-shadow 300ms ease-out;
+  transition-delay: 0s;
+  @include shadow.boxShadow(0);
+
+  &:not([data-disabled]) {
+    &:hover {
+      border-color: color-mix(
+        in srgb,
+        var(--color-highlight) 50%,
+        var(--color-divider)
+      );
+    }
+
+    &:focus-within,
+    &[data-state="open"] {
+      border-color: var(--color-highlight);
+      @include shadow.boxShadow(0.5, 0.5);
+    }
+  }
+
+  &[data-disabled] {
+    color: var(--color-disabled);
+    background: var(--color-surface-1);
+    cursor: not-allowed;
+  }
+}
+
+.Input {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  border: none;
+  background: transparent;
+  color: currentColor;
+  font: inherit;
+  line-height: var(--input-height);
+  padding: var(--input-padding-y) var(--input-padding-x);
+  cursor: inherit;
+
+  &:focus {
+    outline: none;
+  }
+
+  &::placeholder {
+    color: var(--color-muted);
+  }
+}
+
+.InputWrapper:has(.RightSlot) .Input {
+  padding-right: var(--space);
+}
+
+.Slot {
+  display: inline-flex;
+  flex-shrink: 0;
+  color: var(--color-muted);
+  transition: color 300ms ease-out;
+  transition-delay: 0s;
+}
+
+.InputWrapper:focus-within .Slot,
+.InputWrapper[data-state="open"] .Slot {
+  color: var(--color-highlight);
+}
+
+.InputWrapper:has([data-touched]:invalid) {
+  border-color: var(--color-red);
+}
+
+.RightSlot {
+  padding-right: calc(var(--space) * 2);
+}
+
+.Icon {
+  transition: color 150ms ease-out;
+}
+
+.Content {
+  box-sizing: border-box;
+  max-width: var(--radix-popover-trigger-width);
+  margin-inline: auto;
+}
+
+.Body {
+  max-height: min(var(--radix-popover-content-available-height), 360px);
+  overflow: auto;
+  padding: 0;
+}
+
+.Calendar {
+  --rdp-accent-color: var(--color-primary);
+  --rdp-accent-background-color: var(--bg-primary);
+  --rdp-today-color: var(--color-primary);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .InputWrapper,
+  .Input::placeholder,
+  .Slot,
+  .Icon {
+    transition: none;
+  }
+}
+
+.InputWrapper[data-size="s"] {
+  --input-height: calc(var(--line-height) * 0.75);
+  --input-padding-y: calc(var(--space) * 0.75);
+}
+
+.InputWrapper[data-size="m"] {
+  --input-height: var(--line-height);
+  --input-padding-y: var(--space);
+}
+
+.InputWrapper[data-size="l"] {
+  --input-height: calc(var(--line-height) * 1.25);
+  --input-padding-y: var(--space);
+}
