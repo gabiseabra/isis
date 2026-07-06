@@ -7,7 +7,7 @@ import { IconControl } from "../display/IconControl";
 import { Col } from "../layout/FlexBox";
 import { Popover } from "../overlay/Popover";
 import styles from "./DateInput.module.scss";
-import { Field } from "./Field";
+import { Field, FieldProps } from "./Field";
 import { BaseInputProps } from "./use-form";
 
 export type DateInputProps = Omit<
@@ -17,6 +17,7 @@ export type DateInputProps = Omit<
   size?: "s" | "m" | "l";
   variant?: "default" | "unstyled";
   closeOnSelect?: boolean;
+  fieldProps?: Partial<FieldProps>;
 } & (
     | ({ mode?: "single" } & BaseInputProps<Date>)
     | ({ mode: "range" } & BaseInputProps<DateRange>)
@@ -34,6 +35,7 @@ export function DateInput({
   onTouch,
   className,
   disabled,
+  fieldProps,
   ...props
 }: DateInputProps) {
   const inputRef = useRef<HTMLInputElement>(null);
@@ -71,7 +73,11 @@ export function DateInput({
   };
 
   return (
-    <Field htmlFor={props.id} {...{ label, description, error, required }}>
+    <Field
+      htmlFor={props.id}
+      {...{ label, description, error, required }}
+      {...fieldProps}
+    >
       <Popover
         align="center"
         body={{ className: styles.Body }}

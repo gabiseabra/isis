@@ -1,7 +1,5 @@
-import { omit } from "@isis/common/utils/object";
 import { type ComponentProps, useEffect, useRef } from "react";
-import * as css from "../utils/css";
-import { Field } from "./Field";
+import { Field, FieldProps } from "./Field";
 import styles from "./Textarea.module.scss";
 import { BaseInputProps } from "./use-form";
 
@@ -9,8 +7,8 @@ export type TextareaProps = ComponentProps<"textarea"> &
   BaseInputProps<string> & {
     autoGrow?: boolean;
     variant?: "default" | "unstyled";
-  } & css.PaddingProps &
-  css.MarginProps;
+    fieldProps?: Partial<FieldProps>;
+  };
 
 export function Textarea({
   ref,
@@ -27,6 +25,7 @@ export function Textarea({
   label,
   description,
   error,
+  fieldProps,
   ...props
 }: TextareaProps) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -38,12 +37,16 @@ export function Textarea({
   }, [autoGrow]);
 
   return (
-    <Field htmlFor={props.id} {...{ label, description, error, required }}>
+    <Field
+      htmlFor={props.id}
+      {...{ label, description, error, required }}
+      {...fieldProps}
+    >
       <textarea
         required={required}
         data-touched={touched || undefined}
         data-variant={variant}
-        {...omit(props, [...css.paddingProps, ...css.marginProps])}
+        {...props}
         ref={(element) => {
           textareaRef.current = element;
           if (ref instanceof Function) ref(element);
@@ -51,11 +54,6 @@ export function Textarea({
         }}
         rows={rows}
         value={value}
-        style={{
-          ...css.getPaddingStyles(props),
-          ...css.getMarginStyles(props),
-          ...props.style,
-        }}
         className={[styles.Textarea, autoGrow && styles.autogrow, className]
           .filter(Boolean)
           .join(" ")}

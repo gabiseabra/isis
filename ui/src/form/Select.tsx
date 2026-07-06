@@ -20,7 +20,7 @@ import { Col, ColProps, Row } from "../layout/FlexBox";
 import { createBoundary, useBoundary } from "../overlay/Boundary";
 import { useOverlay } from "../overlay/OverlayProvider";
 import { Slot } from "../utils/slot";
-import { Field } from "./Field";
+import { Field, FieldProps } from "./Field";
 import styles from "./Select.module.scss";
 import { BaseInputProps } from "./use-form";
 
@@ -63,6 +63,8 @@ export type SelectProps<ID extends string, T, G> = Omit<
   left?: Slot<(select: Select<T, G>) => ReactNode>;
   right?: Slot<(select: Select<T, G>) => ReactNode>;
   emptyState?: Slot<(select: Select<T, G>) => ReactNode>;
+
+  fieldProps?: Partial<FieldProps>;
 } & (
     | ({ multiple?: false } & BaseInputProps<ID>)
     | ({ multiple: true } & BaseInputProps<ID[]>)
@@ -117,6 +119,8 @@ export function Select<ID extends string, T, G>({
   required,
   touched,
   onTouch,
+
+  fieldProps,
   ...props
 }: SelectProps<ID, T, G>) {
   const overlay = useOverlay();
@@ -218,7 +222,11 @@ export function Select<ID extends string, T, G>({
   };
 
   return (
-    <Field htmlFor={props.id} {...{ label, description, error, required }}>
+    <Field
+      htmlFor={props.id}
+      {...{ label, description, error, required }}
+      {...fieldProps}
+    >
       <PopoverPrimitive.Root open={open} onOpenChange={onOpenChange}>
         <PopoverPrimitive.Trigger asChild>
           <span

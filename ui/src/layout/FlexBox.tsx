@@ -108,3 +108,19 @@ export function Col({
     />
   );
 }
+
+export type FlexBoxProps =
+  | ({
+      direction: "inline";
+    } & RowProps)
+  | ({
+      direction: "block";
+    } & ColProps);
+
+export function FlexBox(props: FlexBoxProps) {
+  return props.direction === "inline" ? (
+    <Row {...omit(props, ["direction"])} />
+  ) : (
+    <Col {...omit(props, ["direction"])} />
+  );
+}

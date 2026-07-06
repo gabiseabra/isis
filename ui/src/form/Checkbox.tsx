@@ -3,14 +3,16 @@ import { type ComponentProps } from "react";
 import { GiCheckMark } from "react-icons/gi";
 import { Row } from "../layout/FlexBox";
 import styles from "./Checkbox.module.scss";
-import { Field } from "./Field";
+import { Field, FieldProps } from "./Field";
 import { BaseInputProps } from "./use-form";
 
 export type CheckboxProps = Omit<
   ComponentProps<typeof CheckboxPrimitive.Root>,
   "value"
 > &
-  BaseInputProps<boolean>;
+  BaseInputProps<boolean> & {
+    fieldProps?: Partial<FieldProps>;
+  };
 
 export function Checkbox({
   className,
@@ -22,10 +24,11 @@ export function Checkbox({
   label,
   description,
   error,
+  fieldProps,
   ...props
 }: CheckboxProps) {
   return (
-    <Field {...{ description, error }}>
+    <Field {...{ description, error }} {...fieldProps}>
       <Row alignY="center" className={styles.Checkbox}>
         <CheckboxPrimitive.Root
           checked={value}
