@@ -4,7 +4,7 @@ import { Textarea, type TextareaProps } from "./Textarea";
 
 type TextareaStoryArgs = Pick<
   TextareaProps,
-  "placeholder" | "rows" | "autoGrow" | "disabled"
+  "placeholder" | "rows" | "autoGrow" | "disabled" | "variant"
 >;
 
 const meta = {
@@ -14,6 +14,13 @@ const meta = {
     rows: 4,
     autoGrow: false,
     disabled: false,
+    variant: "default",
+  },
+  argTypes: {
+    variant: {
+      control: "select",
+      options: ["default", "unstyled"],
+    },
   },
   render: (args) => <Textarea {...args} />,
   decorators: [

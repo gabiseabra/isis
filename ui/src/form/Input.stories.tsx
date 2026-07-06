@@ -5,7 +5,7 @@ import { Input, type InputProps } from "./Input";
 
 type InputStoryArgs = Pick<
   InputProps,
-  "placeholder" | "type" | "disabled" | "size"
+  "placeholder" | "type" | "disabled" | "size" | "variant"
 >;
 
 const meta = {
@@ -15,6 +15,7 @@ const meta = {
     placeholder: "Input",
     type: "text",
     disabled: false,
+    variant: "default",
   },
   render: (args) => <Input {...args} />,
   argTypes: {
@@ -25,6 +26,10 @@ const meta = {
     type: {
       control: "select",
       options: ["text", "email", "password", "search"],
+    },
+    variant: {
+      control: "select",
+      options: ["default", "unstyled"],
     },
   },
   decorators: [

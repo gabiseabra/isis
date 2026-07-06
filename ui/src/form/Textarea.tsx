@@ -1,4 +1,6 @@
+import { omit } from "@isis/common/utils/object";
 import { type ComponentProps, useEffect, useRef } from "react";
+import * as css from "../utils/css";
 import { Field } from "./Field";
 import styles from "./Textarea.module.scss";
 import { BaseInputProps } from "./use-form";
@@ -6,11 +8,14 @@ import { BaseInputProps } from "./use-form";
 export type TextareaProps = ComponentProps<"textarea"> &
   Partial<BaseInputProps<string>> & {
     autoGrow?: boolean;
-  };
+    variant?: "default" | "unstyled";
+  } & css.PaddingProps &
+  css.MarginProps;
 
 export function Textarea({
   ref,
   autoGrow = false,
+  variant = "default",
   className = "",
   onInput,
   rows,
@@ -37,7 +42,8 @@ export function Textarea({
       <textarea
         required={required}
         data-touched={touched || undefined}
-        {...props}
+        data-variant={variant}
+        {...omit(props, [...css.paddingProps, ...css.marginProps])}
         ref={(element) => {
           textareaRef.current = element;
           if (ref instanceof Function) ref(element);
@@ -45,6 +51,11 @@ export function Textarea({
         }}
         rows={rows}
         value={value}
+        style={{
+          ...css.getPaddingStyles(props),
+          ...css.getMarginStyles(props),
+          ...props.style,
+        }}
         className={[styles.Textarea, autoGrow && styles.autogrow, className]
           .filter(Boolean)
           .join(" ")}

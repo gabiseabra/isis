@@ -69,6 +69,24 @@
   padding-right: var(--space);
 }
 
+.InputWrapper[data-variant="unstyled"] {
+  border-color: transparent;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.InputWrapper[data-variant="unstyled"]:not(:has(.Input:disabled)):hover,
+.InputWrapper[data-variant="unstyled"]:not(:has(.Input:disabled)):focus-within,
+.InputWrapper[data-variant="unstyled"]:has([data-touched]:invalid) {
+  border-color: transparent;
+  box-shadow: none;
+}
+
+.InputWrapper[data-variant="unstyled"]:has(.Input:disabled) {
+  background: transparent;
+}
+
 .Slot {
   display: inline-flex;
   flex-shrink: 0;

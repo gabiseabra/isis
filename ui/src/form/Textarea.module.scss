@@ -53,6 +53,24 @@
   resize: none;
 }
 
+.Textarea[data-variant="unstyled"] {
+  border-color: transparent;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.Textarea[data-variant="unstyled"]:not(:disabled):hover,
+.Textarea[data-variant="unstyled"]:not(:disabled):focus,
+.Textarea[data-variant="unstyled"][data-touched]:invalid {
+  border-color: transparent;
+  box-shadow: none;
+}
+
+.Textarea[data-variant="unstyled"]:disabled {
+  background: transparent;
+}
+
 .Textarea[data-touched]:invalid {
   border-color: var(--color-red);
 }
