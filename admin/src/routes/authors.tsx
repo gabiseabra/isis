@@ -10,7 +10,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { BiPlus, BiSearch } from "react-icons/bi";
 import { TbListSearch } from "react-icons/tb";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { useDebounceValue } from "usehooks-ts";
 import { Loading } from "../components/layout/Loading";
 import { authLoader } from "../loaders/authLoader";
@@ -23,8 +23,8 @@ export const loader = authLoader;
 export const HydrateFallback = Loading;
 
 export function Component() {
-  const initialPageParam = 1;
-  const [currentPage, setCurrentPage] = useState(initialPageParam);
+  const navigate = useNavigate();
+  const [currentPage, setCurrentPage] = useState(1);
   const [query, setQuery] = useState("");
   const [debouncedQuery] = useDebounceValue(query, 250);
   const authorsQuery = useQuery(
@@ -99,6 +99,7 @@ export function Component() {
             hasNextPage={authorsQuery.data?.hasNextPage}
           />
         }
+        onTableClick={(row) => navigate(`/author/${ID.parse(row.id).id}`)}
       />
     </Col>
   );

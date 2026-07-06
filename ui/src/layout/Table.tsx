@@ -19,6 +19,7 @@ export type TableProps<Row, Col> = ComponentProps<"table"> & {
   rows: Row[] | readonly Row[];
   columns: Col[] | readonly Col[];
   getId?: (row: Row, index: number) => ID;
+  onTableClick?: (row: Row, col: Col) => void;
 
   // variants
   variant?: "default" | "unstyled";
@@ -60,6 +61,7 @@ export function Table<Row, Col extends ID>({
 
   className,
   style,
+  onTableClick,
   ...props
 }: TableProps<Row, Col>) {
   const table = { rows: currentRows, columns };
@@ -136,7 +138,10 @@ export function Table<Row, Col extends ID>({
                   </Table.Cell>
                 )}
                 {table.columns.map((col) => (
-                  <Table.Cell key={col}>
+                  <Table.Cell
+                    key={col}
+                    onClick={onTableClick && (() => onTableClick(row, col))}
+                  >
                     {Slot.render(cell, row, col, table)}
                   </Table.Cell>
                 ))}
@@ -168,9 +173,18 @@ export type TableCellProps = ComponentProps<"td"> & {
 };
 Table.Cell = function TableCell({
   as: Component = "td",
+  style,
   ...props
 }: TableCellProps) {
-  return <Component {...props} />;
+  return (
+    <Component
+      style={{
+        cursor: props.onClick ? "pointer" : undefined,
+        ...style,
+      }}
+      {...props}
+    />
+  );
 };
 
 export type TableRowProps = ComponentProps<"tr">;
