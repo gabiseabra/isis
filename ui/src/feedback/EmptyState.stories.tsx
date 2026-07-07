@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { FaBoxOpen } from "react-icons/fa";
-import { Col } from "../layout/FlexBox";
+import { Table } from "../layout/Table";
 import { EmptyState, EmptyStateProps } from "./EmptyState";
 
 type EmptyStateStoryProps = {
@@ -10,7 +10,7 @@ type EmptyStateStoryProps = {
   message: string;
 };
 
-const sizes = ["m", "l"] as const;
+const sizes = ["s", "m", "l"] as const;
 const colors = [
   "default",
   "gray",
@@ -64,13 +64,21 @@ export const Sizes: Story = {
     },
   },
   render: ({ message, ...args }) => (
-    <Col gap={2}>
-      {sizes.map((size) => (
-        <EmptyState key={size} {...args} size={size}>
-          {message}
-        </EmptyState>
-      ))}
-    </Col>
+    <Table
+      variant="unstyled"
+      gap={2}
+      columns={["element"]}
+      rows={sizes.map((size) => ({
+        size,
+        element: (
+          <EmptyState key={size} {...args} size={size}>
+            {message}
+          </EmptyState>
+        ),
+      }))}
+      cell={(row, col) => row[col]}
+      index={(row) => <Table.Label align="end">{row.size}</Table.Label>}
+    />
   ),
 };
 

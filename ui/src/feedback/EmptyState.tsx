@@ -7,7 +7,7 @@ import { Color } from "../utils/css";
 
 export type EmptyStateProps = ColProps & {
   color?: Color | "muted";
-  size: "s" | "m" | "l" | "xl";
+  size: "s" | "m" | "l";
   icon?: ReactNode;
   title: ReactNode;
   children?: ReactNode;
@@ -34,8 +34,7 @@ export function EmptyState({
               height: {
                 s: 16,
                 m: 32,
-                l: 86,
-                xl: 64,
+                l: 64,
               }[size],
             }}
           >
@@ -45,7 +44,7 @@ export function EmptyState({
 
         <Text
           as="div"
-          size={size === "l" ? "h4" : "body"}
+          size={({ s: "body", m: "body", l: "h4" } as const)[size]}
           font="sans-serif"
           color={color}
         >
@@ -53,7 +52,13 @@ export function EmptyState({
         </Text>
       </TitleWrapper>
 
-      {children}
+      <Text
+        as="div"
+        size={({ s: "caption", m: "body", l: "body" } as const)[size]}
+        color="muted"
+      >
+        {children}
+      </Text>
     </Col>
   );
 }
