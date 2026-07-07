@@ -1,8 +1,10 @@
 import { UUID } from "@isis/common/dto/uuid";
 import { never } from "@isis/common/utils/error";
 import { ID } from "@isis/common/utils/id";
-import { sign, verify } from "jsonwebtoken";
+import { JsonWebTokenError, sign, verify } from "jsonwebtoken";
 import z from "zod";
+
+class UnauthorizedError extends Error {}
 
 export type JWT = z.infer<typeof JWT>;
 
@@ -28,15 +30,25 @@ export const JWT = Object.assign(
       };
     },
 
-    parseToken(token: string) {
-      const payload = verify(
-        token,
-        process.env.JWT_SECRET ?? never("JWT_SECRET not defined"),
-        {
-          algorithms: ["HS256"],
-        },
-      );
-      return JWT.parse(payload);
+    async parseToken(token: string) {
+      try {
+        const payload = verify(
+          token,
+          process.env.JWT_SECRET ?? never("JWT_SECRET not defined"),
+          {
+            algorithms: ["HS256"],
+          },
+        );
+        return JWT.parse(payload);
+      } catch (error) {
+        if (error instanceof JsonWebTokenError) {
+          throw new JWT.UnauthorizedError();
+        }
+
+        throw error;
+      }
     },
+
+    UnauthorizedError,
   },
 );

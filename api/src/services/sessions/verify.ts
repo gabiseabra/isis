@@ -1,9 +1,14 @@
+import { createErrorHandler } from "@isis/common/utils/error";
 import { UserRow } from "../users/row";
 import { JWT } from "./jwt";
 import { SessionRow } from "./row";
 
 export async function verifySession(token: string) {
-  const payload = JWT.parseToken(token);
+  const payload = await JWT.parseToken(token).catch(
+    createErrorHandler().catch(JWT.UnauthorizedError, () => {
+      throw new verifySession.UnauthorizedError();
+    }),
+  );
 
   const session = await SessionRow.get(payload.uuid);
 
