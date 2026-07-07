@@ -5,7 +5,7 @@
   padding: var(--space);
   box-sizing: content-box;
   transition: background-color 120ms ease-out;
-  background: transparent;
+  background: var(--icon-button-bg);
   cursor: pointer;
 
   &:focus,

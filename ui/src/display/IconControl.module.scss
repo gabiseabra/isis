@@ -2,12 +2,12 @@
 @use "../../styles/mixins/shadow" as shadow;
 
 .IconControl {
-  --icon-size: 24px;
-  --icon-color: currentColor;
-  --icon-bg: transparent;
-  --icon-badge-size: 14px;
-  --icon-badge-color: var(--color-highlight);
-  --icon-badge-bg: var(--bg-highlight);
+  --icon-size: var(--icon-size, 24px);
+  --icon-color: var(--icon-color, currentColor);
+  --icon-bg: var(--icon-bg, transparent);
+  --icon-badge-size: var(--icon-badge-size, 14px);
+  --icon-badge-color: var(--icon-badge-color, var(--color-highlight));
+  --icon-badge-bg: var(--icon-badge-bg, var(--bg-highlight));
 
   position: relative;
 
