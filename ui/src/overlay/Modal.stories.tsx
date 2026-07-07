@@ -19,13 +19,10 @@ const meta = {
     title: "Modal title",
     description: "Use this surface for focused content over the current page.",
   },
-  render: (args) => <ModalStory {...args} />,
   decorators: [
     (Story) => (
       <OverlayProvider>
-        <Col p={4} gap={2}>
-          <Story />
-        </Col>
+        <Story />
       </OverlayProvider>
     ),
   ],
@@ -34,8 +31,6 @@ const meta = {
 type Story = StoryObj<typeof meta>;
 
 export default meta;
-
-export const Default: Story = {};
 
 function ModalStory({ defaultOpen, title, description }: ModalStoryArgs) {
   const [open, setOpen] = useState(defaultOpen);
@@ -74,3 +69,7 @@ function ModalStory({ defaultOpen, title, description }: ModalStoryArgs) {
     </>
   );
 }
+
+export const Default: Story = {
+  render: (args) => <ModalStory {...args} />,
+};

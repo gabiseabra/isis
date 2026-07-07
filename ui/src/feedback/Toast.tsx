@@ -13,6 +13,7 @@ import {
   FaExclamationTriangle,
   FaInfoCircle,
 } from "react-icons/fa";
+import { IconButton } from "../display/IconButton";
 import { IconControl } from "../display/IconControl";
 import { Text } from "../display/Text";
 import { Col } from "../layout/FlexBox";
@@ -129,7 +130,7 @@ export function Toast({
       duration={duration}
     >
       {(type !== "neutral" || icon) && (
-        <IconControl as="span" size="s" color="currentColor" my={1}>
+        <IconControl size="s" color="currentColor" my={1}>
           {icon ??
             {
               success: <FaCheckCircle />,
@@ -161,9 +162,11 @@ export function Toast({
       </Col>
 
       <RxToast.Action asChild altText="Fechar">
-        <IconControl as="button" size="s" color="muted">
-          <BiX />
-        </IconControl>
+        <IconButton>
+          <IconControl size="s" color="muted">
+            <BiX />
+          </IconControl>
+        </IconButton>
       </RxToast.Action>
 
       {duration !== Infinity && (

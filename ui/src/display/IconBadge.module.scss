@@ -1,0 +1,102 @@
+@use "../../styles/mixins/color" as color;
+
+.IconBadge {
+  --icon-badge-color: var(--color-text);
+  --icon-badge-bg: var(--color-surface-0);
+  --icon-badge-size: 14px;
+
+  position: relative;
+  display: inline-flex;
+  width: fit-content;
+  line-height: 0;
+}
+
+.IconBadge:has([data-size="xs"]) {
+  --icon-badge-size: 10px;
+}
+
+.IconBadge:has([data-size="s"]) {
+  --icon-badge-size: 12px;
+}
+
+.IconBadge:has([data-size="m"]) {
+  --icon-badge-size: 14px;
+}
+
+.IconBadge:has([data-size="l"]) {
+  --icon-badge-size: 16px;
+}
+
+.IconBadge:has([data-size="xl"]) {
+  --icon-badge-size: 24px;
+}
+
+.IconBadge:has([data-size="auto"]) {
+  --icon-badge-size: 45%;
+}
+
+.Badge {
+  position: absolute;
+  z-index: 1;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  height: var(--icon-badge-size);
+  min-width: var(--icon-badge-size);
+  padding: 0 calc(var(--icon-badge-size) / 4);
+  border-radius: calc(var(--icon-badge-size) / 2);
+
+  color: var(--icon-badge-color);
+  background: var(--color-badge-bg);
+  font-family: var(--font-sans-serif);
+  font-size: calc(var(--icon-badge-size) * 0.75);
+  font-weight: 500;
+  line-height: 1;
+}
+
+@each $name, $_ in color.$colors-codes {
+  .IconBadge[data-color="#{$name}"] .Badge {
+    color: var(#{"--color-" + $name});
+    background-color: var(#{"--bg-" + $name});
+  }
+}
+
+.IconBadge[data-color="muted"] .Badge {
+  color: var(--color-muted);
+  background: var(--color-surface-0);
+}
+
+.IconBadge[data-color="disabled"] .Badge {
+  color: var(--color-disabled);
+  background: var(--color-surface-0);
+}
+.IconBadge[data-color="transparent"] .Badge {
+  color: var(--color-text);
+  background: transparent;
+}
+
+.IconBadge[data-position="top-start"] .Badge {
+  top: 0;
+  left: 0;
+  transform: translate(-50%, -50%);
+}
+
+.IconBadge[data-position="top-end"] .Badge {
+  top: 0;
+  right: 0;
+  transform: translate(50%, -50%);
+}
+
+.IconBadge[data-position="bottom-start"] .Badge {
+  bottom: 0;
+  left: 0;
+  transform: translate(-50%, 50%);
+}
+
+.IconBadge[data-position="bottom-end"] .Badge {
+  right: 0;
+  bottom: 0;
+  transform: translate(50%, 50%);
+}

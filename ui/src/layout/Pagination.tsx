@@ -1,4 +1,5 @@
 import { BiChevronLeft, BiChevronRight } from "react-icons/bi";
+import { IconButton } from "../display/IconButton";
 import { IconControl } from "../display/IconControl";
 import { Span, Text } from "../display/Text";
 import { Spinner } from "../feedback/Spinner";
@@ -26,34 +27,34 @@ export function Pagination({
       className={styles.Pagination}
       data-loading={loading || undefined}
     >
-      <IconControl
-        as="button"
-        size="s"
+      <IconButton
         radius={1}
         disabled={!hasPreviousPage || loading}
         onClick={() => {
           setCurrentPage(currentPage - 1);
         }}
       >
-        <BiChevronLeft />
-      </IconControl>
+        <IconControl size="s">
+          <BiChevronLeft />
+        </IconControl>
+      </IconButton>
 
       <Text className={styles.Content} align="center">
         <Span className={styles.Text}>Página {currentPage}</Span>
         {loading && <Spinner className={styles.Spinner} size="s" />}
       </Text>
 
-      <IconControl
-        as="button"
-        size="s"
+      <IconButton
         radius={1}
         disabled={!hasNextPage || loading}
         onClick={() => {
           setCurrentPage(currentPage + 1);
         }}
       >
-        <BiChevronRight />
-      </IconControl>
+        <IconControl size="s">
+          <BiChevronRight />
+        </IconControl>
+      </IconButton>
     </Row>
   );
 }

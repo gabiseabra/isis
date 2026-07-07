@@ -18,6 +18,19 @@ export function omit<T extends object, const K extends (keyof T)[]>(
   return out;
 }
 
+export function pick<T extends object, const K extends (keyof T)[]>(
+  obj: T,
+  keys: K,
+): Pick<T, K[number]> {
+  const out = {} as Pick<T, K[number]>;
+
+  for (const k of keys) {
+    out[k] = obj[k];
+  }
+
+  return out;
+}
+
 export function omitUndefined<T>(object: Partial<T>): Partial<T> {
   const out: Partial<T> = {};
 

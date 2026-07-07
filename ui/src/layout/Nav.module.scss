@@ -49,16 +49,19 @@
   border: 1px solid var(--color-divider);
 
   opacity: 0;
-  transition:
-    opacity 120ms ease-out,
-    transform 180ms ease-out;
+
+  transition: opacity 120ms ease-out;
+  & > svg {
+    transition: transform 180ms ease-out;
+  }
 }
 
-.Nav:not([data-open]) > .CollapseButton {
-  transform: translateX(50%) rotate(180deg);
+.Nav:not([data-open]) > .CollapseButton > svg {
+  transform: rotate(180deg);
 }
 
-.Nav:hover > .CollapseButton {
+.Nav:hover > .CollapseButton,
+.Nav > .CollapseButton:hover {
   opacity: 1;
 }
 

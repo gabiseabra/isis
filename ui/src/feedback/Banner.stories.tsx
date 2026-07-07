@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { BiX } from "react-icons/bi";
 import { FaBell } from "react-icons/fa";
+import { IconButton } from "../display/IconButton";
 import { IconControl } from "../display/IconControl";
 import { Button } from "../form/Button";
 import { Col } from "../layout/FlexBox";
@@ -77,9 +78,11 @@ export const WithAction: Story = {
       <Banner
         {...args}
         action={
-          <IconControl as="button" size="s" color="currentColor">
-            <BiX />
-          </IconControl>
+          <IconButton>
+            <IconControl color="muted" size="s">
+              <BiX />
+            </IconControl>
+          </IconButton>
         }
       >
         {message}

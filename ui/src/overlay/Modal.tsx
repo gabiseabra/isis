@@ -1,6 +1,7 @@
 import { Dialog } from "radix-ui";
 import { type ReactNode } from "react";
 import { BiX } from "react-icons/bi";
+import { IconButton } from "../display/IconButton";
 import { IconControl } from "../display/IconControl";
 import { Text } from "../display/Text";
 import { Col, Row } from "../layout/FlexBox";
@@ -49,14 +50,11 @@ export function Modal({
                 aria-label="Fechar"
                 asChild
               >
-                <IconControl
-                  as="button"
-                  color="muted"
-                  size="m"
-                  style={{ cursor: "pointer" }}
-                >
-                  <BiX />
-                </IconControl>
+                <IconButton>
+                  <IconControl color="muted" size="m">
+                    <BiX />
+                  </IconControl>
+                </IconButton>
               </Dialog.Close>
             </Row>
 

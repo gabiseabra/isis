@@ -1,0 +1,37 @@
+.IconButton {
+  display: inline-flex;
+  border: none;
+  border-radius: 50%;
+  padding: var(--space);
+  box-sizing: content-box;
+  transition: background-color 120ms ease-out;
+  background: transparent;
+  cursor: pointer;
+
+  &:focus,
+  &:active {
+    outline: none;
+  }
+
+  &:not(:disabled):hover,
+  &:not(:disabled)[data-pressed] {
+    background: var(--icon-button-active-bg);
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    & > * {
+      --icon-color: var(--color-disabled);
+    }
+  }
+}
+
+.IconButton[data-variant="sheer"] {
+  --icon-button-bg: transparent;
+  --icon-button-active-bg: #00000010;
+}
+
+.IconButton[data-variant="solid"] {
+  --icon-button-bg: var(--color-surface-0);
+  --icon-button-active-bg: var(--color-surface-1);
+}

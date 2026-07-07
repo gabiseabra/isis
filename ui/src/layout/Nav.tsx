@@ -7,6 +7,7 @@ import {
 } from "react";
 import { BiChevronDown, BiChevronLeft } from "react-icons/bi";
 import { Link, LinkProps } from "react-router";
+import { IconButton } from "../display/IconButton";
 import { IconControl } from "../display/IconControl";
 import * as css from "../utils/css";
 import { Col, Row, RowProps } from "./FlexBox";
@@ -49,17 +50,23 @@ export function Nav({
       >
         {collapsible && (
           <IconControl
-            as="button"
+            asChild
             size="s"
-            radius={1}
-            title={open ? "Abrir menu" : "Fechar menu"}
+            p={0.75}
             className={styles.CollapseButton}
-            onClick={() => {
-              setLocalOpen(!open);
-              onOpenChange?.(!open);
-            }}
+            style={{ boxSizing: "content-box" }}
           >
-            <BiChevronLeft />
+            <IconButton
+              variant="solid"
+              radius={1}
+              title={open ? "Abrir menu" : "Fechar menu"}
+              onClick={() => {
+                setLocalOpen(!open);
+                onOpenChange?.(!open);
+              }}
+            >
+              <BiChevronLeft />
+            </IconButton>
           </IconControl>
         )}
 
@@ -117,21 +124,23 @@ Nav.Item = function NavItem({
 
         {children && (
           <IconControl
-            as="button"
             size="auto"
             mr={1}
             p={0.75}
-            radius={1}
             style={{
               height: "calc(var(--nav-link-height) - 8px)",
               boxSizing: "border-box",
             }}
-            onClick={() => {
-              setLocalOpen(!open);
-              onOpenChange?.(!open);
-            }}
           >
-            <BiChevronDown />
+            <IconButton
+              radius={1}
+              onClick={() => {
+                setLocalOpen(!open);
+                onOpenChange?.(!open);
+              }}
+            >
+              <BiChevronDown />
+            </IconButton>
           </IconControl>
         )}
       </Row>
@@ -191,21 +200,24 @@ Nav.Link = function NavLink({
 
         {children && (
           <IconControl
-            as="button"
+            asChild
             size="auto"
             mr={1}
             p={0.75}
-            radius={1}
             style={{
               height: "calc(var(--nav-link-height) - 8px)",
               boxSizing: "border-box",
             }}
-            onClick={() => {
-              setLocalOpen(!open);
-              onOpenChange?.(!open);
-            }}
           >
-            <BiChevronDown />
+            <IconButton
+              radius={1}
+              onClick={() => {
+                setLocalOpen(!open);
+                onOpenChange?.(!open);
+              }}
+            >
+              <BiChevronDown />
+            </IconButton>
           </IconControl>
         )}
       </Row>

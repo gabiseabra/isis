@@ -30,14 +30,14 @@ export function EmptyState({
             as="div"
             color={color}
             size="auto"
-            height={
-              {
+            style={{
+              height: {
                 s: 16,
                 m: 32,
                 l: 86,
                 xl: 64,
-              }[size]
-            }
+              }[size],
+            }}
           >
             {icon}
           </IconControl>

@@ -6,6 +6,7 @@ import {
   MonthCaptionProps,
 } from "@daypicker/react";
 import "@daypicker/react/dist/style.css";
+import { ComponentProps } from "react";
 import {
   BiChevronDown,
   BiChevronLeft,
@@ -14,6 +15,7 @@ import {
 } from "react-icons/bi";
 import { Row } from "../layout/FlexBox";
 import { Color } from "../utils/css";
+import { IconButton } from "./IconButton";
 import { IconControl } from "./IconControl";
 import { Span, Text } from "./Text";
 
@@ -25,9 +27,11 @@ export function Calendar({ color = "primary", ...props }: CalendarProps) {
   return (
     <DayPicker
       components={{
-        Chevron: Calendar.Crevron,
+        Chevron: Calendar.Chevron,
         CaptionLabel: Calendar.Label,
         MonthCaption: Calendar.Header,
+        NextMonthButton: Calendar.Button,
+        PreviousMonthButton: Calendar.Button,
       }}
       style={{
         "--rdp-accent-color": `var(--color-${color})`,
@@ -39,7 +43,7 @@ export function Calendar({ color = "primary", ...props }: CalendarProps) {
   );
 }
 
-Calendar.Crevron = function CalendarCrevron({
+Calendar.Chevron = function CalendarChevron({
   className,
   style,
   size,
@@ -48,12 +52,13 @@ Calendar.Crevron = function CalendarCrevron({
 }: ChevronProps) {
   return (
     <IconControl
-      size="auto"
-      height={size}
       className={className}
-      disabled={disabled}
-      color="currentColor"
-      style={{ color: "var(--rdp-accent-color)", ...style }}
+      color={disabled ? "disabled" : "currentColor"}
+      style={{
+        color: "var(--rdp-accent-color)",
+        height: size,
+        ...style,
+      }}
     >
       {
         {
@@ -78,6 +83,23 @@ Calendar.Label = function CalendarLabel({
   );
 };
 
-Calendar.Header = function CalendarHeader(props: MonthCaptionProps) {
+Calendar.Button = function CalendarButton({
+  color: _color,
+  style,
+  children = " ",
+  ...props
+}: ComponentProps<"button">) {
+  return (
+    <IconButton
+      color="currentColor"
+      style={{ color: "var(--rdp-accent-color)", ...style }}
+      {...props}
+    >
+      {children}
+    </IconButton>
+  );
+};
+
+Calendar.Header = function CalendarHeader(props: Partial<MonthCaptionProps>) {
   return <Row alignY="center" {...props} />;
 };

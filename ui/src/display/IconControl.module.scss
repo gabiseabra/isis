@@ -1,11 +1,10 @@
 @use "../../styles/mixins/color" as color;
 @use "../../styles/mixins/shadow" as shadow;
 
-.Root {
+.IconControl {
   --icon-size: 24px;
   --icon-color: currentColor;
   --icon-bg: transparent;
-  --icon-active-bg: #00000010;
   --icon-badge-size: 14px;
   --icon-badge-color: var(--color-highlight);
   --icon-badge-bg: var(--bg-highlight);
@@ -30,11 +29,6 @@
   width: var(--icon-size);
   height: var(--icon-size);
   box-sizing: border-box;
-
-  &:focus,
-  &:active {
-    outline: none;
-  }
 
   & > :not(.Badge) {
     display: block;
@@ -86,53 +80,49 @@
   }
 }
 
-.Root[data-clickable] {
-  cursor: pointer;
-}
-
 @each $name, $_ in color.$colors-codes {
-  .Root[data-color="#{$name}"] {
+  .IconControl[data-color="#{$name}"] {
     --icon-color: var(#{"--color-" + $name});
     --icon-background: var(#{"--bg-" + $name});
   }
 }
 
-.Root[data-color="muted"] {
+.IconControl[data-color="muted"] {
   --icon-color: var(--color-muted);
   --icon-background: var(--color-surface-1);
 }
 
-.Root[data-disabled] {
+.IconControl[data-color="disabled"] {
   --icon-color: var(--color-disabled);
   --icon-background: var(--color-surface-1);
 }
 
-.Root[data-size="xs"] {
+.IconControl[data-size="xs"] {
   --icon-size: 12px;
   --icon-badge-size: 10px;
 }
 
-.Root[data-size="s"] {
+.IconControl[data-size="s"] {
   --icon-size: 16px;
   --icon-badge-size: 12px;
 }
 
-.Root[data-size="m"] {
+.IconControl[data-size="m"] {
   --icon-size: 24px;
   --icon-badge-size: 14px;
 }
 
-.Root[data-size="l"] {
+.IconControl[data-size="l"] {
   --icon-size: 32px;
   --icon-badge-size: 16px;
 }
 
-.Root[data-size="xl"] {
+.IconControl[data-size="xl"] {
   --icon-size: 48px;
   --icon-badge-size: 24px;
 }
 
-.Root[data-size="auto"] {
+.IconControl[data-size="auto"] {
   --icon-badge-size: 45%;
 
   width: auto;
@@ -147,25 +137,5 @@
     line-height: 100%;
     font-size: 100%;
     transform: translate(0, 0);
-  }
-}
-
-tr:has(> td > .Root[data-size="auto"]) {
-  height: 1px;
-}
-
-td:has(> .Root[data-size="auto"]) {
-  height: inherit;
-}
-
-button.Root {
-  border-radius: 50%;
-  padding: var(--space);
-  box-sizing: content-box;
-  transition: background-color 120ms ease-out;
-
-  &:not(:disabled):hover,
-  &:not(:disabled)[data-pressed] {
-    background: var(--icon-active-bg);
   }
 }
