@@ -94,8 +94,8 @@ export function DateInput({
             onChange={(e) => {
               const nextValue = e.currentTarget.value;
               setDisplayValue(nextValue);
-              const date = DateInput.parse(nextValue);
-              if (date) onChangeValue?.(date);
+              const result = z.coerce.date().safeParse(nextValue);
+              if (result.success) onChangeValue?.(result.data);
             }}
             data-touched={touched || undefined}
             autoComplete="off"
@@ -107,9 +107,3 @@ export function DateInput({
     </Field>
   );
 }
-
-DateInput.parse = function parseDate(value: string): Date | null {
-  const result = z.coerce.date().safeParse(value);
-  if (!result.success) return null;
-  return result.data;
-};

@@ -1,4 +1,4 @@
-import { DateRange } from "@daypicker/react";
+import { DateRange } from "@isis/common/dto/date-range";
 import { ReactNode } from "react";
 import { FormattedDate } from "./FormattedDate";
 import { Text, TextProps } from "./Text";

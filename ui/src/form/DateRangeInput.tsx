@@ -1,11 +1,11 @@
-import { type DateRange } from "@daypicker/react";
 import "@daypicker/react/dist/style.css";
+import { DateRange } from "@isis/common/dto/date-range";
 import { useRef, useState, type ComponentProps } from "react";
 import { BiCalendar } from "react-icons/bi";
+import z from "zod";
 import { Calendar } from "../display/Calendar";
 import { FormattedDateRange } from "../display/FormattedDateRange";
 import { Popover } from "../overlay/Popover";
-import { DateInput } from "./DateInput";
 import { Field, FieldProps } from "./Field";
 import { InputWrapper } from "./InputWrapper";
 import { BaseInputProps } from "./use-form";
@@ -65,7 +65,10 @@ export function DateRangeInput({
           <Calendar
             mode="range"
             defaultMonth={value?.from ?? value?.to ?? new Date()}
-            selected={value}
+            selected={{
+              from: value?.from,
+              to: value?.to,
+            }}
             onSelect={(range) => {
               if (range) {
                 onChangeValue?.(range);
@@ -96,7 +99,7 @@ export function DateRangeInput({
             onChange={(e) => {
               const nextValue = e.currentTarget.value;
               setDisplayValue(nextValue);
-              const range = DateRangeInput.parse(nextValue);
+              const range = parseDateRange(nextValue);
               if (range) onChangeValue?.(range);
             }}
             data-touched={touched || undefined}
@@ -110,13 +113,13 @@ export function DateRangeInput({
   );
 }
 
-DateRangeInput.parse = function parseDateRange(
-  range: string,
-): DateRange | null {
-  const [fromValue, toValue] = range.split(/\s+[–-]\s+/, 2);
-  const from = DateInput.parse(fromValue);
-  if (!from) return null;
+function parseDateRange(range: string): DateRange | null {
+  const [fromValue, toValue] = range.split(/\s+[-—]\s+/, 2);
+  const fromResult = z.coerce.date().safeParse(fromValue);
+  if (!fromResult.success) return null;
 
-  const to = toValue ? DateInput.parse(toValue) : null;
-  return to ? { from, to } : { from };
-};
+  const toResutlt = toValue ? z.coerce.date().safeParse(toValue) : null;
+  return toResutlt?.success
+    ? { from: fromResult.data, to: toResutlt.data }
+    : { from: fromResult.data };
+}
