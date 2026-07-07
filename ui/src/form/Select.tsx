@@ -32,6 +32,9 @@ export type Select<T, G> = {
   groupedOptions?: Map<G, T[]>;
   toggle(option: T): void;
   ref(option: T): RefObject<HTMLElement | null>;
+  disabled: boolean;
+  open: boolean;
+  close(): void;
 };
 
 export type SelectProps<ID extends string, T, G> = Omit<
@@ -114,12 +117,11 @@ export function Select<ID extends string, T, G>({
       : Slot.render(placeholder, select),
   trigger = (select) => (
     <Select.Trigger
+      select={select}
       size={size}
       variant={variant}
-      disabled={disabled}
-      empty={select.selectedOptions.length == 0}
-      left={Slot.render(left, select)}
-      right={Slot.render(right, select)}
+      left={left}
+      right={right}
     >
       {Slot.render(triggerText, select)}
     </Select.Trigger>
@@ -194,13 +196,16 @@ export function Select<ID extends string, T, G>({
           else elementsRef.current.delete(optionId(option));
         },
       }),
+      disabled: !!disabled,
+      open,
+      close() {
+        onOpenChange(false);
+      },
     }),
-    [options, values],
+    [options, values, disabled, open],
   );
 
-  console.log(select);
-
-  const onOpenChange = (open: boolean) => {
+  function onOpenChange(open: boolean) {
     if (open && disabled) return;
     if (open && autoFocus) {
       // focus on first selected option
@@ -212,9 +217,9 @@ export function Select<ID extends string, T, G>({
     onControlledOpenChange?.(open);
     setLocalOpen(open);
     if (!open) onTouch?.();
-  };
+  }
 
-  const onKeyDown = (e: KeyboardEvent<HTMLElement>) => {
+  function onKeyDown(e: KeyboardEvent<HTMLElement>) {
     if (e.defaultPrevented || disabled) return;
     const selectedOptionIndex = options.findIndex(
       (option) => select.ref(option)?.current === document.activeElement,
@@ -236,7 +241,7 @@ export function Select<ID extends string, T, G>({
       if (option) select.ref(option).current?.focus();
       e.preventDefault();
     }
-  };
+  }
 
   return (
     <Field
@@ -244,10 +249,10 @@ export function Select<ID extends string, T, G>({
       {...{ label, description, error, required }}
       {...fieldProps}
     >
-      <PopoverPrimitive.Root open={open} onOpenChange={onOpenChange}>
+      <PopoverPrimitive.Root open={select.open} onOpenChange={onOpenChange}>
         <PopoverPrimitive.Trigger
           asChild
-          data-state={open ? "open" : "closed"}
+          data-state={select.open ? "open" : "closed"}
           data-disabled={disabled || undefined}
           data-touched={touched || undefined}
           data-variant={variant}
@@ -264,7 +269,7 @@ export function Select<ID extends string, T, G>({
             sideOffset={4}
             collisionPadding={boundary.paddingPx}
             collisionBoundary={boundary.element}
-            data-state={open ? "open" : "closed"}
+            data-state={select.open ? "open" : "closed"}
             data-values={values.length ? values.join(";") : undefined}
             {...omit(props, ["multiple", "value", "onChangeValue"])}
             onKeyDown={(e) => {
@@ -309,19 +314,28 @@ export function Select<ID extends string, T, G>({
   );
 }
 
-type SelectTrigggerProps = InputWrapperProps;
+type SelectTrigggerProps<T, G> = Omit<InputWrapperProps, "left" | "right"> & {
+  select: Select<T, G>;
+  left?: Slot<(select: Select<T, G>) => ReactNode>;
+  right?: Slot<(select: Select<T, G>) => ReactNode>;
+};
 
-Select.Trigger = function SelectTrigger({
+Select.Trigger = function SelectTrigger<T, G>({
+  select,
+  left,
   right,
   ...props
-}: SelectTrigggerProps) {
+}: SelectTrigggerProps<T, G>) {
   return (
     <InputWrapper
       tabIndex={0}
-      style={{ cursor: props.disabled ? "not-allowed" : "pointer" }}
+      disabled={select.disabled}
+      empty={select.selectedOptions.length == 0}
+      active={select.open}
+      left={Slot.render(left, select)}
       right={
         <>
-          {right}
+          {Slot.render(right, select)}
 
           <IconControl className={styles.Icon} color="muted" size="s">
             <BiChevronDown />

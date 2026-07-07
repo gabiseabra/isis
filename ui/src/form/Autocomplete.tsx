@@ -1,7 +1,6 @@
 import { DistributiveOmit } from "@isis/common/types/union";
 import { escapeRegExp } from "@isis/common/utils/regexp";
 import { KeyboardEvent, useRef, useState } from "react";
-import styles from "./Autocomplete.module.scss";
 import { Select, SelectProps } from "./Select";
 
 export type AutocompleteProps<ID extends string, T, G> = DistributiveOmit<
@@ -19,6 +18,8 @@ export function Autocomplete<ID extends string, T, G>({
   open: controlledOpen,
   onOpenChange: onControlledOpenChange,
   optionText,
+  left,
+  right,
   ...props
 }: AutocompleteProps<ID, T, G>) {
   const inputRef = useRef<HTMLInputElement>(null);
@@ -32,19 +33,26 @@ export function Autocomplete<ID extends string, T, G>({
       options={options.filter((o) => queryRegExp?.test(optionText(o)) ?? true)}
       optionText={optionText}
       trigger={(select) => (
-        <input
-          ref={inputRef}
-          type="text"
-          placeholder={placeholder}
-          value={
-            query ||
-            select.selectedOptions
-              .map((option) => optionText(option))
-              .join(", ")
-          }
-          onChange={(e) => setQuery(e.currentTarget.value)}
-          className={styles.Input}
-        />
+        <Select.Trigger
+          select={select}
+          size={props.size}
+          variant={props.variant}
+          left={left}
+          right={right}
+        >
+          <input
+            ref={inputRef}
+            type="text"
+            placeholder={placeholder}
+            value={
+              query ||
+              select.selectedOptions
+                .map((option) => optionText(option))
+                .join(", ")
+            }
+            onChange={(e) => setQuery(e.currentTarget.value)}
+          />
+        </Select.Trigger>
       )}
       {...props}
       open={controlledOpen ?? localOpen}
