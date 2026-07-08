@@ -1,21 +1,15 @@
 import { omit } from "@isis/common/utils/object";
-import { ComponentProps, CSSProperties } from "react";
+import { CSSProperties } from "react";
 import * as css from "../utils/css";
 import { Box, BoxProps } from "./Box";
 import styles from "./FlexBox.module.scss";
 
-export type RowProps = {
-  asChild?: boolean;
-  flex?: number | string;
+export type RowProps = BoxProps & {
   gap?: number;
   wrap?: boolean;
   alignX?: CSSProperties["justifyContent"];
   alignY?: CSSProperties["alignItems"];
-  width?: "wide" | "narrow" | "auto" | number | string;
-  height?: number | string;
-} & css.PaddingProps &
-  css.MarginProps &
-  ComponentProps<"div">;
+};
 
 export function Row({
   flex,
@@ -45,10 +39,9 @@ export function Row({
 }
 
 export type ColProps = {
-  asChild?: boolean;
+  gap?: number;
   alignX?: CSSProperties["alignItems"];
   alignY?: CSSProperties["justifyContent"];
-  gap?: number;
 } & BoxProps;
 
 export function Col({
