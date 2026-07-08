@@ -2,7 +2,7 @@ import { Book } from "@isis/common/dto/book";
 import { ID } from "@isis/common/utils/id";
 import { sql, sqlOne } from "../../db/sql";
 
-export class BookRow {
+class BookRow {
   constructor(
     public id: number,
     public title: string,
@@ -19,36 +19,37 @@ export class BookRow {
     public languages: (string | null)[],
     public tags: (string | null)[],
   ) {}
+}
 
-  static toJson(row: BookRow): Book {
-    return {
-      id: ID.create("Book", row.id),
-      title: row.title,
-      slug: row.slug,
-      isbn13: row.isbn13 ?? undefined,
-      isbn10: row.isbn10 ?? undefined,
-      imageUrl: row.image_url ?? undefined,
-      publishYear: row.publish_year ?? undefined,
-      publisherId:
-        row.publisher_id !== null
-          ? ID.create("Publisher", row.publisher_id)
-          : undefined,
-      authorIds: row.author_ids
-        .filter((id): id is number => id !== null)
-        .map((id) => ID.create("Author", Number(id))),
-      languages: row.languages.filter(
-        (language): language is string => language !== null,
-      ),
-      tags: row.tags.filter((tag): tag is string => tag !== null),
-      createdById:
-        row.created_by !== null ? ID.create("User", row.created_by) : undefined,
-      createdAt: row.created_at,
-      updatedAt: row.updated_at,
-    };
-  }
+function mapBook(row: BookRow): Book {
+  return {
+    id: ID.create("Book", row.id),
+    title: row.title,
+    slug: row.slug,
+    isbn13: row.isbn13 ?? undefined,
+    isbn10: row.isbn10 ?? undefined,
+    imageUrl: row.image_url ?? undefined,
+    publishYear: row.publish_year ?? undefined,
+    publisherId:
+      row.publisher_id !== null
+        ? ID.create("Publisher", row.publisher_id)
+        : undefined,
+    authorIds: row.author_ids
+      .filter((id): id is number => id !== null)
+      .map((id) => ID.create("Author", Number(id))),
+    languages: row.languages.filter(
+      (language): language is string => language !== null,
+    ),
+    tags: row.tags.filter((tag): tag is string => tag !== null),
+    createdById:
+      row.created_by !== null ? ID.create("User", row.created_by) : undefined,
+    createdAt: row.created_at,
+    updatedAt: row.updated_at,
+  };
+}
 
-  static async get(id: number) {
-    return await sqlOne<BookRow>`
+export async function getBook(id: number) {
+  const row = await sqlOne<BookRow>`
     select b.*,
       coalesce(array_agg(distinct ba.author_id), array[]::bigint[]) as author_ids,
       coalesce(array_agg(distinct bl.language_code::text), array[]::text[]) as languages,
@@ -60,21 +61,22 @@ export class BookRow {
     where b.id = ${id}
     group by b.id;
     `;
-  }
+  return mapBook(row);
+}
 
-  static async query(query: {
-    offset: number;
-    limit: number;
-    query?: string;
-    ids?: number[];
-    tags?: string[];
-    sort?: "name" | "created_at" | "updated_at";
-    order?: "asc" | "desc";
-  }) {
-    const sort = query.sort ?? "name";
-    const order = query.order ?? "asc";
+export async function queryBooks(query: {
+  offset: number;
+  limit: number;
+  query?: string;
+  ids?: number[];
+  tags?: string[];
+  sort?: "name" | "created_at" | "updated_at";
+  order?: "asc" | "desc";
+}) {
+  const sort = query.sort ?? "name";
+  const order = query.order ?? "asc";
 
-    return await sql<BookRow>`
+  const rows = await sql<BookRow>`
     select b.*,
       coalesce(array_agg(distinct ba.author_id), array[]::bigint[]) as author_ids,
       coalesce(array_agg(distinct bl.language_code::text), array[]::text[]) as languages,
@@ -100,5 +102,6 @@ export class BookRow {
     limit ${query.limit}
     offset ${query.offset};
     `;
-  }
+
+  return rows.map(mapBook);
 }

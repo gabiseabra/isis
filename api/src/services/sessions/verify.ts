@@ -1,7 +1,8 @@
 import { createErrorHandler } from "@isis/common/utils/error";
-import { UserRow } from "../users/row";
+import { ID } from "@isis/common/utils/id";
+import { getUser } from "../users/db";
+import { getSession } from "./db";
 import { JWT } from "./jwt";
-import { SessionRow } from "./row";
 
 export async function verifySession(token: string) {
   const payload = await JWT.parseToken(token).catch(
@@ -10,12 +11,12 @@ export async function verifySession(token: string) {
     }),
   );
 
-  const session = await SessionRow.get(payload.uuid);
+  const session = await getSession(payload.uuid);
 
   if (!session || (session.revoked_at && session.revoked_at <= new Date()))
     throw new verifySession.UnauthorizedError();
 
-  const user = await UserRow.get(session.user_id);
+  const user = await getUser(ID.create("User", session.user_id));
 
   return { user, session };
 }

@@ -2,7 +2,6 @@ import { CreateUserInput } from "@isis/common/dto/user/create-input";
 import { pipe } from "ts-functional-pipe";
 import z from "zod";
 import { createUser } from "../services/users/create";
-import { UserRow } from "../services/users/row";
 import { ANSI } from "../utils/ansi";
 import { Command } from "../utils/command";
 import { Theme } from "../utils/theme";
@@ -19,7 +18,7 @@ export default Command.create(
 
     console.log(
       pipe(ANSI.bold, ANSI.hex(Theme.green))("User created: "),
-      UserRow.toJson(user).id,
+      user.id,
     );
   },
   {

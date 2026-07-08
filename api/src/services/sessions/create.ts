@@ -1,30 +1,27 @@
 import argon2 from "argon2";
-import { UserRow } from "../users/row";
+import { getUser, getUserPasswordHash } from "../users/db";
+import { createSessionRow } from "./db";
 import { JWT } from "./jwt";
-import { SessionRow } from "./row";
 
 export async function createSession(input: {
   email: string;
   password: string;
 }) {
-  const [user] = await UserRow.query({
-    email: input.email,
-    limit: 1,
-    offset: 0,
-  });
+  const userData = await getUserPasswordHash({ email: input.email });
 
-  if (!user?.password_hash) throw new createSession.UnauthorizedError();
+  if (!userData || !userData.passwordHash)
+    throw new createSession.UnauthorizedError();
 
-  if (!(await argon2.verify(user.password_hash, input.password))) {
+  if (!(await argon2.verify(userData.passwordHash, input.password))) {
     throw new createSession.UnauthorizedError();
   }
 
-  const { token, payload } = JWT.create(UserRow.toJson(user).id);
+  const { token, payload } = JWT.create(userData.id);
 
   return {
-    user,
+    user: await getUser(userData.id),
     token,
-    session: await SessionRow.create(payload),
+    session: await createSessionRow(payload),
   };
 }
 

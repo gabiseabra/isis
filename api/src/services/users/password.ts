@@ -1,21 +1,26 @@
+import { User } from "@isis/common/dto/user";
 import argon2 from "argon2";
-import { UserRow } from "./row";
+import { getUserPasswordHash, updateUserPasswordHash } from "./db";
 
 export async function updatePassword(
-  user: UserRow,
+  user: User,
   input: {
     newPassword: string;
     oldPassword: string;
   },
 ) {
+  const userData = await getUserPasswordHash(user);
   if (
-    !user ||
-    !(!user.password_hash && !input.oldPassword) ||
-    !(await argon2.verify(user.password_hash ?? "", input.oldPassword))
+    // user not found
+    !userData ||
+    // match null password hash with empty password input
+    !(!userData.passwordHash && !input.oldPassword) ||
+    // password doesn't match
+    !(await argon2.verify(userData.passwordHash ?? "", input.oldPassword))
   )
     throw new updatePassword.UnauthorizedError();
 
-  await UserRow.updatePasswordHash({
+  await updateUserPasswordHash({
     id: user.id,
     passwordHash: (await argon2.hash(input.newPassword)).toString(),
   });
