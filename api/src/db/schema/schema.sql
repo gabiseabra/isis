@@ -28,6 +28,17 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp" WITH SCHEMA public;
 COMMENT ON EXTENSION "uuid-ossp" IS 'generate universally unique identifiers (UUIDs)';
 
 
+--
+-- Name: column_type; Type: TYPE; Schema: public; Owner: -
+--
+
+CREATE TYPE public.column_type AS ENUM (
+    'string',
+    'number',
+    'date'
+);
+
+
 SET default_tablespace = '';
 
 SET default_table_access_method = heap;
@@ -96,6 +107,17 @@ CREATE TABLE public.book_languages (
 
 
 --
+-- Name: book_tags; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.book_tags (
+    book_id bigint NOT NULL,
+    tag character varying(255) NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL
+);
+
+
+--
 -- Name: books; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -125,17 +147,6 @@ ALTER TABLE public.books ALTER COLUMN id ADD GENERATED ALWAYS AS IDENTITY (
     NO MINVALUE
     NO MAXVALUE
     CACHE 1
-);
-
-
---
--- Name: book_tags; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.book_tags (
-    book_id bigint NOT NULL,
-    tag character varying(255) NOT NULL,
-    created_at timestamp with time zone DEFAULT now() NOT NULL
 );
 
 
@@ -238,6 +249,118 @@ CREATE TABLE public.sessions (
 
 
 --
+-- Name: sheet_cells; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.sheet_cells (
+    id bigint NOT NULL,
+    sheet_id bigint NOT NULL,
+    column_id bigint NOT NULL,
+    row_id bigint NOT NULL,
+    value text,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    updated_at timestamp with time zone DEFAULT now() NOT NULL
+);
+
+
+--
+-- Name: sheet_cells_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+ALTER TABLE public.sheet_cells ALTER COLUMN id ADD GENERATED ALWAYS AS IDENTITY (
+    SEQUENCE NAME public.sheet_cells_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- Name: sheet_columns; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.sheet_columns (
+    id bigint NOT NULL,
+    sheet_id bigint NOT NULL,
+    name text NOT NULL,
+    target character varying(255),
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    updated_at timestamp with time zone DEFAULT now() NOT NULL
+);
+
+
+--
+-- Name: sheet_columns_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+ALTER TABLE public.sheet_columns ALTER COLUMN id ADD GENERATED ALWAYS AS IDENTITY (
+    SEQUENCE NAME public.sheet_columns_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- Name: sheet_rows; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.sheet_rows (
+    id bigint NOT NULL,
+    sheet_id bigint NOT NULL,
+    column_id bigint NOT NULL,
+    value text,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    updated_at timestamp with time zone DEFAULT now() NOT NULL
+);
+
+
+--
+-- Name: sheet_rows_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+ALTER TABLE public.sheet_rows ALTER COLUMN id ADD GENERATED ALWAYS AS IDENTITY (
+    SEQUENCE NAME public.sheet_rows_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- Name: sheets; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.sheets (
+    id bigint NOT NULL,
+    file_name text NOT NULL,
+    file_hash character(32) NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    updated_at timestamp with time zone DEFAULT now() NOT NULL
+);
+
+
+--
+-- Name: sheets_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+ALTER TABLE public.sheets ALTER COLUMN id ADD GENERATED ALWAYS AS IDENTITY (
+    SEQUENCE NAME public.sheets_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
 -- Name: users; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -314,11 +437,11 @@ ALTER TABLE ONLY public.books
 
 
 --
--- Name: book_tags book_tags_book_id_tag_key; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: book_tags books_tags_book_id_tag_key; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.book_tags
-    ADD CONSTRAINT book_tags_book_id_tag_key UNIQUE (book_id, tag);
+    ADD CONSTRAINT books_tags_book_id_tag_key UNIQUE (book_id, tag);
 
 
 --
@@ -375,6 +498,38 @@ ALTER TABLE ONLY public.schema_migrations
 
 ALTER TABLE ONLY public.sessions
     ADD CONSTRAINT sessions_pkey PRIMARY KEY (uuid);
+
+
+--
+-- Name: sheet_cells sheet_cells_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.sheet_cells
+    ADD CONSTRAINT sheet_cells_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: sheet_columns sheet_columns_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.sheet_columns
+    ADD CONSTRAINT sheet_columns_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: sheet_rows sheet_rows_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.sheet_rows
+    ADD CONSTRAINT sheet_rows_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: sheets sheets_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.sheets
+    ADD CONSTRAINT sheets_pkey PRIMARY KEY (id);
 
 
 --
@@ -466,11 +621,11 @@ ALTER TABLE ONLY public.books
 
 
 --
--- Name: book_tags book_tags_book_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: book_tags books_tags_book_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.book_tags
-    ADD CONSTRAINT book_tags_book_id_fkey FOREIGN KEY (book_id) REFERENCES public.books(id) ON DELETE CASCADE;
+    ADD CONSTRAINT books_tags_book_id_fkey FOREIGN KEY (book_id) REFERENCES public.books(id) ON DELETE CASCADE;
 
 
 --
@@ -487,6 +642,54 @@ ALTER TABLE ONLY public.publishers
 
 ALTER TABLE ONLY public.sessions
     ADD CONSTRAINT sessions_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
+
+
+--
+-- Name: sheet_cells sheet_cells_column_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.sheet_cells
+    ADD CONSTRAINT sheet_cells_column_id_fkey FOREIGN KEY (column_id) REFERENCES public.sheet_columns(id) ON DELETE CASCADE;
+
+
+--
+-- Name: sheet_cells sheet_cells_row_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.sheet_cells
+    ADD CONSTRAINT sheet_cells_row_id_fkey FOREIGN KEY (row_id) REFERENCES public.sheet_rows(id) ON DELETE CASCADE;
+
+
+--
+-- Name: sheet_cells sheet_cells_sheet_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.sheet_cells
+    ADD CONSTRAINT sheet_cells_sheet_id_fkey FOREIGN KEY (sheet_id) REFERENCES public.sheets(id) ON DELETE CASCADE;
+
+
+--
+-- Name: sheet_columns sheet_columns_sheet_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.sheet_columns
+    ADD CONSTRAINT sheet_columns_sheet_id_fkey FOREIGN KEY (sheet_id) REFERENCES public.sheets(id) ON DELETE CASCADE;
+
+
+--
+-- Name: sheet_rows sheet_rows_column_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.sheet_rows
+    ADD CONSTRAINT sheet_rows_column_id_fkey FOREIGN KEY (column_id) REFERENCES public.sheet_columns(id) ON DELETE CASCADE;
+
+
+--
+-- Name: sheet_rows sheet_rows_sheet_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.sheet_rows
+    ADD CONSTRAINT sheet_rows_sheet_id_fkey FOREIGN KEY (sheet_id) REFERENCES public.sheets(id) ON DELETE CASCADE;
 
 
 --
@@ -507,4 +710,8 @@ INSERT INTO public.schema_migrations (version) VALUES
     ('20260628180019'),
     ('20260628180100'),
     ('20260628190608'),
-    ('20260628191756');
+    ('20260628191756'),
+    ('20260708144320'),
+    ('20260708144557'),
+    ('20260708144907'),
+    ('20260708151535');
