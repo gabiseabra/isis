@@ -29,11 +29,9 @@ const meta: Meta = {
                 }}
               >
                 <Story />
-                <Col asChild flex={1} alignX="center" alignY="center">
-                  <Card m={2}>
-                    <Outlet />
-                  </Card>
-                </Col>
+                <Card m={2} flex={1} alignX="center" alignY="center">
+                  <Outlet />
+                </Card>
               </Row>
             ),
             children: [

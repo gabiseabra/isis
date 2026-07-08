@@ -16,7 +16,7 @@ export type DateInputProps = Omit<
     size?: "s" | "m" | "l";
     variant?: "default" | "unstyled";
     closeOnSelect?: boolean;
-    fieldProps?: Partial<FieldProps>;
+    fieldProps?: FieldProps;
   };
 
 export function DateInput({

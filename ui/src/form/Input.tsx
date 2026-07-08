@@ -4,13 +4,12 @@ import { InputWrapper } from "./InputWrapper";
 import { BaseInputProps } from "./use-form";
 
 export type InputProps = Omit<ComponentProps<"input">, "size"> &
-  Partial<BaseInputProps<string>> & {
+  BaseInputProps<string> & {
     size?: "s" | "m" | "l";
     variant?: "default" | "unstyled";
     left?: ReactNode;
     right?: ReactNode;
-    onChangeValue?: (value: string) => void;
-    fieldProps?: Partial<FieldProps>;
+    fieldProps?: FieldProps;
   };
 
 export function Input({
@@ -30,8 +29,6 @@ export function Input({
   return (
     <Field
       htmlFor={props.id}
-      direction={variant === "unstyled" ? "inline" : "block"}
-      alignY="center"
       {...{ label, description, error, required }}
       {...fieldProps}
     >

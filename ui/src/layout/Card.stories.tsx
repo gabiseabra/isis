@@ -46,7 +46,13 @@ export const Elevations: Story = {
       rows={elevations}
       columns={["element"]}
       cell={(elevation) => (
-        <Card {...args} elevation={elevation} p={3} gap={1}>
+        <Card
+          {...args}
+          elevation={elevation}
+          p={3}
+          alignX="center"
+          alignY="center"
+        >
           <Text size="h5">Elevation {elevation}</Text>
           <Text color="muted">More elevation, more shadow and radius.</Text>
         </Card>

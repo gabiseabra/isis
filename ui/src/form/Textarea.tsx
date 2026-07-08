@@ -7,7 +7,7 @@ export type TextareaProps = ComponentProps<"textarea"> &
   BaseInputProps<string> & {
     autoGrow?: boolean;
     variant?: "default" | "unstyled";
-    fieldProps?: Partial<FieldProps>;
+    fieldProps?: FieldProps;
   };
 
 export function Textarea({

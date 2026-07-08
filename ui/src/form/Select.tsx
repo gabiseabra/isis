@@ -70,7 +70,7 @@ export type SelectProps<ID extends string, T, G> = Omit<
   right?: Slot<(select: Select<T, G>) => ReactNode>;
   emptyState?: Slot<(select: Select<T, G>) => ReactNode>;
 
-  fieldProps?: Partial<FieldProps>;
+  fieldProps?: FieldProps;
 } & (
     | ({ multiple?: false } & BaseInputProps<ID>)
     | ({ multiple: true } & BaseInputProps<ID[]>)

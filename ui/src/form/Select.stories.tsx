@@ -78,7 +78,7 @@ export const Multiple: Story = {
 export const Bounded: Story = {
   render: (props) => (
     <Select.Boundary padding={2} asChild>
-      <Card elevation={1} px={10} py={20} alignX="center" alignY="center">
+      <Card px={10} py={20} alignX="center" alignY="center">
         <MultiSelectStory {...props} />
       </Card>
     </Select.Boundary>

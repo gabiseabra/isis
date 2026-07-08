@@ -11,7 +11,7 @@ export type CheckboxProps = Omit<
   "value"
 > &
   BaseInputProps<boolean> & {
-    fieldProps?: Partial<FieldProps>;
+    fieldProps?: FieldProps;
   };
 
 export function Checkbox({

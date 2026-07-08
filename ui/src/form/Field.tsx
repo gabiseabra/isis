@@ -1,4 +1,3 @@
-import { WithOptional } from "@isis/common/types/object";
 import { type ReactNode } from "react";
 import { BiErrorCircle, BiInfoCircle } from "react-icons/bi";
 import { IconControl } from "../display/IconControl";
@@ -7,7 +6,7 @@ import { FlexBox, FlexBoxProps } from "../layout/FlexBox";
 import { Tooltip } from "../overlay/Tooltip";
 import styles from "./Field.module.scss";
 
-export type FieldProps = WithOptional<FlexBoxProps, "direction"> & {
+export type FieldProps = FlexBoxProps & {
   htmlFor?: string;
   label?: ReactNode;
   required?: boolean;
@@ -21,16 +20,14 @@ export function Field({
   required,
   description,
   error,
-  className = "",
+  className,
   children,
   ...props
 }: FieldProps) {
-  const direction = props.direction ?? "block";
   return (
     <FlexBox
       {...props}
       className={[styles.Field, className].filter(Boolean).join(" ")}
-      direction={direction}
     >
       {label && (
         <label className={styles.Label} htmlFor={htmlFor}>
@@ -59,7 +56,7 @@ export function Field({
               </IconControl>
             </Tooltip>
           ),
-        }[direction]}
+        }[props.direction ?? "block"]}
 
       {error &&
         {
@@ -75,7 +72,7 @@ export function Field({
               </IconControl>
             </Tooltip>
           ),
-        }[direction]}
+        }[props.direction ?? "block"]}
     </FlexBox>
   );
 }

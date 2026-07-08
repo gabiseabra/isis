@@ -1,4 +1,4 @@
-import { type DateRange } from "@daypicker/react";
+import { DateRange } from "@isis/common/dto/date-range";
 import type { Meta, StoryObj } from "@storybook/react";
 import { useState } from "react";
 import { DateRangeInput, type DateRangeInputProps } from "./DateRangeInput";
