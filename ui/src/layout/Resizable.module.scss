@@ -40,6 +40,10 @@
   cursor: row-resize;
 }
 
+.Resizable[data-direction="y"] > .Handle > * {
+  width: 100%;
+}
+
 .Resizable[data-direction="both"] > .Handle {
   right: 0;
   bottom: 0;

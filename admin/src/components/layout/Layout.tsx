@@ -57,8 +57,8 @@ export function Layout({ children }: { children: ReactNode }) {
         </Nav.Link>
       </Nav>
 
-      <Col as="main" flex={1} alignX="center" alignY="center">
-        {children}
+      <Col asChild flex={1} alignX="center" alignY="center">
+        <main>{children}</main>
       </Col>
     </>
   );

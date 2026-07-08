@@ -27,7 +27,6 @@ export function EmptyState({
       <TitleWrapper alignY="center">
         {icon && (
           <IconControl
-            as="div"
             color={color}
             size="auto"
             style={{
@@ -43,7 +42,6 @@ export function EmptyState({
         )}
 
         <Text
-          as="div"
           size={({ s: "body", m: "body", l: "h4" } as const)[size]}
           font="sans-serif"
           color={color}
@@ -52,13 +50,14 @@ export function EmptyState({
         </Text>
       </TitleWrapper>
 
-      <Text
-        as="div"
-        size={({ s: "caption", m: "body", l: "body" } as const)[size]}
-        color="muted"
-      >
-        {children}
-      </Text>
+      {!!children && (
+        <Text
+          size={({ s: "caption", m: "body", l: "body" } as const)[size]}
+          color="muted"
+        >
+          {children}
+        </Text>
+      )}
     </Col>
   );
 }

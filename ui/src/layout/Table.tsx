@@ -285,7 +285,7 @@ Table.ResizableHeader = function ResizableTableHeader<Row, Col extends string>({
             asChild
             disabled={!resizable}
             direction="x"
-            onResize={(width) => onResize?.(col, width)}
+            onResize={({ width }) => onResize?.(col, width)}
           >
             <Table.Cell
               as="th"

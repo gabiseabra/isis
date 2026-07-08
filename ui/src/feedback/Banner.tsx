@@ -37,7 +37,6 @@ export function Banner({
     >
       {(type !== "neutral" || icon) && (
         <IconControl
-          as="span"
           size="s"
           color="currentColor"
           my={1}

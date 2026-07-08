@@ -64,21 +64,11 @@ function ResizableStory({
     <Resizable
       id={id}
       aspectRatio={aspectRatio}
-      {...(direction === "both"
-        ? {
-            direction: "both",
-            onResize({ width, height }) {
-              setWidth(width);
-              setHeight(height);
-            },
-          }
-        : {
-            direction,
-            onResize(size) {
-              if (direction === "x") setWidth(size);
-              if (direction === "y") setHeight(size);
-            },
-          })}
+      direction={direction}
+      onResize={({ width, height }) => {
+        setWidth(width);
+        setHeight(height);
+      }}
     >
       <Card style={{ width, height }} />
     </Resizable>

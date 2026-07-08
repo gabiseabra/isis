@@ -17,7 +17,8 @@
     "dev:docker": "docker compose up",
     "lint": "eslint .",
     "tsc": "tsc -b",
-    "build": "npm run build --workspaces"
+    "build": "npm run build --workspaces",
+    "postinstall": "patch-package"
   },
   "devDependencies": {
     "@eslint/compat": "^2.1.0",
@@ -32,6 +33,7 @@
     "eslint-plugin-prettier": "^5.5.6",
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-hooks": "^7.1.1",
+    "patch-package": "^8.0.1",
     "prettier": "^3.8.4",
     "prettier-plugin-organize-imports": "^4.3.0",
     "typescript": "^6.0.3"

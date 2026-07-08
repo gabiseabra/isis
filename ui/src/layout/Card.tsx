@@ -1,13 +1,13 @@
+import { Box, BoxProps } from "./Box";
 import styles from "./Card.module.scss";
-import { Col, ColProps } from "./FlexBox";
 
-export type CardProps = ColProps & {
+export type CardProps = BoxProps & {
   elevation?: 0 | 1 | 2;
 };
 
 export function Card({ className, elevation = 0, ...props }: CardProps) {
   return (
-    <Col
+    <Box
       className={[styles.Card, className].filter(Boolean).join(" ")}
       data-elevation={elevation}
       {...props}

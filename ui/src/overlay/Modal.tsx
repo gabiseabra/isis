@@ -37,41 +37,43 @@ export function Modal({
       <Dialog.Portal container={overlay.root}>
         <Dialog.Overlay className={styles.Overlay} />
         <Dialog.Content className={styles.Content}>
-          <Col as="header" className={styles.Header}>
-            <Row alignX="space-between" alignY="center">
-              <Dialog.Title asChild>
-                <Text as="h2" size="h4" m={0}>
-                  {title}
-                </Text>
-              </Dialog.Title>
+          <Col asChild className={styles.Header}>
+            <header>
+              <Row alignX="space-between" alignY="center">
+                <Dialog.Title asChild>
+                  <Text as="h2" size="h4" m={0}>
+                    {title}
+                  </Text>
+                </Dialog.Title>
 
-              <Dialog.Close
-                className={styles.Close}
-                aria-label="Fechar"
-                asChild
-              >
-                <IconButton>
-                  <IconControl color="muted" size="m">
-                    <BiX />
-                  </IconControl>
-                </IconButton>
-              </Dialog.Close>
-            </Row>
+                <Dialog.Close
+                  className={styles.Close}
+                  aria-label="Fechar"
+                  asChild
+                >
+                  <IconButton>
+                    <IconControl color="muted" size="m">
+                      <BiX />
+                    </IconControl>
+                  </IconButton>
+                </Dialog.Close>
+              </Row>
 
-            {description ? (
-              <Dialog.Description asChild>
-                <Text as="h5" color="muted" m={0}>
-                  {description}
-                </Text>
-              </Dialog.Description>
-            ) : null}
+              {description ? (
+                <Dialog.Description asChild>
+                  <Text as="h5" color="muted" m={0}>
+                    {description}
+                  </Text>
+                </Dialog.Description>
+              ) : null}
+            </header>
           </Col>
 
           <Col className={styles.Body}>{children}</Col>
 
           {footer && (
-            <Row as="footer" alignX="end" className={styles.Footer}>
-              {footer}
+            <Row asChild alignX="end" className={styles.Footer}>
+              <footer>{footer}</footer>
             </Row>
           )}
         </Dialog.Content>
