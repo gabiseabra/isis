@@ -1,6 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { useState } from "react";
-import { Col } from "../layout/FlexBox";
 import { DateInput, type DateInputProps } from "./DateInput";
 
 type DateInputStoryArgs = Pick<

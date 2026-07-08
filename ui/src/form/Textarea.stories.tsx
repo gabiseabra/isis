@@ -1,5 +1,4 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { Col } from "../layout/FlexBox";
 import { Textarea, type TextareaProps } from "./Textarea";
 
 type TextareaStoryArgs = Pick<

@@ -1,5 +1,4 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { Col } from "../layout/FlexBox";
 import { Checkbox, type CheckboxProps } from "./Checkbox";
 
 type CheckboxStoryArgs = Pick<CheckboxProps, "label" | "checked" | "disabled">;

@@ -1,5 +1,4 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { Col } from "../layout/FlexBox";
 import { Field, type FieldProps } from "./Field";
 import { Input } from "./Input";
 
