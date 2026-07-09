@@ -253,27 +253,12 @@ CREATE TABLE public.sessions (
 --
 
 CREATE TABLE public.sheet_cells (
-    id bigint NOT NULL,
     sheet_id bigint NOT NULL,
     column_id bigint NOT NULL,
     row_id bigint NOT NULL,
     value text,
     created_at timestamp with time zone DEFAULT now() NOT NULL,
     updated_at timestamp with time zone DEFAULT now() NOT NULL
-);
-
-
---
--- Name: sheet_cells_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-ALTER TABLE public.sheet_cells ALTER COLUMN id ADD GENERATED ALWAYS AS IDENTITY (
-    SEQUENCE NAME public.sheet_cells_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1
 );
 
 
@@ -285,7 +270,7 @@ CREATE TABLE public.sheet_columns (
     id bigint NOT NULL,
     sheet_id bigint NOT NULL,
     name text NOT NULL,
-    target character varying(255),
+    tags text[] DEFAULT ARRAY[]::text[] NOT NULL,
     created_at timestamp with time zone DEFAULT now() NOT NULL,
     updated_at timestamp with time zone DEFAULT now() NOT NULL
 );
@@ -312,8 +297,6 @@ ALTER TABLE public.sheet_columns ALTER COLUMN id ADD GENERATED ALWAYS AS IDENTIT
 CREATE TABLE public.sheet_rows (
     id bigint NOT NULL,
     sheet_id bigint NOT NULL,
-    column_id bigint NOT NULL,
-    value text,
     created_at timestamp with time zone DEFAULT now() NOT NULL,
     updated_at timestamp with time zone DEFAULT now() NOT NULL
 );
@@ -505,7 +488,7 @@ ALTER TABLE ONLY public.sessions
 --
 
 ALTER TABLE ONLY public.sheet_cells
-    ADD CONSTRAINT sheet_cells_pkey PRIMARY KEY (id);
+    ADD CONSTRAINT sheet_cells_pkey PRIMARY KEY (column_id, row_id);
 
 
 --
@@ -674,14 +657,6 @@ ALTER TABLE ONLY public.sheet_cells
 
 ALTER TABLE ONLY public.sheet_columns
     ADD CONSTRAINT sheet_columns_sheet_id_fkey FOREIGN KEY (sheet_id) REFERENCES public.sheets(id) ON DELETE CASCADE;
-
-
---
--- Name: sheet_rows sheet_rows_column_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.sheet_rows
-    ADD CONSTRAINT sheet_rows_column_id_fkey FOREIGN KEY (column_id) REFERENCES public.sheet_columns(id) ON DELETE CASCADE;
 
 
 --

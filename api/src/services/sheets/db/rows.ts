@@ -1,0 +1,181 @@
+import { SheetCell, SheetRow } from "@isis/common/dto/sheet";
+import { groupBy } from "@isis/common/utils/array";
+import { ID } from "@isis/common/utils/id";
+import { nest } from "../../../db/nest";
+import { sql, sqlOne } from "../../../db/sql";
+
+class SheetRowRow {
+  constructor(
+    public id: number,
+    public sheet_id: number,
+    public created_at: Date,
+    public updated_at: Date,
+  ) {}
+}
+
+class SheetCellRow {
+  constructor(
+    public sheet_id: number,
+    public column_id: number,
+    public row_id: number,
+    public value: string | null,
+    public created_at: Date,
+    public updated_at: Date,
+  ) {}
+}
+
+function mapSheetCell(row: SheetCellRow): SheetCell {
+  return {
+    sheetId: ID.create("Sheet", row.sheet_id),
+    columnId: row.column_id,
+    rowId: row.row_id,
+    value: row.value,
+  };
+}
+
+function mapSheetRow(row: SheetRowRow): SheetRow {
+  return {
+    sheetId: ID.create("Sheet", row.sheet_id),
+    rowId: row.id,
+    cells: [],
+  };
+}
+
+////
+
+export async function getSheetRow(
+  sheetId: ID<"Sheet">,
+  rowId: number,
+  columnIds: number[],
+) {
+  const rows = await sql<SheetCellRow>`
+    select * from sheet_cells
+    where sheet_id = ${ID.parse(sheetId).id}
+      and row_id = ${rowId}
+      and column_id = any(${columnIds}::bigint[])
+    order by array_position(${columnIds}::bigint[], column_id) asc;
+    `;
+
+  return {
+    sheetId,
+    rowId,
+    cells: rows.map(mapSheetCell),
+  } satisfies SheetRow;
+}
+
+export async function querySheetRows(input: {
+  sheetId: ID<"Sheet">;
+  /** column ids to include in the result */
+  columnIds: number[];
+  offset: number;
+  limit: number;
+  query?: string;
+  ids?: number[];
+  sort?: "id" | "created_at" | "updated_at" | `column_${number}`;
+  order?: "asc" | "desc";
+}) {
+  const rows = await sql<SheetCellRow>`
+    select sheet_cells.* from sheet_cells
+    join sheet_rows on sheet_rows.sheet_id = sheet_cells.sheet_id
+      and sheet_rows.id = sheet_cells.row_id
+    where sheet_cells.sheet_id = ${ID.parse(input.sheetId).id}
+      and sheet_cells.column_id = any(${input.columnIds}::bigint[])
+      and sheet_rows.id = any(coalesce(${(input.ids ?? null) as number[]}::bigint[], array[sheet_rows.id]))
+      and (${input.query ?? null}::text is null or exists (
+        select 1 from sheet_cells query_cells
+        where query_cells.sheet_id = sheet_rows.sheet_id
+          and query_cells.row_id = sheet_rows.id
+          and query_cells.value ilike '%' || ${input.query ?? null} || '%'
+      ))
+    order by
+      case when ${input.sort ?? "id"} = 'id' and ${input.order ?? "asc"} = 'asc' then sheet_rows.id end asc,
+      case when ${input.sort ?? "id"} = 'id' and ${input.order ?? "asc"} = 'desc' then sheet_rows.id end desc,
+      case when ${input.sort ?? "id"} = 'created_at' and ${input.order ?? "asc"} = 'asc' then sheet_rows.created_at end asc,
+      case when ${input.sort ?? "id"} = 'created_at' and ${input.order ?? "asc"} = 'desc' then sheet_rows.created_at end desc,
+      case when ${input.sort ?? "id"} = 'updated_at' and ${input.order ?? "asc"} = 'asc' then sheet_rows.updated_at end asc,
+      case when ${input.sort ?? "id"} = 'updated_at' and ${input.order ?? "asc"} = 'desc' then sheet_rows.updated_at end desc,
+      case when ${input.sort ?? "id"} like 'column_%' and ${input.order ?? "asc"} = 'asc' then (
+        select sort_cells.value from sheet_cells sort_cells
+        where sort_cells.sheet_id = sheet_rows.sheet_id
+          and sort_cells.row_id = sheet_rows.id
+          and sort_cells.column_id = replace(${input.sort ?? "id"}, 'column_', '')::bigint
+      ) end asc,
+      case when ${input.sort ?? "id"} like 'column_%' and ${input.order ?? "asc"} = 'desc' then (
+        select sort_cells.value from sheet_cells sort_cells
+        where sort_cells.sheet_id = sheet_rows.sheet_id
+          and sort_cells.row_id = sheet_rows.id
+          and sort_cells.column_id = replace(${input.sort ?? "id"}, 'column_', '')::bigint
+      ) end desc,
+      sheet_rows.id asc,
+      array_position(${input.columnIds}::bigint[], sheet_cells.column_id) asc
+    limit ${input.limit * input.columnIds.length}
+    offset ${input.offset * input.columnIds.length};
+    `;
+
+  return groupBy(rows, (row) => row.row_id).map(([rowId, cells]) => ({
+    sheetId: input.sheetId,
+    rowId,
+    cells: cells.map(mapSheetCell),
+  })) satisfies SheetRow[];
+}
+
+export async function createSheetRows(input: {
+  sheetId: ID<"Sheet">;
+  count: number;
+}) {
+  const sheetId = ID.parse(input.sheetId).id;
+
+  const rows = await sql<SheetRowRow>`
+    insert into sheet_rows (sheet_id)
+    select *
+    from UNNEST(${Array.from({ length: input.count }, () => sheetId)} :: bigint[])
+    returning *;
+    `;
+
+  return rows.map(mapSheetRow);
+}
+
+export async function upsertSheetCell(input: {
+  sheetId: ID<"Sheet">;
+  columnId: number;
+  rowId: number;
+  value: string;
+}) {
+  const row = await sqlOne<SheetCellRow>`
+    insert into sheet_cells (sheet_id, column_id, row_id, value)
+    values (${ID.parse(input.sheetId).id}, ${input.columnId}, ${input.rowId}, ${input.value})
+    on conflict (column_id, row_id) do update
+    set value = excluded.value,
+      updated_at = now()
+    returning *;
+    `;
+
+  return mapSheetCell(row);
+}
+
+export async function bulkUpsertSheetCell(input: {
+  sheetId: ID<"Sheet">;
+  cells: {
+    columnId: number;
+    rowId: number;
+    value: string;
+  }[];
+}) {
+  const { columnId, rowId, value } = nest(input.cells);
+
+  const rows = await sql<SheetCellRow>`
+    insert into sheet_cells (sheet_id, column_id, row_id, value)
+    select ${ID.parse(input.sheetId).id}, *
+    from UNNEST(
+      ${columnId} :: bigint[],
+      ${rowId} :: bigint[],
+      ${value} :: text[]
+    )
+    on conflict (column_id, row_id) do update
+    set value = excluded.value,
+      updated_at = now()
+    returning *;
+    `;
+
+  return rows.map(mapSheetCell);
+}
