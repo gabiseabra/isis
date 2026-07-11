@@ -18,6 +18,8 @@ export default defineConfig({
         bigserial: "number",
         int8: "number",
         uuid: "UUID",
+        json: "unknown",
+        jsonb: "unknown",
       },
     },
   },

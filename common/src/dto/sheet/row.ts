@@ -5,7 +5,7 @@ export const SheetCell = z.object({
   sheetId: z.string().refine(ID.guard("Sheet")),
   rowId: z.number(),
   columnId: z.number(),
-  value: z.string().nullable(),
+  value: z.unknown(),
 });
 
 export type SheetCell = z.infer<typeof SheetCell>;

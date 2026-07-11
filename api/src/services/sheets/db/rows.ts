@@ -18,7 +18,7 @@ class SheetCellRow {
     public sheet_id: number,
     public column_id: number,
     public row_id: number,
-    public value: string | null,
+    public value: unknown,
     public created_at: Date,
     public updated_at: Date,
   ) {}
@@ -85,7 +85,7 @@ export async function querySheetRows(input: {
         select 1 from sheet_cells query_cells
         where query_cells.sheet_id = sheet_rows.sheet_id
           and query_cells.row_id = sheet_rows.id
-          and query_cells.value ilike '%' || ${input.query ?? null} || '%'
+          and query_cells.value::text ilike '%' || ${input.query ?? null} || '%'
       ))
     order by
       case when ${input.sort ?? "id"} = 'id' and ${input.order ?? "asc"} = 'asc' then sheet_rows.id end asc,
@@ -95,13 +95,13 @@ export async function querySheetRows(input: {
       case when ${input.sort ?? "id"} = 'updated_at' and ${input.order ?? "asc"} = 'asc' then sheet_rows.updated_at end asc,
       case when ${input.sort ?? "id"} = 'updated_at' and ${input.order ?? "asc"} = 'desc' then sheet_rows.updated_at end desc,
       case when ${input.sort ?? "id"} like 'column_%' and ${input.order ?? "asc"} = 'asc' then (
-        select sort_cells.value from sheet_cells sort_cells
+        select sort_cells.value::text from sheet_cells sort_cells
         where sort_cells.sheet_id = sheet_rows.sheet_id
           and sort_cells.row_id = sheet_rows.id
           and sort_cells.column_id = replace(${input.sort ?? "id"}, 'column_', '')::bigint
       ) end asc,
       case when ${input.sort ?? "id"} like 'column_%' and ${input.order ?? "asc"} = 'desc' then (
-        select sort_cells.value from sheet_cells sort_cells
+        select sort_cells.value::text from sheet_cells sort_cells
         where sort_cells.sheet_id = sheet_rows.sheet_id
           and sort_cells.row_id = sheet_rows.id
           and sort_cells.column_id = replace(${input.sort ?? "id"}, 'column_', '')::bigint
@@ -143,7 +143,7 @@ export async function upsertSheetCell(input: {
 }) {
   const row = await sqlOne<SheetCellRow>`
     insert into sheet_cells (sheet_id, column_id, row_id, value)
-    values (${ID.parse(input.sheetId).id}, ${input.columnId}, ${input.rowId}, ${input.value})
+    values (${ID.parse(input.sheetId).id}, ${input.columnId}, ${input.rowId}, ${JSON.stringify(input.value)}::jsonb)
     on conflict (column_id, row_id) do update
     set value = excluded.value,
       updated_at = now()
@@ -169,7 +169,7 @@ export async function bulkUpsertSheetCell(input: {
     from UNNEST(
       ${columnId} :: bigint[],
       ${rowId} :: bigint[],
-      ${value} :: text[]
+      ${value.map((value) => JSON.stringify(value))} :: jsonb[]
     )
     on conflict (column_id, row_id) do update
     set value = excluded.value,
