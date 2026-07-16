@@ -39,6 +39,20 @@ CREATE TYPE public.column_type AS ENUM (
 );
 
 
+--
+-- Name: duplicate_row_structure(anyelement, integer); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.duplicate_row_structure(signature_match anyelement, multiplier integer) RETURNS SETOF anyelement
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+    RETURN QUERY
+    SELECT (signature_match).* FROM generate_series(1, multiplier);
+END;
+$$;
+
+
 SET default_tablespace = '';
 
 SET default_table_access_method = heap;
@@ -81,6 +95,19 @@ CREATE TABLE public.book_authors (
     book_id bigint NOT NULL,
     author_id bigint NOT NULL,
     created_at timestamp with time zone DEFAULT now() NOT NULL
+);
+
+
+--
+-- Name: book_drafts; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.book_drafts (
+    book_id bigint NOT NULL,
+    sheet_id bigint NOT NULL,
+    row_id bigint NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    updated_at timestamp with time zone DEFAULT now() NOT NULL
 );
 
 
@@ -256,7 +283,7 @@ CREATE TABLE public.sheet_cells (
     sheet_id bigint NOT NULL,
     column_id bigint NOT NULL,
     row_id bigint NOT NULL,
-    value text,
+    value json NOT NULL,
     created_at timestamp with time zone DEFAULT now() NOT NULL,
     updated_at timestamp with time zone DEFAULT now() NOT NULL
 );
@@ -385,6 +412,14 @@ ALTER TABLE ONLY public.authors
 
 ALTER TABLE ONLY public.book_authors
     ADD CONSTRAINT book_authors_book_id_author_id_key UNIQUE (book_id, author_id);
+
+
+--
+-- Name: book_drafts book_drafts_book_id_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.book_drafts
+    ADD CONSTRAINT book_drafts_book_id_key UNIQUE (book_id);
 
 
 --
@@ -556,6 +591,30 @@ ALTER TABLE ONLY public.book_authors
 
 
 --
+-- Name: book_drafts book_drafts_book_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.book_drafts
+    ADD CONSTRAINT book_drafts_book_id_fkey FOREIGN KEY (book_id) REFERENCES public.books(id) ON DELETE CASCADE;
+
+
+--
+-- Name: book_drafts book_drafts_row_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.book_drafts
+    ADD CONSTRAINT book_drafts_row_id_fkey FOREIGN KEY (row_id) REFERENCES public.sheet_rows(id) ON DELETE CASCADE;
+
+
+--
+-- Name: book_drafts book_drafts_sheet_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.book_drafts
+    ADD CONSTRAINT book_drafts_sheet_id_fkey FOREIGN KEY (sheet_id) REFERENCES public.sheets(id) ON DELETE CASCADE;
+
+
+--
 -- Name: book_genres book_genres_book_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -689,4 +748,5 @@ INSERT INTO public.schema_migrations (version) VALUES
     ('20260708144320'),
     ('20260708144557'),
     ('20260708144907'),
-    ('20260708151535');
+    ('20260708151535'),
+    ('20260709163615');

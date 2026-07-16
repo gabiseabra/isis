@@ -1,3 +1,5 @@
+import { hash } from "./hash";
+
 export function unique<T>(array: T[]): T[] {
   return Array.from(new Set(array));
 }
@@ -14,12 +16,13 @@ export function groupBy<K, T>(items: T[], key: (item: T) => K): [K, T[]][] {
       .reduce(
         (groups, item) => {
           const groupKey = key(item);
-          if (groups.has(groupKey)) groups.get(groupKey)?.push(item);
-          else groups.set(groupKey, [item]);
+          if (groups.has(hash(groupKey)))
+            groups.get(hash(groupKey))?.[1].push(item);
+          else groups.set(hash(groupKey), [groupKey, [item]]);
           return groups;
         },
-        new Map([]) as Map<K, T[]>,
+        new Map([]) as Map<string, [K, T[]]>,
       )
       .entries(),
-  );
+  ).map(([, value]) => value);
 }

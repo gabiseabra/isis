@@ -118,7 +118,7 @@ export function useForm<T extends AnySchema>({
     return keys(schema.shape).some(
       (k) => hash(values[k]) !== hash(initialValue[k]),
     );
-  }, [values]);
+  }, [values, initialValue]);
 
   return {
     errors,
