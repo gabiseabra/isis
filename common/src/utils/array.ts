@@ -26,3 +26,19 @@ export function groupBy<K, T>(items: T[], key: (item: T) => K): [K, T[]][] {
       .entries(),
   ).map(([, value]) => value);
 }
+
+export function combinations<A, B, T>(
+  a: A[],
+  b: B[],
+  f: (a: A, b: B, i: number, j: number) => T,
+): T[] {
+  return a.flatMap((x, i) => b.map((y, j) => f(x, y, i, j)));
+}
+
+export function zip<A, B, T>(
+  a: A[],
+  b: B[],
+  f: (a: A, b: B, index: number) => T,
+): T[] {
+  return a.flatMap((x, i) => b.slice(i, i + 1).map((y) => f(x, y, i)));
+}

@@ -25,3 +25,14 @@ export async function sqlOne<T extends QueryResultRow = never>(
   if (!row) throw new Error("Expected 1 row");
   return row;
 }
+
+export async function sqlOneMaybe<T extends QueryResultRow = never>(
+  strings: TemplateStringsArray,
+  ...values: unknown[]
+) {
+  const [row, ...rest] = await sql<T>(strings, ...values);
+  if (!row) return null;
+  if (rest.length > 0)
+    throw new Error(`Expected 1 row, received ${rest.length + 1}`);
+  return row;
+}

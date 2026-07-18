@@ -39,7 +39,7 @@ export async function createPublisher(input: {
 }
 
 export async function updatePublisher(input: {
-  id: number;
+  id: ID<"Publisher">;
   name: string;
   imageUrl?: string;
   countryCode?: string;
@@ -50,7 +50,7 @@ export async function updatePublisher(input: {
       image_url = ${input.imageUrl ?? null},
       country_code = ${input.countryCode ?? null},
       updated_at = now()
-    where id = ${input.id}
+    where id = ${ID.parse(input.id).id}
     returning *;
     `;
 

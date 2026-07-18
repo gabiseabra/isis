@@ -5,6 +5,7 @@ export const SheetColumn = z.object({
   sheetId: z.string().refine(ID.guard("Sheet")),
   columnId: z.number(),
   name: z.string(),
+  target: z.string().optional(),
   tags: z.string().array(),
 });
 

@@ -1,8 +1,7 @@
 import { oc } from "@orpc/contract";
 import z from "zod";
-import { DraftState } from "../../dto/draft-state";
 import { Publisher } from "../../dto/publisher";
-import { DraftPublisher } from "../../dto/publisher/draft";
+import { PublisherInput } from "../../dto/publisher/input";
 import { QueryPublishersInput } from "../../dto/publisher/query-input";
 
 export const publishers = oc.prefix("/publishers").router({
@@ -28,20 +27,14 @@ export const publishers = oc.prefix("/publishers").router({
       }),
     ),
 
-  getDraft: oc
+  upsert: oc
     .route({
-      description: "Get publisher draft.",
+      description: "Create or update publisher.",
     })
-    .errors({
-      NOT_FOUND: {},
-    })
-    .input(Publisher.pick({ id: true }))
-    .output(DraftState(DraftPublisher)),
-
-  upsertDraft: oc
-    .route({
-      description: "Create or update publisher draft.",
-    })
-    .input(DraftPublisher)
+    .input(
+      PublisherInput.extend({
+        id: Publisher.shape.id.optional(),
+      }),
+    )
     .output(Publisher),
 });

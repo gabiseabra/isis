@@ -1,4 +1,5 @@
 import { adminApi } from "@isis/common/orpc/admin";
+import { never } from "@isis/common/utils/error";
 import { ID } from "@isis/common/utils/id";
 import { implement } from "@orpc/server";
 import {
@@ -13,15 +14,6 @@ import { requireAuth } from "../middleware/auth";
 const c = implement(adminApi.publishers).$context<ORPCContext>();
 
 export const publishers = c.router({
-  upsert: c.upsert.use(requireAuth).handler(async ({ input }) => {
-    return input.id
-      ? await updatePublisher({
-          ...input,
-          id: ID.parse(input.id).id,
-        })
-      : await createPublisher(input);
-  }),
-
   get: c.get.use(requireAuth).handler(async ({ input }) => {
     return await getPublisher(ID.parse(input.id).id);
   }),
@@ -42,4 +34,15 @@ export const publishers = c.router({
       hasNextPage: items.length > input.limit,
     };
   }),
+
+  upsert: c.upsert
+    .use(requireAuth)
+    .handler(async ({ input: { id: publisherId, ...input } }) => {
+      return publisherId
+        ? await updatePublisher({
+            id: publisherId,
+            ...input,
+          })
+        : await createPublisher(input);
+    }),
 });

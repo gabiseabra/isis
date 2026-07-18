@@ -1,10 +1,12 @@
 import z from "zod";
 import { ID } from "../utils/id";
+import { BookStatus } from "./book/status";
 
 export const Book = z.object({
   id: z.string().refine(ID.guard("Book")),
+  status: BookStatus,
   title: z.string(),
-  slug: z.string(),
+  slug: z.string().optional(),
   isbn13: z.string().optional(),
   isbn10: z.string().optional(),
   imageUrl: z.string().optional(),

@@ -1,6 +1,7 @@
 import { SheetCell, SheetRow } from "@isis/common/dto/sheet";
 import { groupBy } from "@isis/common/utils/array";
 import { ID } from "@isis/common/utils/id";
+import { NonEmpty } from "@isis/common/utils/non-empty";
 import { nest } from "../../../db/nest";
 import { sql, sqlOne } from "../../../db/sql";
 
@@ -43,22 +44,22 @@ function mapSheetRow(row: SheetRowRow): SheetRow {
 
 ////
 
-export async function getSheetRow(
-  sheetId: ID<"Sheet">,
-  rowId: number,
-  columnIds: number[],
-) {
+export async function getSheetRow(input: {
+  sheetId: ID<"Sheet">;
+  rowId: number;
+  columnIds: number[];
+}) {
   const rows = await sql<SheetCellRow>`
     select * from sheet_cells
-    where sheet_id = ${ID.parse(sheetId).id}
-      and row_id = ${rowId}
-      and column_id = any(${columnIds}::bigint[])
-    order by array_position(${columnIds}::bigint[], column_id) asc;
+    where sheet_id = ${ID.parse(input.sheetId).id}
+      and row_id = ${input.rowId}
+      and column_id = any(${input.columnIds}::bigint[])
+    order by array_position(${input.columnIds}::bigint[], column_id) asc;
     `;
 
   return {
-    sheetId,
-    rowId,
+    sheetId: input.sheetId,
+    rowId: input.rowId,
     cells: rows.map(mapSheetCell),
   } satisfies SheetRow;
 }
@@ -119,7 +120,17 @@ export async function querySheetRows(input: {
   })) satisfies SheetRow[];
 }
 
-export async function createSheetRows(input: {
+export async function createSheetRow(sheetId: ID<"Sheet">) {
+  const row = await sqlOne<SheetRowRow>`
+    insert into sheet_rows (sheet_id)
+    values (${ID.parse(sheetId).id})
+    returning *;
+    `;
+
+  return mapSheetRow(row);
+}
+
+export async function bulkCreateSheetRow(input: {
   sheetId: ID<"Sheet">;
   count: number;
 }) {
@@ -155,11 +166,11 @@ export async function upsertSheetCell(input: {
 
 export async function bulkUpsertSheetCell(input: {
   sheetId: ID<"Sheet">;
-  cells: {
+  cells: NonEmpty<{
     columnId: number;
     rowId: number;
-    value: string;
-  }[];
+    value: unknown;
+  }>;
 }) {
   const { columnId, rowId, value } = nest(input.cells);
 

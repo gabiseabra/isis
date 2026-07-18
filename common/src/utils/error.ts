@@ -26,8 +26,9 @@ export function isErrorRecoverable(error: unknown) {
   return Math.floor(code / 100) !== 4 && code !== 501;
 }
 
-export function never(message: string): never {
-  throw new Error(message);
+export function never(messageOrError: string | Error): never {
+  if (messageOrError instanceof Error) throw messageOrError;
+  throw new Error(messageOrError);
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

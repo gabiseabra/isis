@@ -29,6 +29,16 @@ COMMENT ON EXTENSION "uuid-ossp" IS 'generate universally unique identifiers (UU
 
 
 --
+-- Name: book_status; Type: TYPE; Schema: public; Owner: -
+--
+
+CREATE TYPE public.book_status AS ENUM (
+    'published',
+    'unpublished'
+);
+
+
+--
 -- Name: column_type; Type: TYPE; Schema: public; Owner: -
 --
 
@@ -106,8 +116,11 @@ CREATE TABLE public.book_drafts (
     book_id bigint NOT NULL,
     sheet_id bigint NOT NULL,
     row_id bigint NOT NULL,
+    deleted_at timestamp with time zone,
+    applied_at timestamp with time zone,
     created_at timestamp with time zone DEFAULT now() NOT NULL,
-    updated_at timestamp with time zone DEFAULT now() NOT NULL
+    updated_at timestamp with time zone DEFAULT now() NOT NULL,
+    CONSTRAINT book_drafts_not_applied_and_deleted_check CHECK ((NOT ((applied_at IS NOT NULL) AND (deleted_at IS NOT NULL))))
 );
 
 
@@ -134,32 +147,22 @@ CREATE TABLE public.book_languages (
 
 
 --
--- Name: book_tags; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.book_tags (
-    book_id bigint NOT NULL,
-    tag character varying(255) NOT NULL,
-    created_at timestamp with time zone DEFAULT now() NOT NULL
-);
-
-
---
 -- Name: books; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.books (
     id bigint NOT NULL,
     title text NOT NULL,
-    slug character varying(255) NOT NULL,
+    slug character varying(255),
     isbn13 character(13),
     isbn10 character(10),
     image_url text,
     publish_year smallint,
     publisher_id bigint,
-    created_by bigint,
     created_at timestamp with time zone DEFAULT now() NOT NULL,
-    updated_at timestamp with time zone DEFAULT now() NOT NULL
+    updated_at timestamp with time zone DEFAULT now() NOT NULL,
+    status public.book_status DEFAULT 'unpublished'::public.book_status NOT NULL,
+    tags text[] DEFAULT ARRAY[]::text[] NOT NULL
 );
 
 
@@ -297,6 +300,7 @@ CREATE TABLE public.sheet_columns (
     id bigint NOT NULL,
     sheet_id bigint NOT NULL,
     name text NOT NULL,
+    target text,
     tags text[] DEFAULT ARRAY[]::text[] NOT NULL,
     created_at timestamp with time zone DEFAULT now() NOT NULL,
     updated_at timestamp with time zone DEFAULT now() NOT NULL
@@ -415,11 +419,11 @@ ALTER TABLE ONLY public.book_authors
 
 
 --
--- Name: book_drafts book_drafts_book_id_key; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: book_drafts book_drafts_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.book_drafts
-    ADD CONSTRAINT book_drafts_book_id_key UNIQUE (book_id);
+    ADD CONSTRAINT book_drafts_pkey PRIMARY KEY (book_id, row_id);
 
 
 --
@@ -452,14 +456,6 @@ ALTER TABLE ONLY public.books
 
 ALTER TABLE ONLY public.books
     ADD CONSTRAINT books_slug_key UNIQUE (slug);
-
-
---
--- Name: book_tags books_tags_book_id_tag_key; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.book_tags
-    ADD CONSTRAINT books_tags_book_id_tag_key UNIQUE (book_id, tag);
 
 
 --
@@ -534,6 +530,7 @@ ALTER TABLE ONLY public.sheet_columns
     ADD CONSTRAINT sheet_columns_pkey PRIMARY KEY (id);
 
 
+
 --
 -- Name: sheet_rows sheet_rows_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
@@ -564,6 +561,20 @@ ALTER TABLE ONLY public.users
 
 ALTER TABLE ONLY public.users
     ADD CONSTRAINT users_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: book_drafts_one_active_per_book_idx; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX book_drafts_one_active_per_book_idx ON public.book_drafts USING btree (book_id) WHERE ((applied_at IS NULL) AND (deleted_at IS NULL));
+
+
+--
+-- Name: sheet_columns_sheet_id_target_idx; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX sheet_columns_sheet_id_target_idx ON public.sheet_columns USING btree (sheet_id, target) WHERE (target IS NOT NULL);
 
 
 --
@@ -647,27 +658,11 @@ ALTER TABLE ONLY public.book_languages
 
 
 --
--- Name: books books_created_by_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.books
-    ADD CONSTRAINT books_created_by_fkey FOREIGN KEY (created_by) REFERENCES public.users(id) ON DELETE SET NULL;
-
-
---
 -- Name: books books_publisher_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.books
     ADD CONSTRAINT books_publisher_id_fkey FOREIGN KEY (publisher_id) REFERENCES public.publishers(id) ON DELETE SET NULL;
-
-
---
--- Name: book_tags books_tags_book_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.book_tags
-    ADD CONSTRAINT books_tags_book_id_fkey FOREIGN KEY (book_id) REFERENCES public.books(id) ON DELETE CASCADE;
 
 
 --
@@ -749,4 +744,8 @@ INSERT INTO public.schema_migrations (version) VALUES
     ('20260708144557'),
     ('20260708144907'),
     ('20260708151535'),
-    ('20260709163615');
+    ('20260709163615'),
+    ('20260718015129'),
+    ('20260718121458'),
+    ('20260718130028'),
+    ('20260718132348');

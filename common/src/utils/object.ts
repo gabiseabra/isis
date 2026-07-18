@@ -47,8 +47,8 @@ export function keys<T extends object>(object: T): (keyof T)[] {
   return Object.keys(object) as (keyof T)[];
 }
 
-export function createRecord<const K extends PropertyKey, V>(
-  keys: readonly K[],
+export function createRecord<K extends PropertyKey, V>(
+  keys: K[] | readonly K[],
   value: (key: K) => V,
 ): Record<K, V> {
   const out = {} as Record<K, V>;
@@ -58,6 +58,13 @@ export function createRecord<const K extends PropertyKey, V>(
   }
 
   return out;
+}
+
+export function mapRecord<K extends PropertyKey, A, B>(
+  rec: Record<K, A>,
+  map: (a: A, key: K) => B,
+): Record<K, B> {
+  return createRecord(keys(rec), (k) => map(rec[k], k));
 }
 
 export function equals<T extends GenericObject>(

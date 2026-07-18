@@ -2,8 +2,8 @@ import { oc } from "@orpc/contract";
 import z from "zod";
 import { Book } from "../../dto/book";
 import { DraftBook } from "../../dto/book/draft";
+import { BookInput } from "../../dto/book/input";
 import { QueryBooksInput } from "../../dto/book/query-input";
-import { DraftState } from "../../dto/draft-state";
 
 export const books = oc.prefix("/books").router({
   get: oc
@@ -36,12 +36,39 @@ export const books = oc.prefix("/books").router({
       NOT_FOUND: {},
     })
     .input(Book.pick({ id: true }))
-    .output(DraftState(DraftBook)),
+    .output(DraftBook.nullable()),
 
   upsertDraft: oc
     .route({
-      description: "Get book draft data.",
+      description: "Save draft book data or create new draft.",
     })
-    .input(DraftBook)
+    .errors({
+      NOT_FOUND: {},
+    })
+    .input(
+      BookInput.extend({
+        id: Book.shape.id.optional(),
+      }),
+    )
+    .output(DraftBook),
+
+  applyDraft: oc
+    .route({
+      description: ".",
+    })
+    .errors({
+      NOT_FOUND: {},
+    })
+    .input(Book.pick({ id: true }))
     .output(Book),
+
+  discardDraft: oc
+    .route({
+      description: ".",
+    })
+    .errors({
+      NOT_FOUND: {},
+    })
+    .input(Book.pick({ id: true }))
+    .output(z.void()),
 });
