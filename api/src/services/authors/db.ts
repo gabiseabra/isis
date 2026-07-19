@@ -1,6 +1,6 @@
 import { Author } from "@isis/common/dto/author";
 import { ID } from "@isis/common/utils/id";
-import { sql, sqlOne } from "../../db/sql";
+import { sql, sqlOne, sqlOneMaybe } from "../../db/sql";
 
 class AuthorRow {
   constructor(
@@ -52,7 +52,7 @@ export async function updateAuthor(input: {
   birthYear?: number;
   deathYear?: number;
 }) {
-  const row = await sqlOne<AuthorRow>`
+  const row = await sqlOneMaybe<AuthorRow>`
     update authors
     set name = ${input.name},
       image_url = ${input.imageUrl ?? null},
@@ -64,16 +64,16 @@ export async function updateAuthor(input: {
     returning *;
     `;
 
-  return mapAuthor(row);
+  return row ? mapAuthor(row) : null;
 }
 
 export async function getAuthor(id: number) {
-  const row = await sqlOne<AuthorRow>`
+  const row = await sqlOneMaybe<AuthorRow>`
     select * from authors
     where id = ${id};
     `;
 
-  return mapAuthor(row);
+  return row ? mapAuthor(row) : null;
 }
 
 export async function queryAuthors(query: {

@@ -1,4 +1,5 @@
 import { adminApi } from "@isis/common/orpc/admin";
+import { never } from "@isis/common/utils/error";
 import { ID } from "@isis/common/utils/id";
 import { implement } from "@orpc/server";
 import {
@@ -13,17 +14,19 @@ import { requireAuth } from "../middleware/auth";
 const c = implement(adminApi.authors).$context<ORPCContext>();
 
 export const authors = c.router({
-  upsert: c.upsert.use(requireAuth).handler(async ({ input }) => {
+  upsert: c.upsert.use(requireAuth).handler(async ({ input, errors }) => {
     return input.id
-      ? await updateAuthor({
+      ? ((await updateAuthor({
           ...input,
           id: ID.parse(input.id).id,
-        })
+        })) ?? never(errors.NOT_FOUND()))
       : await createAuthor(input);
   }),
 
-  get: c.get.use(requireAuth).handler(async ({ input }) => {
-    return await getAuthor(ID.parse(input.id).id);
+  get: c.get.use(requireAuth).handler(async ({ input, errors }) => {
+    return (
+      (await getAuthor(ID.parse(input.id).id)) ?? never(errors.NOT_FOUND())
+    );
   }),
 
   query: c.query.use(requireAuth).handler(async ({ input }) => {

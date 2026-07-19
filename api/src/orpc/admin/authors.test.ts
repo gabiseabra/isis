@@ -14,46 +14,56 @@ const clientRef = setupOrpcClient(
   },
 );
 
-describe("adminRouter.publishers", () => {
+describe("adminRouter.authors", () => {
   describe("upsert", () => {
-    it("creates a new publisher", async () => {
+    it("creates a new author", async () => {
       await expect(
-        clientRef.current?.publishers.upsert({
-          name: "Routledge",
+        clientRef.current?.authors.upsert({
+          name: "Wittgenstein",
+          countryCode: "AT",
+          birthYear: 1889,
         }),
       ).resolves.toEqual({
-        id: `id://Publisher/1`,
-        name: "Routledge",
-        countryCode: undefined,
+        id: `id://Author/1`,
+        name: "Wittgenstein",
+        countryCode: "AT",
+        birthYear: 1889,
+        deathYear: undefined,
         imageUrl: undefined,
         createdAt: expect.any(Date),
         updatedAt: expect.any(Date),
       });
     });
 
-    it("updates an existing publisher", async () => {
+    it("updates an existing author", async () => {
       await expect(
-        clientRef.current?.publishers.upsert({
-          id: `id://Publisher/1`,
-          name: "Routledge",
-          countryCode: "GB",
+        clientRef.current?.authors.upsert({
+          id: `id://Author/1`,
+          name: "Wittgenstein",
+          countryCode: "AT",
+          birthYear: 1889,
+          deathYear: 1951,
         }),
       ).resolves.toEqual({
-        id: `id://Publisher/1`,
-        name: "Routledge",
-        countryCode: "GB",
+        id: `id://Author/1`,
+        name: "Wittgenstein",
+        countryCode: "AT",
+        birthYear: 1889,
+        deathYear: 1951,
         imageUrl: undefined,
         createdAt: expect.any(Date),
         updatedAt: expect.any(Date),
       });
     });
 
-    it("returns 404 when updating a missing publisher", async () => {
+    it("returns 404 when updating a missing author", async () => {
       await expect(
-        clientRef.current?.publishers.upsert({
-          id: `id://Publisher/420`,
-          name: "Routledge",
-          countryCode: "GB",
+        clientRef.current?.authors.upsert({
+          id: `id://Author/420`,
+          name: "Wittgenstein",
+          countryCode: "AT",
+          birthYear: 1889,
+          deathYear: 1951,
         }),
       ).rejects.toMatchObject({
         code: "NOT_FOUND",
@@ -62,24 +72,26 @@ describe("adminRouter.publishers", () => {
   });
 
   describe("get", () => {
-    it("returns an existing publisher", async () => {
+    it("returns an existing author", async () => {
       await expect(
-        clientRef.current?.publishers.get({
-          id: `id://Publisher/1`,
+        clientRef.current?.authors.get({
+          id: `id://Author/1`,
         }),
       ).resolves.toEqual({
-        id: `id://Publisher/1`,
-        name: "Routledge",
-        countryCode: "GB",
+        id: `id://Author/1`,
+        name: "Wittgenstein",
+        countryCode: "AT",
+        birthYear: 1889,
+        deathYear: 1951,
         imageUrl: undefined,
         createdAt: expect.any(Date),
         updatedAt: expect.any(Date),
       });
     });
 
-    it("returns 404 when publisher does not exist", async () => {
+    it("returns 404 when author does not exist", async () => {
       await expect(
-        clientRef.current?.publishers.get({ id: `id://Publisher/420` }),
+        clientRef.current?.authors.get({ id: `id://Author/420` }),
       ).rejects.toMatchObject({
         code: "NOT_FOUND",
       });
@@ -88,39 +100,43 @@ describe("adminRouter.publishers", () => {
 
   describe("query", () => {
     beforeAll(async () => {
-      await clientRef.current?.publishers.upsert({
+      await clientRef.current?.authors.upsert({
         name: "Query Alpha",
         countryCode: "BR",
+        birthYear: 1901,
       });
-      await clientRef.current?.publishers.upsert({
+      await clientRef.current?.authors.upsert({
         name: "Query Omega",
         countryCode: "CA",
+        birthYear: 1902,
       });
-      await clientRef.current?.publishers.upsert({
-        name: "Same Publisher",
+      await clientRef.current?.authors.upsert({
+        name: "Same Author",
         countryCode: "BR",
+        birthYear: 1903,
       });
-      await clientRef.current?.publishers.upsert({
-        name: "Same Publisher",
+      await clientRef.current?.authors.upsert({
+        name: "Same Author",
         countryCode: "CA",
+        birthYear: 1904,
       });
     });
 
     it("supports page and limit", async () => {
       await expect(
-        clientRef.current?.publishers.query({
+        clientRef.current?.authors.query({
           page: 2,
           limit: 2,
         }),
       ).resolves.toMatchObject({
         items: [
           {
-            id: `id://Publisher/1`,
-            name: "Routledge",
+            id: `id://Author/4`,
+            name: "Same Author",
           },
           {
-            id: `id://Publisher/4`,
-            name: "Same Publisher",
+            id: `id://Author/5`,
+            name: "Same Author",
           },
         ],
         hasNextPage: true,
@@ -129,7 +145,7 @@ describe("adminRouter.publishers", () => {
 
     it("supports sort and order", async () => {
       await expect(
-        clientRef.current?.publishers.query({
+        clientRef.current?.authors.query({
           page: 1,
           limit: 3,
           sort: "name",
@@ -138,16 +154,16 @@ describe("adminRouter.publishers", () => {
       ).resolves.toMatchObject({
         items: [
           {
-            id: `id://Publisher/4`,
-            name: "Same Publisher",
+            id: `id://Author/1`,
+            name: "Wittgenstein",
           },
           {
-            id: `id://Publisher/5`,
-            name: "Same Publisher",
+            id: `id://Author/4`,
+            name: "Same Author",
           },
           {
-            id: `id://Publisher/1`,
-            name: "Routledge",
+            id: `id://Author/5`,
+            name: "Same Author",
           },
         ],
         hasNextPage: true,
@@ -156,7 +172,7 @@ describe("adminRouter.publishers", () => {
 
     it("supports query", async () => {
       await expect(
-        clientRef.current?.publishers.query({
+        clientRef.current?.authors.query({
           page: 1,
           limit: 10,
           query: "Query",
@@ -164,11 +180,11 @@ describe("adminRouter.publishers", () => {
       ).resolves.toMatchObject({
         items: [
           {
-            id: `id://Publisher/2`,
+            id: `id://Author/2`,
             name: "Query Alpha",
           },
           {
-            id: `id://Publisher/3`,
+            id: `id://Author/3`,
             name: "Query Omega",
           },
         ],
@@ -178,20 +194,20 @@ describe("adminRouter.publishers", () => {
 
     it("supports name", async () => {
       await expect(
-        clientRef.current?.publishers.query({
+        clientRef.current?.authors.query({
           page: 1,
           limit: 10,
-          name: "Same Publisher",
+          name: "Same Author",
         }),
       ).resolves.toMatchObject({
         items: [
           {
-            id: `id://Publisher/4`,
-            name: "Same Publisher",
+            id: `id://Author/4`,
+            name: "Same Author",
           },
           {
-            id: `id://Publisher/5`,
-            name: "Same Publisher",
+            id: `id://Author/5`,
+            name: "Same Author",
           },
         ],
         hasNextPage: false,
@@ -200,19 +216,19 @@ describe("adminRouter.publishers", () => {
 
     it("supports ids", async () => {
       await expect(
-        clientRef.current?.publishers.query({
+        clientRef.current?.authors.query({
           page: 1,
           limit: 10,
-          ids: [`id://Publisher/2`, `id://Publisher/3`],
+          ids: [`id://Author/2`, `id://Author/3`],
         }),
       ).resolves.toMatchObject({
         items: [
           {
-            id: `id://Publisher/2`,
+            id: `id://Author/2`,
             name: "Query Alpha",
           },
           {
-            id: `id://Publisher/3`,
+            id: `id://Author/3`,
             name: "Query Omega",
           },
         ],

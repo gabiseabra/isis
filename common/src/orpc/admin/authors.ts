@@ -9,12 +9,18 @@ export const authors = oc.prefix("/authors").router({
     .route({
       description: "Create or update author.",
     })
+    .errors({
+      NOT_FOUND: {},
+    })
     .input(AuthorInput)
     .output(Author),
 
   get: oc
     .route({
       description: "Get author.",
+    })
+    .errors({
+      NOT_FOUND: {},
     })
     .input(Author.pick({ id: true }))
     .output(Author),
