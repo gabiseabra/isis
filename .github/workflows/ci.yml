@@ -50,6 +50,8 @@ jobs:
       - name: Migrate database
         run: npm run db:wait -w api && npm run db:up -w api
 
+      - name: Test
+        run: npm test
+
       - name: Lint
         run: npm run lint
-
