@@ -5,7 +5,7 @@ import { Box, BoxProps } from "./Box";
 import styles from "./FlexBox.module.scss";
 
 export type RowProps = BoxProps & {
-  flex?: number | string | boolean;
+  flex?: number | string;
   gap?: number;
   wrap?: boolean;
   alignX?: CSSProperties["justifyContent"];
@@ -22,13 +22,12 @@ export function Row({
   style,
   ...props
 }: RowProps) {
-  if (!flex) return <Box className={className} style={style} {...props} />;
   return (
     <Box
       className={[styles.FlexBox, className].filter(Boolean).join(" ")}
       data-direction="row"
       style={{
-        flex: flex === true ? undefined : flex,
+        flex: flex,
         alignItems: alignY,
         justifyContent: alignX,
         gap: typeof gap === "number" ? css.space(gap) : undefined,
@@ -41,7 +40,7 @@ export function Row({
 }
 
 export type ColProps = {
-  flex?: number | string | boolean;
+  flex?: number | string;
   gap?: number;
   alignX?: CSSProperties["alignItems"];
   alignY?: CSSProperties["justifyContent"];
@@ -56,13 +55,12 @@ export function Col({
   style,
   ...props
 }: ColProps) {
-  if (!flex) return <Box className={className} style={style} {...props} />;
   return (
     <Box
       className={[styles.FlexBox, className].filter(Boolean).join(" ")}
       data-direction="column"
       style={{
-        flex: flex === true ? undefined : flex,
+        flex: flex,
         alignItems: alignX,
         justifyContent: alignY,
         gap: typeof gap === "number" ? css.space(gap) : undefined,
