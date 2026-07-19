@@ -1,5 +1,5 @@
 
--- Dumped from database version 17.10
+-- Dumped from database version 18.4 (Homebrew)
 -- Dumped by pg_dump version 18.3
 
 SET statement_timeout = 0;
@@ -39,17 +39,6 @@ CREATE TYPE public.book_status AS ENUM (
 
 
 --
--- Name: column_type; Type: TYPE; Schema: public; Owner: -
---
-
-CREATE TYPE public.column_type AS ENUM (
-    'string',
-    'number',
-    'date'
-);
-
-
---
 -- Name: media_visibility; Type: TYPE; Schema: public; Owner: -
 --
 
@@ -57,20 +46,6 @@ CREATE TYPE public.media_visibility AS ENUM (
     'public',
     'private'
 );
-
-
---
--- Name: duplicate_row_structure(anyelement, integer); Type: FUNCTION; Schema: public; Owner: -
---
-
-CREATE FUNCTION public.duplicate_row_structure(signature_match anyelement, multiplier integer) RETURNS SETOF anyelement
-    LANGUAGE plpgsql
-    AS $$
-BEGIN
-    RETURN QUERY
-    SELECT (signature_match).* FROM generate_series(1, multiplier);
-END;
-$$;
 
 
 SET default_tablespace = '';
@@ -240,31 +215,33 @@ CREATE TABLE public.languages (
 
 
 --
--- Name: media; Type: TABLE; Schema: public; Owner: -
+-- Name: media_files; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE public.media (
+CREATE TABLE public.media_files (
     id bigint NOT NULL,
-    folder_id bigint,
+    folder_id bigint NOT NULL,
     visibility public.media_visibility DEFAULT 'private'::public.media_visibility NOT NULL,
     name text NOT NULL,
     original_name text NOT NULL,
+    description text,
+    tags text[] DEFAULT ARRAY[]::text[] NOT NULL,
     storage_key text NOT NULL,
     mime_type character varying(255) NOT NULL,
     size_bytes bigint NOT NULL,
     deleted_at timestamp with time zone,
     created_at timestamp with time zone DEFAULT now() NOT NULL,
     updated_at timestamp with time zone DEFAULT now() NOT NULL,
-    CONSTRAINT media_size_bytes_check CHECK ((size_bytes >= 0))
+    CONSTRAINT media_files_size_bytes_check CHECK ((size_bytes >= 0))
 );
 
 
 --
--- Name: media_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+-- Name: media_files_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
-ALTER TABLE public.media ALTER COLUMN id ADD GENERATED ALWAYS AS IDENTITY (
-    SEQUENCE NAME public.media_id_seq
+ALTER TABLE public.media_files ALTER COLUMN id ADD GENERATED ALWAYS AS IDENTITY (
+    SEQUENCE NAME public.media_files_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -280,7 +257,10 @@ ALTER TABLE public.media ALTER COLUMN id ADD GENERATED ALWAYS AS IDENTITY (
 CREATE TABLE public.media_folders (
     id bigint NOT NULL,
     parent_id bigint,
+    hidden boolean DEFAULT false NOT NULL,
     name text NOT NULL,
+    tags text[] DEFAULT ARRAY[]::text[] NOT NULL,
+    deleted_at timestamp with time zone,
     created_at timestamp with time zone DEFAULT now() NOT NULL,
     updated_at timestamp with time zone DEFAULT now() NOT NULL
 );
@@ -371,10 +351,10 @@ CREATE TABLE public.sheet_columns (
     id bigint NOT NULL,
     sheet_id bigint NOT NULL,
     name text NOT NULL,
-    target text,
     tags text[] DEFAULT ARRAY[]::text[] NOT NULL,
     created_at timestamp with time zone DEFAULT now() NOT NULL,
-    updated_at timestamp with time zone DEFAULT now() NOT NULL
+    updated_at timestamp with time zone DEFAULT now() NOT NULL,
+    target text
 );
 
 
@@ -562,27 +542,27 @@ ALTER TABLE ONLY public.languages
 
 
 --
+-- Name: media_files media_files_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.media_files
+    ADD CONSTRAINT media_files_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: media_files media_files_storage_key_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.media_files
+    ADD CONSTRAINT media_files_storage_key_key UNIQUE (storage_key);
+
+
+--
 -- Name: media_folders media_folders_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.media_folders
     ADD CONSTRAINT media_folders_pkey PRIMARY KEY (id);
-
-
---
--- Name: media media_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.media
-    ADD CONSTRAINT media_pkey PRIMARY KEY (id);
-
-
---
--- Name: media media_storage_key_key; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.media
-    ADD CONSTRAINT media_storage_key_key UNIQUE (storage_key);
 
 
 --
@@ -625,7 +605,6 @@ ALTER TABLE ONLY public.sheet_columns
     ADD CONSTRAINT sheet_columns_pkey PRIMARY KEY (id);
 
 
-
 --
 -- Name: sheet_rows sheet_rows_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
@@ -666,31 +645,24 @@ CREATE UNIQUE INDEX book_drafts_one_active_per_book_idx ON public.book_drafts US
 
 
 --
--- Name: media_folder_id_name_key; Type: INDEX; Schema: public; Owner: -
+-- Name: media_files_folder_id_name_key; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE UNIQUE INDEX media_folder_id_name_key ON public.media USING btree (folder_id, name) WHERE ((folder_id IS NOT NULL) AND (deleted_at IS NULL));
+CREATE UNIQUE INDEX media_files_folder_id_name_key ON public.media_files USING btree (folder_id, name) WHERE (deleted_at IS NULL);
 
 
 --
 -- Name: media_folders_parent_id_name_key; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE UNIQUE INDEX media_folders_parent_id_name_key ON public.media_folders USING btree (parent_id, name) WHERE (parent_id IS NOT NULL);
+CREATE UNIQUE INDEX media_folders_parent_id_name_key ON public.media_folders USING btree (parent_id, name) WHERE ((parent_id IS NOT NULL) AND (deleted_at IS NULL));
 
 
 --
 -- Name: media_folders_root_name_key; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE UNIQUE INDEX media_folders_root_name_key ON public.media_folders USING btree (name) WHERE (parent_id IS NULL);
-
-
---
--- Name: media_root_name_key; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE UNIQUE INDEX media_root_name_key ON public.media USING btree (name) WHERE ((folder_id IS NULL) AND (deleted_at IS NULL));
+CREATE UNIQUE INDEX media_folders_root_name_key ON public.media_folders USING btree (name) WHERE ((parent_id IS NULL) AND (deleted_at IS NULL));
 
 
 --
@@ -789,11 +761,11 @@ ALTER TABLE ONLY public.books
 
 
 --
--- Name: media media_folder_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: media_files media_files_folder_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.media
-    ADD CONSTRAINT media_folder_id_fkey FOREIGN KEY (folder_id) REFERENCES public.media_folders(id) ON DELETE RESTRICT;
+ALTER TABLE ONLY public.media_files
+    ADD CONSTRAINT media_files_folder_id_fkey FOREIGN KEY (folder_id) REFERENCES public.media_folders(id) ON DELETE RESTRICT;
 
 
 --

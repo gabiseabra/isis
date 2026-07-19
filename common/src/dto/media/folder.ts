@@ -6,6 +6,8 @@ export const MediaFolder = z.object({
   parentId: zID("MediaFolder").optional(),
   hidden: z.boolean(),
   name: z.string(),
+  tags: z.string().array(),
+  deletedAt: z.date().nullable(),
   createdAt: z.date(),
   updatedAt: z.date(),
 });
