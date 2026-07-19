@@ -1,7 +1,7 @@
 import { AsyncLocalStorage } from "node:async_hooks";
 import pg from "pg";
 
-const pool = new pg.Pool({ connectionString: process.env.DATABASE_URL });
+let pool = new pg.Pool({ connectionString: process.env.DATABASE_URL });
 
 /**
  * A pool client whose lifecycle is managed.
@@ -48,6 +48,11 @@ export async function useClient(): Promise<DisposablePoolClient> {
 
 export async function closeClient() {
   await pool.end();
+}
+
+export async function setDatabaseUrl(databaseUrl: string) {
+  await closeClient();
+  pool = new pg.Pool({ connectionString: databaseUrl });
 }
 
 type StoredClient = {

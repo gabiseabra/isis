@@ -22,7 +22,8 @@
     "db:rollback": "dbmate --migrations-dir ./src/db/migrations --schema-file ./src/db/schema/schema.sql rollback",
     "postdb:rollback": "./src/cli/rewrite-schema.sh",
     "db:dump": "dbmate --migrations-dir ./src/db/migrations --schema-file ./src/db/schema/schema.sql dump",
-    "postdb:dump": "./src/cli/rewrite-schema.sh"
+    "postdb:dump": "./src/cli/rewrite-schema.sh",
+    "db:seed": "sh -c 'for f in src/db/schema/seed/*.sql; do psql \"$DATABASE_URL\" -f \"$f\"; done'"
   },
   "dependencies": {
     "@isis/common": "*",

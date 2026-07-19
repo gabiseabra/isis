@@ -1,5 +1,4 @@
 import { adminApi } from "@isis/common/orpc/admin";
-import { never } from "@isis/common/utils/error";
 import { ID } from "@isis/common/utils/id";
 import { implement } from "@orpc/server";
 import {

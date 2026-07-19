@@ -19,25 +19,36 @@
     "tsc": "tsc -b",
     "build": "npm run build --workspaces",
     "clean": "npm run clean --workspaces && rm -rf ./node_modules",
+    "test": "NODE_ENV=test DOTENV_CONFIG_PATH=.env.test node -r dotenv/config ./node_modules/jest/bin/jest.js --config ./test/jest.config.ts --runInBand",
+    "test:up": "sh -c 'set -a; . ./.env.test; set +a; npm run db:drop -w api; npm run db:create -w api && npm run db:up -w api'",
     "postinstall": "patch-package"
   },
   "devDependencies": {
+    "@babel/plugin-transform-modules-commonjs": "^7.29.7",
     "@eslint/compat": "^2.1.0",
     "@orpc/contract": "^1.14.6",
     "@ts-safeql/eslint-plugin": "^3.6.12",
+    "@types/jest": "^30.0.0",
     "@typescript-eslint/eslint-plugin": "^8.61.0",
     "@typescript-eslint/parser": "^8.61.0",
+    "@vitejs/plugin-react": "^6.0.3",
     "concurrently": "^10.0.3",
+    "cypress": "^15.18.1",
+    "cypress-real-events": "^1.15.0",
     "dotenv": "^17.4.2",
     "eslint": "^9.39.4",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.6",
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-hooks": "^7.1.1",
+    "jest": "^30.4.2",
     "patch-package": "^8.0.1",
     "prettier": "^3.8.4",
     "prettier-plugin-organize-imports": "^4.3.0",
-    "typescript": "^6.0.3"
+    "ts-jest": "^29.4.11",
+    "ts-node": "^10.9.2",
+    "typescript": "^6.0.3",
+    "vite": "^8.1.5"
   },
   "overrides": {
     "libpg-query": "17.0.0"

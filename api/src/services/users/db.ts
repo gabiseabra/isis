@@ -1,6 +1,6 @@
 import { User } from "@isis/common/dto/user";
 import { ID } from "@isis/common/utils/id";
-import { sql, sqlOne } from "../../db/sql";
+import { sql, sqlOne, sqlOneMaybe } from "../../db/sql";
 
 class UserRow {
   constructor(
@@ -70,15 +70,11 @@ export async function queryUsers(query: {
 export async function getUserPasswordHash(
   query: { id: ID<"User"> } | { email: string },
 ) {
-  const [row] = await ("id" in query
-    ? sql<{ id: number; password_hash: string | null }>`
-      select id, password_hash from users
-      where id = ${ID.parse(query.id).id}
-      `
-    : sql<{ id: number; password_hash: string | null }>`
-      select id, password_hash from users
-      where email = ${query.email}
-      `);
+  const row = await sqlOneMaybe<{ id: number; password_hash: string | null }>`
+    select id, password_hash from users
+    where id = coalesce(${"id" in query ? ID.parse(query.id).id : null}, id)
+      and email = coalesce(${"email" in query ? query.email : null}, email);
+    `;
 
   return row
     ? {
