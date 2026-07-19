@@ -1,5 +1,3 @@
-import { never } from "zod";
-
 export type NonEmpty<T> = [T, ...T[]];
 
 export const NonEmpty = {

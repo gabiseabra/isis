@@ -1,6 +1,6 @@
 import { Publisher } from "@isis/common/dto/publisher";
 import { ID } from "@isis/common/utils/id";
-import { sql, sqlOne } from "../../db/sql";
+import { sql, sqlOne, sqlOneMaybe } from "../../db/sql";
 
 class PublisherRow {
   constructor(
@@ -44,7 +44,7 @@ export async function updatePublisher(input: {
   imageUrl?: string;
   countryCode?: string;
 }) {
-  const row = await sqlOne<PublisherRow>`
+  const row = await sqlOneMaybe<PublisherRow>`
     update publishers
     set name = ${input.name},
       image_url = ${input.imageUrl ?? null},
@@ -54,16 +54,16 @@ export async function updatePublisher(input: {
     returning *;
     `;
 
-  return mapPublisher(row);
+  return row ? mapPublisher(row) : null;
 }
 
 export async function getPublisher(id: number) {
-  const row = await sqlOne<PublisherRow>`
+  const row = await sqlOneMaybe<PublisherRow>`
     select * from publishers
     where id = ${id};
     `;
 
-  return mapPublisher(row);
+  return row ? mapPublisher(row) : null;
 }
 
 export async function queryPublishers(query: {

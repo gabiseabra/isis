@@ -1,7 +1,6 @@
 import { Book } from "@isis/common/dto/book";
 import { BookStatus } from "@isis/common/dto/book/status";
 import { WithRequired } from "@isis/common/types/object";
-import { isNonNullable } from "@isis/common/utils/guards";
 import { ID } from "@isis/common/utils/id";
 import { sql, sqlOne, sqlOneMaybe } from "../../db/sql";
 
@@ -16,8 +15,8 @@ class BookRow {
     public image_url: string | null,
     public publish_year: number | null,
     public publisher_id: number | null,
-    public author_ids: (number | null)[],
-    public languages: (string | null)[],
+    public author_ids: number[] | null,
+    public languages: string[] | null,
     public tags: string[],
     public created_at: Date,
     public updated_at: Date,
@@ -38,10 +37,8 @@ function mapBook(row: BookRow): Book {
       row.publisher_id !== null
         ? ID.create("Publisher", row.publisher_id)
         : undefined,
-    authorIds: row.author_ids
-      .filter(isNonNullable)
-      .map((id) => ID.create("Author", Number(id))),
-    languages: row.languages.filter(isNonNullable),
+    authorIds: (row.author_ids ?? []).map((id) => ID.create("Author", id)),
+    languages: row.languages ?? [],
     tags: row.tags,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
@@ -51,8 +48,8 @@ function mapBook(row: BookRow): Book {
 export async function getBook(id: ID<"Book">) {
   const row = await sqlOneMaybe<BookRow>`
     select b.*,
-      coalesce(array_agg(distinct ba.author_id), array[]::bigint[]) as author_ids,
-      coalesce(array_agg(distinct bl.language_code::text), array[]::text[]) as languages
+      array_agg(distinct coalesce(ba.author_id::int, 0)) filter (where ba.author_id is not null) as author_ids,
+      array_agg(distinct coalesce(bl.language_code::text, '')) filter (where bl.language_code is not null) as languages
     from books b
     left join book_authors ba on ba.book_id = b.id
     left join book_languages bl on bl.book_id = b.id
@@ -77,8 +74,8 @@ export async function queryBooks(query: {
 
   const rows = await sql<BookRow>`
     select b.*,
-      coalesce(array_agg(distinct ba.author_id), array[]::bigint[]) as author_ids,
-      coalesce(array_agg(distinct bl.language_code::text), array[]::text[]) as languages
+      array_agg(distinct coalesce(ba.author_id::int, 0)) filter (where ba.author_id is not null) as author_ids,
+      array_agg(distinct coalesce(bl.language_code::text, '')) filter (where bl.language_code is not null) as languages
     from books b
     left join book_authors ba on ba.book_id = b.id
     left join authors a on a.id = ba.author_id
@@ -139,7 +136,7 @@ export async function createBook(
       ${(input.tags ?? []) as string[]}
     )
     returning *,
-      array[]::bigint[] as author_ids,
+      array[]::int[] as author_ids,
       array[]::text[] as languages
     `;
   return mapBook(row);
@@ -164,7 +161,7 @@ export async function updateBook(
       updated_at = now()
     where id = ${ID.parse(input.id).id}
     returning *,
-      array[]::bigint[] as author_ids,
+      array[]::int[] as author_ids,
       array[]::text[] as languages
     `;
   return mapBook(row);
@@ -218,12 +215,12 @@ export async function addBookLanguages(
   bookId: ID<"Book">,
   langCodesToCreate: string[],
 ) {
-  const rows = await sql<{ language_code: string | null }>`
+  const rows = await sql<{ language_code: string }>`
     insert into book_languages (book_id, language_code)
     select ${ID.parse(bookId).id}, *
     from UNNEST(${langCodesToCreate})
     on conflict do nothing
     returning language_code;
     `;
-  return rows.map((row) => row.language_code).filter(isNonNullable);
+  return rows.map((row) => row.language_code);
 }

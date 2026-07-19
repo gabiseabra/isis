@@ -31,6 +31,9 @@ export const publishers = oc.prefix("/publishers").router({
     .route({
       description: "Create or update publisher.",
     })
+    .errors({
+      NOT_FOUND: {},
+    })
     .input(
       PublisherInput.extend({
         id: Publisher.shape.id.optional(),
