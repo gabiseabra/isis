@@ -28,6 +28,7 @@ export async function upsertBook({
           ...input,
           status: "unpublished",
         }));
+
     const [languages, authorIds] = await Promise.all([
       removeBookLanguages(book.id).then(() =>
         NonEmpty.isNonEmpty(input.languages)
@@ -40,6 +41,7 @@ export async function upsertBook({
           : [],
       ),
     ]);
+
     return {
       ...book,
       languages,

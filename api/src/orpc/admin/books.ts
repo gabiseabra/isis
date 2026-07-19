@@ -44,26 +44,43 @@ export const books = c.router({
     );
   }),
 
-  upsertDraft: c.upsertDraft.use(requireAuth).handler(async ({ input }) => {
-    if (input.id) return upsertDraftBook(input.id, input);
+  upsertDraft: c.upsertDraft
+    .use(requireAuth)
+    .handler(async ({ input, errors }) => {
+      if (input.id)
+        return upsertDraftBook(input.id, input).catch(
+          createErrorHandler().catch(BookNotFound, () =>
+            never(errors.NOT_FOUND()),
+          ),
+        );
 
-    return unit(async () => {
-      const book = await createBook({
-        status: "unpublished",
-        title: input.title,
+      return unit(async () => {
+        const book = await createBook({
+          status: "unpublished",
+          title: input.title,
+        });
+        return upsertDraftBook(book.id, input);
       });
-      return upsertDraftBook(book.id, input);
-    });
-  }),
+    }),
 
   applyDraft: c.applyDraft
     .use(requireAuth)
     .handler(async ({ input, errors }) => {
-      await applyDraftBook(input.id);
+      await applyDraftBook(input.id).catch(
+        createErrorHandler().catch(BookNotFound, () =>
+          never(errors.NOT_FOUND()),
+        ),
+      );
       return (await getBook(input.id)) ?? never(errors.NOT_FOUND());
     }),
 
-  discardDraft: c.discardDraft.use(requireAuth).handler(async ({ input }) => {
-    await discardDraftBook(input.id);
-  }),
+  discardDraft: c.discardDraft
+    .use(requireAuth)
+    .handler(async ({ input, errors }) => {
+      await discardDraftBook(input.id).catch(
+        createErrorHandler().catch(BookNotFound, () =>
+          never(errors.NOT_FOUND()),
+        ),
+      );
+    }),
 });

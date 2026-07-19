@@ -191,7 +191,7 @@ export async function addBookAuthors(
   const rows = await sql<{ author_id: number }>`
     insert into book_authors (book_id, author_id)
     select ${ID.parse(bookId).id}, *
-    from UNNEST(${authorIds})
+    from UNNEST(${authorIds}::bigint[])
     on conflict do nothing
     returning author_id;
     `;
@@ -218,7 +218,7 @@ export async function addBookLanguages(
   const rows = await sql<{ language_code: string }>`
     insert into book_languages (book_id, language_code)
     select ${ID.parse(bookId).id}, *
-    from UNNEST(${langCodesToCreate})
+    from UNNEST(${langCodesToCreate}::char(2)[])
     on conflict do nothing
     returning language_code;
     `;

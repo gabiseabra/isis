@@ -1,24 +1,33 @@
-import { setupDatabase } from "../../test/setup-database";
-import { setupOrpcClient } from "../../test/setup-orpc-client";
+import { UUID } from "@isis/common/dto/uuid";
+import { setupDatabase, tearDownDatabase } from "../../test/setup-database";
+import { OrpcClient, setupOrpcClient } from "../../test/setup-orpc-client";
 import { adminRouter } from "../admin";
 
-setupDatabase();
+const dbID = UUID.create();
+let client: OrpcClient<typeof adminRouter>;
 
-const clientRef = setupOrpcClient(
-  adminRouter,
-  { request: { headers: {} } },
-  {
-    name: "Test",
-    email: "test@isis.com",
-    password: "test",
-  },
-);
+beforeAll(async () => {
+  await setupDatabase(dbID);
+  client = await setupOrpcClient(
+    adminRouter,
+    { request: { headers: {} } },
+    {
+      name: "Test",
+      email: "test@isis.com",
+      password: "test",
+    },
+  );
+});
+
+afterAll(async () => {
+  await tearDownDatabase(dbID);
+});
 
 describe("adminRouter.publishers", () => {
   describe("upsert", () => {
     it("creates a new publisher", async () => {
       await expect(
-        clientRef.current?.publishers.upsert({
+        client.publishers.upsert({
           name: "Routledge",
         }),
       ).resolves.toEqual({
@@ -33,7 +42,7 @@ describe("adminRouter.publishers", () => {
 
     it("updates an existing publisher", async () => {
       await expect(
-        clientRef.current?.publishers.upsert({
+        client.publishers.upsert({
           id: `id://Publisher/1`,
           name: "Routledge",
           countryCode: "GB",
@@ -50,7 +59,7 @@ describe("adminRouter.publishers", () => {
 
     it("returns 404 when updating a missing publisher", async () => {
       await expect(
-        clientRef.current?.publishers.upsert({
+        client.publishers.upsert({
           id: `id://Publisher/420`,
           name: "Routledge",
           countryCode: "GB",
@@ -64,7 +73,7 @@ describe("adminRouter.publishers", () => {
   describe("get", () => {
     it("returns an existing publisher", async () => {
       await expect(
-        clientRef.current?.publishers.get({
+        client.publishers.get({
           id: `id://Publisher/1`,
         }),
       ).resolves.toEqual({
@@ -79,7 +88,7 @@ describe("adminRouter.publishers", () => {
 
     it("returns 404 when publisher does not exist", async () => {
       await expect(
-        clientRef.current?.publishers.get({ id: `id://Publisher/420` }),
+        client.publishers.get({ id: `id://Publisher/420` }),
       ).rejects.toMatchObject({
         code: "NOT_FOUND",
       });
@@ -88,19 +97,19 @@ describe("adminRouter.publishers", () => {
 
   describe("query", () => {
     beforeAll(async () => {
-      await clientRef.current?.publishers.upsert({
+      await client.publishers.upsert({
         name: "Query Alpha",
         countryCode: "BR",
       });
-      await clientRef.current?.publishers.upsert({
+      await client.publishers.upsert({
         name: "Query Omega",
         countryCode: "CA",
       });
-      await clientRef.current?.publishers.upsert({
+      await client.publishers.upsert({
         name: "Same Publisher",
         countryCode: "BR",
       });
-      await clientRef.current?.publishers.upsert({
+      await client.publishers.upsert({
         name: "Same Publisher",
         countryCode: "CA",
       });
@@ -108,7 +117,7 @@ describe("adminRouter.publishers", () => {
 
     it("supports page and limit", async () => {
       await expect(
-        clientRef.current?.publishers.query({
+        client.publishers.query({
           page: 2,
           limit: 2,
         }),
@@ -129,7 +138,7 @@ describe("adminRouter.publishers", () => {
 
     it("supports sort and order", async () => {
       await expect(
-        clientRef.current?.publishers.query({
+        client.publishers.query({
           page: 1,
           limit: 3,
           sort: "name",
@@ -156,7 +165,7 @@ describe("adminRouter.publishers", () => {
 
     it("supports query", async () => {
       await expect(
-        clientRef.current?.publishers.query({
+        client.publishers.query({
           page: 1,
           limit: 10,
           query: "Query",
@@ -178,7 +187,7 @@ describe("adminRouter.publishers", () => {
 
     it("supports name", async () => {
       await expect(
-        clientRef.current?.publishers.query({
+        client.publishers.query({
           page: 1,
           limit: 10,
           name: "Same Publisher",
@@ -200,7 +209,7 @@ describe("adminRouter.publishers", () => {
 
     it("supports ids", async () => {
       await expect(
-        clientRef.current?.publishers.query({
+        client.publishers.query({
           page: 1,
           limit: 10,
           ids: [`id://Publisher/2`, `id://Publisher/3`],

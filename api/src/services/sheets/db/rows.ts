@@ -180,7 +180,7 @@ export async function bulkUpsertSheetCell(input: {
     from UNNEST(
       ${columnId} :: bigint[],
       ${rowId} :: bigint[],
-      ${value.map((value) => JSON.stringify(value))} :: jsonb[]
+      ${value.map((value) => JSON.stringify(value ?? null))} :: jsonb[]
     )
     on conflict (column_id, row_id) do update
     set value = excluded.value,

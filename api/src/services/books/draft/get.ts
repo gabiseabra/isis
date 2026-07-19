@@ -35,7 +35,7 @@ export async function getActiveDraftBook(bookId: ID<"Book">): Promise<
 
   const input = createRecord(
     keys(columns),
-    (key) => DraftState.getCell({ row, columns }, key)?.value,
+    (key) => DraftState.getCell({ row, columns }, key)?.value ?? undefined,
   );
 
   const { data, errors } = await validateDraftBook(book, input);

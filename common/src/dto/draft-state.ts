@@ -29,7 +29,7 @@ export const DraftState = Object.assign(zDraftState, {
   ) {
     const col = draft.columns[columnName];
     const cell =
-      col && draft.row.cells.find((cell) => (cell.columnId = col.columnId));
+      col && draft.row.cells.find((cell) => cell.columnId === col.columnId);
     return cell;
   },
   getErrors<K extends PropertyKey>(

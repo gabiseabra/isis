@@ -15,7 +15,7 @@ class DraftBookMetadataRow {
 
 function mapDraftBookMetadata(row: DraftBookMetadataRow) {
   return {
-    bookId: ID.create("Book", row.sheet_id),
+    bookId: ID.create("Book", row.book_id),
     sheetId: ID.create("Sheet", row.sheet_id),
     rowId: row.row_id,
     deletedAt: row.deleted_at,

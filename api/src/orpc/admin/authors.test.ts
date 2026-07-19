@@ -1,24 +1,33 @@
-import { setupDatabase } from "../../test/setup-database";
-import { setupOrpcClient } from "../../test/setup-orpc-client";
+import { UUID } from "@isis/common/dto/uuid";
+import { setupDatabase, tearDownDatabase } from "../../test/setup-database";
+import { OrpcClient, setupOrpcClient } from "../../test/setup-orpc-client";
 import { adminRouter } from "../admin";
 
-setupDatabase();
+const dbID = UUID.create();
+let client: OrpcClient<typeof adminRouter>;
 
-const clientRef = setupOrpcClient(
-  adminRouter,
-  { request: { headers: {} } },
-  {
-    name: "Test",
-    email: "test@isis.com",
-    password: "test",
-  },
-);
+beforeAll(async () => {
+  await setupDatabase(dbID);
+  client = await setupOrpcClient(
+    adminRouter,
+    { request: { headers: {} } },
+    {
+      name: "Test",
+      email: "test@isis.com",
+      password: "test",
+    },
+  );
+});
+
+afterAll(async () => {
+  await tearDownDatabase(dbID);
+});
 
 describe("adminRouter.authors", () => {
   describe("upsert", () => {
     it("creates a new author", async () => {
       await expect(
-        clientRef.current?.authors.upsert({
+        client.authors.upsert({
           name: "Wittgenstein",
           countryCode: "AT",
           birthYear: 1889,
@@ -37,7 +46,7 @@ describe("adminRouter.authors", () => {
 
     it("updates an existing author", async () => {
       await expect(
-        clientRef.current?.authors.upsert({
+        client.authors.upsert({
           id: `id://Author/1`,
           name: "Wittgenstein",
           countryCode: "AT",
@@ -58,7 +67,7 @@ describe("adminRouter.authors", () => {
 
     it("returns 404 when updating a missing author", async () => {
       await expect(
-        clientRef.current?.authors.upsert({
+        client.authors.upsert({
           id: `id://Author/420`,
           name: "Wittgenstein",
           countryCode: "AT",
@@ -74,7 +83,7 @@ describe("adminRouter.authors", () => {
   describe("get", () => {
     it("returns an existing author", async () => {
       await expect(
-        clientRef.current?.authors.get({
+        client.authors.get({
           id: `id://Author/1`,
         }),
       ).resolves.toEqual({
@@ -91,7 +100,7 @@ describe("adminRouter.authors", () => {
 
     it("returns 404 when author does not exist", async () => {
       await expect(
-        clientRef.current?.authors.get({ id: `id://Author/420` }),
+        client.authors.get({ id: `id://Author/420` }),
       ).rejects.toMatchObject({
         code: "NOT_FOUND",
       });
@@ -100,22 +109,22 @@ describe("adminRouter.authors", () => {
 
   describe("query", () => {
     beforeAll(async () => {
-      await clientRef.current?.authors.upsert({
+      await client.authors.upsert({
         name: "Query Alpha",
         countryCode: "BR",
         birthYear: 1901,
       });
-      await clientRef.current?.authors.upsert({
+      await client.authors.upsert({
         name: "Query Omega",
         countryCode: "CA",
         birthYear: 1902,
       });
-      await clientRef.current?.authors.upsert({
+      await client.authors.upsert({
         name: "Same Author",
         countryCode: "BR",
         birthYear: 1903,
       });
-      await clientRef.current?.authors.upsert({
+      await client.authors.upsert({
         name: "Same Author",
         countryCode: "CA",
         birthYear: 1904,
@@ -124,7 +133,7 @@ describe("adminRouter.authors", () => {
 
     it("supports page and limit", async () => {
       await expect(
-        clientRef.current?.authors.query({
+        client.authors.query({
           page: 2,
           limit: 2,
         }),
@@ -145,7 +154,7 @@ describe("adminRouter.authors", () => {
 
     it("supports sort and order", async () => {
       await expect(
-        clientRef.current?.authors.query({
+        client.authors.query({
           page: 1,
           limit: 3,
           sort: "name",
@@ -172,7 +181,7 @@ describe("adminRouter.authors", () => {
 
     it("supports query", async () => {
       await expect(
-        clientRef.current?.authors.query({
+        client.authors.query({
           page: 1,
           limit: 10,
           query: "Query",
@@ -194,7 +203,7 @@ describe("adminRouter.authors", () => {
 
     it("supports name", async () => {
       await expect(
-        clientRef.current?.authors.query({
+        client.authors.query({
           page: 1,
           limit: 10,
           name: "Same Author",
@@ -216,7 +225,7 @@ describe("adminRouter.authors", () => {
 
     it("supports ids", async () => {
       await expect(
-        clientRef.current?.authors.query({
+        client.authors.query({
           page: 1,
           limit: 10,
           ids: [`id://Author/2`, `id://Author/3`],
