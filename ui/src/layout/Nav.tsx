@@ -81,13 +81,15 @@ export function Nav({
 
         {header && <div className={styles.Header}>{header}</div>}
 
-        {loading ? (
-          <Col flex={1} alignX="center" alignY="center">
-            <Spinner size="m" color="blue" />
-          </Col>
-        ) : (
-          children
-        )}
+        <Col flex={1} alignX="stretch" alignY="start">
+          {loading ? (
+            <Col flex={1} alignX="center" alignY="center">
+              <Spinner size="m" color="blue" />
+            </Col>
+          ) : (
+            children
+          )}
+        </Col>
 
         {footer && <div className={styles.Footer}>{footer}</div>}
       </nav>
@@ -193,7 +195,7 @@ Nav.Item = function NavItem({
         )}
       </Row>
 
-      {children && <Col className={styles.ItemContent}>{children}</Col>}
+      {children && open && <Col className={styles.ItemContent}>{children}</Col>}
     </Col>
   );
 };

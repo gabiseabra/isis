@@ -5,6 +5,7 @@ import { Nav } from "@isis/ui/layout/Nav";
 import { useQuery } from "@tanstack/react-query";
 import { ReactNode } from "react";
 import { BiSolidPen } from "react-icons/bi";
+import { BsImages } from "react-icons/bs";
 import { HiLogout } from "react-icons/hi";
 import { ImBook, ImBooks } from "react-icons/im";
 import { useLocalStorage } from "usehooks-ts";
@@ -55,6 +56,8 @@ export function Layout({ children }: { children: ReactNode }) {
           <Nav.Link to="/publishers" icon={<ImBook />} title="Editoras" />
           <Nav.Link to="/authors" icon={<BiSolidPen />} title="Autores" />
         </Nav.Link>
+
+        <Nav.Link to="/media" icon={<BsImages />} title="Mídia" />
       </Nav>
 
       <Col asChild flex={1} alignX="center" alignY="center">

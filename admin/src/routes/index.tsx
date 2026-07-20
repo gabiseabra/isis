@@ -7,6 +7,7 @@ import * as authors from "./authors";
 import * as books from "./books";
 import * as home from "./home";
 import * as login from "./login";
+import * as media from "./media";
 import * as publishers from "./publishers";
 
 export const element = (
@@ -21,7 +22,15 @@ export const errorElement = (
   </Layout>
 );
 
-export const children = [home, login, publishers, authors, author, books];
+export const children = [
+  home,
+  login,
+  publishers,
+  authors,
+  author,
+  books,
+  media,
+];
 
 function RouteError() {
   const error = useRouteError();

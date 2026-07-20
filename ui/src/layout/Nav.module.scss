@@ -7,6 +7,9 @@
   --nav-width: 200px;
   --nav-closed-width: var(--nav-link-height);
 
+  display: flex;
+  flex-direction: column;
+  gap: var(--space);
   position: relative;
   width: var(--nav-closed-width);
   min-width: var(--nav-closed-width);
@@ -116,6 +119,7 @@
   color: var(--color-highlight);
 }
 
+.Item > .ItemTitle:has(:is(input, textarea, select):focus),
 .Item > .ItemTitle:has(> :is(a, button)):hover,
 .Item > .ItemTitle:has(> :is(a, button):active) {
   background: var(--nav-link-active-bg);

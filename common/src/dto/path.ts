@@ -22,4 +22,10 @@ export const Path = Object.assign(z.string() as z.ZodType<Path>, {
   join(values: Path[]): Path {
     return values.map(Path.trim).join("/");
   },
+  contains(a: Path, b: Path) {
+    const parent = Path.trim(a);
+    const child = Path.trim(b);
+
+    return child === parent || child.startsWith(`${parent}/`);
+  },
 });
