@@ -1,5 +1,5 @@
-import { MediaMetadata } from "@isis/common/dto/media/metadata";
 import { ID } from "@isis/common/utils/id";
+import { NonEmpty } from "@isis/common/utils/non-empty";
 import { sql } from "../../../db/sql";
 
 class MediaMetadataRow {
@@ -9,38 +9,40 @@ class MediaMetadataRow {
   ) {}
 }
 
-function mapMediaMetadata(rows: MediaMetadataRow[]) {
-  return MediaMetadata.parse(
-    Object.fromEntries(rows.map((row) => [row.name, row.value])),
-  );
-}
-
 /// queries
 
-export async function getMediaMetadata(entryId: ID<"MediaEntry">) {
+export async function getMediaMetadata(mediaId: ID<"Media">) {
   const rows = await sql<MediaMetadataRow>`
     select name, value from media_metadata
-    where entry_id = ${ID.parse(entryId).id};
+    where entry_id = ${ID.parse(mediaId).id};
   `;
 
-  return mapMediaMetadata(rows);
+  return Object.fromEntries(rows.map((row) => [row.name, row.value] as const));
 }
 
-/// mutations
+/// relations: media
 
-export async function upsertMediaMetadata(input: {
-  entryId: ID<"MediaEntry">;
-  metadata: MediaMetadata;
-}) {
-  const metadata = MediaMetadata.parse(input.metadata);
+export async function removeMediaMetadata(
+  mediaId: ID<"Media">,
+  keysToDelete?: string[],
+) {
+  await sql`
+    delete from media_metadata
+    where entry_id = ${ID.parse(mediaId).id}
+      and name = any(coalesce(${(keysToDelete ?? null) as string[]}::varchar[], array[name]));
+  `;
+}
 
+export async function addMediaMetadata(
+  mediaId: ID<"Media">,
+  entries: NonEmpty<{ key: string; value: unknown }>,
+) {
   await sql`
     insert into media_metadata (entry_id, name, value)
-    select ${ID.parse(input.entryId).id}, metadata.name, metadata.value
-    from jsonb_each(${JSON.stringify(metadata)}::jsonb) metadata(name, value)
+    select ${ID.parse(mediaId).id}, metadata.key, metadata.value
+    from jsonb_to_recordset(${JSON.stringify(entries)}::jsonb)
+      as metadata(key varchar(255), value jsonb)
     on conflict (entry_id, name) do update
     set value = excluded.value;
   `;
-
-  return metadata;
 }

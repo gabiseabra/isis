@@ -1,8 +1,6 @@
 -- migrate:up
 CREATE EXTENSION ltree;
 
-CREATE TYPE media_visibility AS ENUM ('public', 'private');
-
 CREATE TABLE media_entries (
   id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   parent_id BIGINT REFERENCES media_entries (id),
@@ -10,7 +8,6 @@ CREATE TABLE media_entries (
   "slug" VARCHAR(255) NOT NULL,
   "path" LTREE NOT NULL,
   tags TEXT[] NOT NULL DEFAULT array[]::TEXT[],
-  visibility media_visibility,
   deleted_at TIMESTAMPTZ,
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
@@ -62,5 +59,4 @@ DROP TRIGGER set_media_entry_path ON media_entries;
 DROP FUNCTION set_media_entry_path();
 DROP TABLE media_metadata;
 DROP TABLE media_entries;
-DROP TYPE media_visibility;
 DROP EXTENSION ltree;

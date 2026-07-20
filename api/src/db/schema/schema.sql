@@ -53,16 +53,6 @@ CREATE TYPE public.book_status AS ENUM (
 
 
 --
--- Name: media_visibility; Type: TYPE; Schema: public; Owner: -
---
-
-CREATE TYPE public.media_visibility AS ENUM (
-    'public',
-    'private'
-);
-
-
---
 -- Name: set_media_entry_path(); Type: FUNCTION; Schema: public; Owner: -
 --
 
@@ -271,7 +261,6 @@ CREATE TABLE public.media_entries (
     slug character varying(255) NOT NULL,
     path public.ltree NOT NULL,
     tags text[] DEFAULT ARRAY[]::text[] NOT NULL,
-    visibility public.media_visibility,
     deleted_at timestamp with time zone,
     created_at timestamp with time zone DEFAULT now() NOT NULL,
     updated_at timestamp with time zone DEFAULT now() NOT NULL

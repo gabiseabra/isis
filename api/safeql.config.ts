@@ -17,6 +17,7 @@ export default defineConfig({
         bigint: "number",
         bigserial: "number",
         int8: "number",
+        ltree: { parameter: { regex: "LTree" }, return: "LTree" },
         uuid: "UUID",
         json: "unknown",
         jsonb: "unknown",
