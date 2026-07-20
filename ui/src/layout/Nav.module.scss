@@ -70,20 +70,18 @@
   gap: var(--nav-link-gap);
 }
 
-.Item > .Link,
 .Item > .ItemTitle {
   --nav-link-active-color: var(--color-highlight);
   --nav-link-active-bg: var(--color-surface-1);
 
   border-radius: var(--radius);
   min-height: var(--nav-link-height);
-  border-radius: var(--radius);
   position: relative;
 }
 
 @each $name, $_ in color.$colors-codes {
   @if ($name != "default") {
-    .Item > .Link[data-color="#{$name}"] {
+    .Item > .ItemTitle[data-color="#{$name}"] {
       --nav-link-active-color: var(#{"--color-" + $name});
       --nav-link-active-bg: color-mix(
         in srgb,
@@ -94,8 +92,7 @@
   }
 }
 
-.Item > .Link > a,
-.Item > .ItemTitle > [data-direction="row"] {
+.Item > .ItemTitle > :is(a, button, [data-direction="row"]) {
   display: inline-flex;
   flex: 1;
   min-width: 0;
@@ -104,13 +101,38 @@
   gap: var(--space);
   box-sizing: border-box;
   padding: var(--space);
+  border-radius: inherit;
   text-decoration: none;
   color: currentColor;
   overflow: hidden;
   white-space: nowrap;
 }
 
-.LinkIcon {
+.Item > .ItemTitle > :is(a, button) {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.Item > .ItemTitle:has(> :is(a, button):focus-visible) {
+  background: var(--color-surface-1);
+  color: var(--color-highlight);
+}
+
+.Item > .ItemTitle:has(> :is(a, button)):hover,
+.Item > .ItemTitle:has(> :is(a, button):active) {
+  background: var(--nav-link-active-bg);
+  color: var(--nav-link-active-color);
+}
+
+.Item > .ItemTitle > :is(a, button):focus-visible {
+  outline: none;
+}
+
+.ItemIcon {
   margin-left: 2px;
   transition:
     width 180ms ease-out,
@@ -119,20 +141,19 @@
     line-height 180ms ease-out;
 }
 
-.LinkText {
+.ItemText {
   flex: 1;
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-.LinkBadge {
+.ItemBadge {
   flex: 0 0 auto;
   overflow: hidden;
 }
 
-.Nav:not([data-open]) .Item > .Link > button,
-.Nav:not([data-open]) .Item > .ItemTitle > button {
+.Nav:not([data-open]) .ItemToggle {
   position: absolute;
   inset-inline-end: 0;
   opacity: 0;
@@ -140,6 +161,7 @@
 }
 
 .ItemContent {
+  position: relative;
   max-height: 0;
   overflow: hidden;
   opacity: 0;
@@ -150,19 +172,29 @@
     transform 180ms ease-out;
 }
 
+.Nav[data-open] .ItemContent {
+  padding-left: calc(var(--space) * 2);
+}
+
+.ItemContent::before {
+  content: "";
+  position: absolute;
+  inset-block: 0;
+  left: var(--space);
+  width: var(--size-divider);
+  border-radius: var(--radius-divider);
+  background: var(--color-divider);
+  transform: scaleY(0);
+  transform-origin: top;
+  transition: transform 180ms ease-out;
+}
+
+.Nav[data-open] .Item[data-open] > .ItemContent::before {
+  transform: scaleY(1);
+}
+
 .Item[data-open] > .ItemContent {
   max-height: 100vh;
   opacity: 1;
   transform: translateY(0);
-}
-
-.Link:focus {
-  background: var(--color-surface-1);
-  color: var(--color-highlight);
-}
-
-.Link:hover,
-.Link:active {
-  background: var(--nav-link-active-bg);
-  color: var(--nav-link-active-color);
 }
