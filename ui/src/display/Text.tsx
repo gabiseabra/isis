@@ -13,6 +13,7 @@ export type TextProps = {
   indent?: number;
   align?: "left" | "right" | "center" | "start" | "end";
   disabled?: boolean;
+  noWrap?: boolean;
 } & css.MarginProps &
   css.PaddingProps &
   HTMLAttributes<HTMLElement>;
@@ -47,6 +48,7 @@ export function Text({
   children,
   className,
   style = {},
+  noWrap,
   ...props
 }: TextProps) {
   const dataIndent = indent && indent >= 1 && indent <= 4 ? indent : undefined;
@@ -64,6 +66,14 @@ export function Text({
       style={{
         ...css.getPaddingStyles(props),
         ...css.getMarginStyles(props),
+        ...(noWrap
+          ? {
+              whiteSpace: "nowrap",
+              textOverflow: "ellipsis",
+              maxWidth: "100%",
+              overflow: "hidden",
+            }
+          : {}),
         ...style,
       }}
       data-align={align}

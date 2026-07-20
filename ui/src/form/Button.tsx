@@ -10,7 +10,7 @@ export type ButtonProps = Omit<ComponentProps<"button">, "color"> & {
   right?: ReactNode;
   variant?: "primary" | "secondary" | "sheer" | "link";
   color?: Color | "currentColor";
-  size?: "l" | "m" | "s";
+  size?: "l" | "m" | "s" | "auto";
 };
 
 export function Button({
@@ -41,15 +41,16 @@ export function Button({
       type={type}
       {...props}
     >
-      <span className={styles.Content}>
-        {!!left && (
-          <span className={[styles.Slot, styles.Left].join(" ")}>{left}</span>
-        )}
-        {children}
-        {!!right && (
-          <span className={[styles.Slot, styles.Right].join(" ")}>{right}</span>
-        )}
-      </span>
+      {!!left && (
+        <span className={[styles.Slot, styles.Left].join(" ")}>{left}</span>
+      )}
+
+      {children}
+
+      {!!right && (
+        <span className={[styles.Slot, styles.Right].join(" ")}>{right}</span>
+      )}
+
       {loading && <Spinner size="s" className={styles.Spinner} />}
     </button>
   );

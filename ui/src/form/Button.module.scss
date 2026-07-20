@@ -25,7 +25,7 @@
   }
 }
 
-.Content {
+.Button {
   display: inline-flex;
   align-items: center;
   gap: var(--space);
@@ -58,7 +58,7 @@
 .Button[data-loading] {
   cursor: progress;
 
-  .Content {
+  & > *:not(.Spinner) {
     opacity: 0.5;
   }
 }
