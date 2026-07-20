@@ -1,5 +1,5 @@
 
--- Dumped from database version 18.4 (Homebrew)
+-- Dumped from database version 17.10
 -- Dumped by pg_dump version 18.3
 
 SET statement_timeout = 0;
@@ -50,6 +50,180 @@ CREATE TYPE public.book_status AS ENUM (
     'published',
     'unpublished'
 );
+
+
+--
+-- Name: column_type; Type: TYPE; Schema: public; Owner: -
+--
+
+CREATE TYPE public.column_type AS ENUM (
+    'string',
+    'number',
+    'date'
+);
+
+
+--
+-- Name: duplicate_row_structure(anyelement, integer); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.duplicate_row_structure(signature_match anyelement, multiplier integer) RETURNS SETOF anyelement
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+    RETURN QUERY
+    SELECT (signature_match).* FROM generate_series(1, multiplier);
+END;
+$$;
+
+
+--
+-- Name: jsonb_expression_match(jsonb, text); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.jsonb_expression_match(input jsonb, expression text) RETURNS boolean
+    LANGUAGE plpgsql IMMUTABLE STRICT
+    AS $_$
+DECLARE
+  expr TEXT := btrim(expression);
+  len INT;
+  i INT;
+  ch TEXT;
+  op TEXT;
+  paren_depth INT;
+  brace_depth INT;
+  in_string BOOLEAN;
+  escaped BOOLEAN;
+  match TEXT[];
+  path TEXT[];
+  json_value JSONB;
+  raw TEXT;
+BEGIN
+  -- Remove outer parentheses that wrap the entire expression.
+  LOOP
+    len := length(expr);
+    EXIT WHEN len < 2 OR left(expr, 1) <> '(' OR right(expr, 1) <> ')';
+
+    paren_depth := 0;
+    brace_depth := 0;
+    in_string := false;
+    escaped := false;
+
+    FOR i IN 1..len LOOP
+      ch := substr(expr, i, 1);
+
+      IF in_string THEN
+        IF escaped THEN
+          escaped := false;
+        ELSIF ch = '\\' THEN
+          escaped := true;
+        ELSIF ch = '"' THEN
+          in_string := false;
+        END IF;
+      ELSE
+        IF ch = '"' THEN
+          in_string := true;
+        ELSIF ch = '{' THEN
+          brace_depth := brace_depth + 1;
+        ELSIF ch = '}' THEN
+          brace_depth := brace_depth - 1;
+        ELSIF brace_depth = 0 AND ch = '(' THEN
+          paren_depth := paren_depth + 1;
+        ELSIF brace_depth = 0 AND ch = ')' THEN
+          paren_depth := paren_depth - 1;
+
+          IF paren_depth = 0 AND i < len THEN
+            EXIT;
+          END IF;
+        END IF;
+      END IF;
+    END LOOP;
+
+    EXIT WHEN paren_depth <> 0 OR i < len;
+    expr := btrim(substr(expr, 2, len - 2));
+  END LOOP;
+
+  -- Split boolean operators at top level. OR is lower precedence than AND.
+  FOREACH op IN ARRAY ARRAY['||', '&&'] LOOP
+    len := length(expr);
+    paren_depth := 0;
+    brace_depth := 0;
+    in_string := false;
+    escaped := false;
+
+    FOR i IN 1..greatest(len - 1, 0) LOOP
+      ch := substr(expr, i, 1);
+
+      IF in_string THEN
+        IF escaped THEN
+          escaped := false;
+        ELSIF ch = '\\' THEN
+          escaped := true;
+        ELSIF ch = '"' THEN
+          in_string := false;
+        END IF;
+      ELSE
+        IF paren_depth = 0 AND brace_depth = 0 AND substr(expr, i, 2) = op THEN
+          IF op = '||' THEN
+            RETURN jsonb_expression_match(input, substr(expr, 1, i - 1))
+                OR jsonb_expression_match(input, substr(expr, i + 2));
+          ELSE
+            RETURN jsonb_expression_match(input, substr(expr, 1, i - 1))
+               AND jsonb_expression_match(input, substr(expr, i + 2));
+          END IF;
+        END IF;
+
+        IF ch = '"' THEN
+          in_string := true;
+        ELSIF ch = '{' THEN
+          brace_depth := brace_depth + 1;
+        ELSIF ch = '}' THEN
+          brace_depth := brace_depth - 1;
+        ELSIF brace_depth = 0 AND ch = '(' THEN
+          paren_depth := paren_depth + 1;
+        ELSIF brace_depth = 0 AND ch = ')' THEN
+          paren_depth := paren_depth - 1;
+        END IF;
+      END IF;
+    END LOOP;
+  END LOOP;
+
+  -- Parse and evaluate leaf expression: path:op:literal.
+  match := regexp_match(expr, '^([^:\[\]\s()]+):(eq|like|neq|num|lte|json):(.+)$');
+
+  IF match IS NULL THEN
+    RAISE EXCEPTION 'Invalid jsonb expression: %', expression;
+  END IF;
+
+  path := string_to_array(match[1], '.');
+  json_value := input #> path;
+  op := match[2];
+  raw := match[3];
+
+  IF op = 'eq' THEN
+    RETURN coalesce(jsonb_typeof(json_value) = 'string' AND json_value = raw::jsonb, false);
+  ELSIF op = 'like' THEN
+    RETURN coalesce(jsonb_typeof(json_value) = 'string' AND (json_value #>> '{}') LIKE (raw::jsonb #>> '{}'), false);
+  ELSIF op = 'neq' THEN
+    RETURN coalesce(jsonb_typeof(json_value) = 'string' AND json_value <> raw::jsonb, false);
+  ELSIF op = 'num' THEN
+    RETURN coalesce(jsonb_typeof(json_value) = 'number' AND (json_value #>> '{}')::numeric = raw::numeric, false);
+  ELSIF op = 'lte' THEN
+    RETURN coalesce(jsonb_typeof(json_value) = 'number' AND (json_value #>> '{}')::numeric <= raw::numeric, false);
+  ELSIF op = 'json' THEN
+    RETURN coalesce(json_value = raw::jsonb, false);
+  END IF;
+
+  RAISE EXCEPTION 'Unsupported jsonb expression operator: %', op;
+END;
+$_$;
+
+
+--
+-- Name: FUNCTION jsonb_expression_match(input jsonb, expression text); Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON FUNCTION public.jsonb_expression_match(input jsonb, expression text) IS 'Evaluates a small boolean expression language against a JSONB document. Supports &&, ||, parentheses, dot paths, and type-strict leaf operators eq, like, neq, num, lte, and json. String operators require JSON string values; number operators require JSON number values; json compares raw JSONB equality.';
 
 
 --
@@ -649,6 +823,13 @@ CREATE UNIQUE INDEX book_drafts_one_active_per_book_idx ON public.book_drafts US
 
 
 --
+-- Name: media_entries_path_unique; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX media_entries_path_unique ON public.media_entries USING btree (path) WHERE (deleted_at IS NULL);
+
+
+--
 -- Name: sheet_columns_sheet_id_target_idx; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -850,4 +1031,5 @@ INSERT INTO public.schema_migrations (version) VALUES
     ('20260718121458'),
     ('20260718130028'),
     ('20260718132348'),
-    ('20260719020000');
+    ('20260719020000'),
+    ('20260720041000');
