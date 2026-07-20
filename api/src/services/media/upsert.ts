@@ -11,7 +11,7 @@ import {
   updateMediaEntry,
 } from "./db";
 
-export async function updateMedia({
+export async function upsertMedia({
   id,
   metadata,
   ...input

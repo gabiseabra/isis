@@ -4,9 +4,9 @@ import { implement } from "@orpc/server";
 import {
   queryMediaEntry,
   queryMediaEntryChildren,
-  updateMediaEntry,
 } from "../../services/media/db";
 import { getMedia } from "../../services/media/get";
+import { upsertMedia } from "../../services/media/upsert";
 import { ORPCContext } from "../context";
 import { requireAuth } from "../middleware/auth";
 
@@ -62,7 +62,7 @@ export const media = c.router({
   }),
 
   update: c.update.use(requireAuth).handler(async ({ input, errors }) => {
-    await updateMediaEntry(input);
+    await upsertMedia(input);
     return (await getMedia(input.id)) ?? never(errors.NOT_FOUND());
   }),
 });

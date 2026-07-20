@@ -60,6 +60,6 @@ export async function truncateDatabase(id: string) {
   }
 
   await sql`
-  truncate table books, authors, publishers, sheets, genres restart identity cascade;
+  truncate table books, authors, publishers, sheets, genres, media_entries restart identity cascade;
   `;
 }

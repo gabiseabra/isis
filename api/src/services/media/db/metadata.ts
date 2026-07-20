@@ -2,17 +2,10 @@ import { ID } from "@isis/common/utils/id";
 import { NonEmpty } from "@isis/common/utils/non-empty";
 import { sql } from "../../../db/sql";
 
-class MediaMetadataRow {
-  constructor(
-    public name: string,
-    public value: unknown,
-  ) {}
-}
-
 /// queries
 
 export async function getMediaMetadata(mediaId: ID<"Media">) {
-  const rows = await sql<MediaMetadataRow>`
+  const rows = await sql<{ name: string; value: unknown | null }>`
     select name, value from media_metadata
     where entry_id = ${ID.parse(mediaId).id};
   `;

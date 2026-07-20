@@ -45,7 +45,7 @@ export async function getMediaEntry(id: ID<"Media">) {
 
 export async function getMediaParentIds(id: ID<"Media">) {
   const row = await sqlOneMaybe<{ parent_ids: number[] }>`
-    select array_agg(parent.id order by nlevel(parent.path)) as parent_ids
+    select coalesce(array_agg(parent.id order by nlevel(parent.path)), array[]::bigint[]) as parent_ids
     from media_entries media
     join media_entries parent on parent.path @> media.path
       and parent.id <> media.id
