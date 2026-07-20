@@ -1,0 +1,52 @@
+.FileUpload {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space);
+  box-sizing: border-box;
+  width: auto;
+  padding: calc(var(--space) * 3);
+  border: 2px dashed var(--color-divider);
+  border-radius: var(--radius);
+  background: var(--color-surface-0);
+  cursor: pointer;
+}
+
+.FileUpload:not([data-disabled]):hover,
+.FileUpload[data-dragging] {
+  border-color: var(--color-highlight);
+}
+
+.FileUpload[data-disabled] {
+  color: var(--color-disabled);
+  background: var(--color-surface-1);
+  cursor: not-allowed;
+}
+
+.Icon {
+  font-size: 2rem;
+  color: var(--color-highlight);
+}
+
+.Input {
+  display: none;
+}
+
+.FileUpload[data-size="m"] {
+  flex-direction: row;
+  height: var(--line-height);
+  padding: var(--space) calc(var(--space) * 2);
+  border-style: dashed;
+  box-sizing: content-box;
+}
+
+.FileUpload[data-size="m"] .Icon {
+  flex: 0 0 auto;
+  font-size: 1.25rem;
+}
+
+.Text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
