@@ -28,6 +28,10 @@ body {
   overflow: visible;
 }
 
+body.sb-show-main {
+  background-color: var(--color-surface-0);
+}
+
 @page {
   margin: 0;
 }

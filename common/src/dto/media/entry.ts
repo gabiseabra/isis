@@ -1,6 +1,18 @@
 import z from "zod";
 import { zID } from "../primitives";
+import { MediaVisibility } from "./visibility";
 
-export const MediaEntryID = z.union([zID("MediaFolder"), zID("MediaFile")]);
+export const MediaEntry = z.object({
+  id: zID("MediaEntry"),
+  parentId: zID("MediaEntry").optional(),
+  name: z.string(),
+  slug: z.string(),
+  path: z.string(),
+  tags: z.string().array(),
+  visibility: MediaVisibility,
+  deletedAt: z.date().optional(),
+  createdAt: z.date(),
+  updatedAt: z.date(),
+});
 
-export type MediaEntryID = z.infer<typeof MediaEntryID>;
+export type MediaEntry = z.infer<typeof MediaEntry>;

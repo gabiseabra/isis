@@ -1,46 +1,66 @@
 -- migrate:up
+CREATE EXTENSION ltree;
+
 CREATE TYPE media_visibility AS ENUM ('public', 'private');
 
-CREATE TABLE media_folders (
+CREATE TABLE media_entries (
   id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-  parent_id BIGINT REFERENCES media_folders (id) ON DELETE RESTRICT,
-  "hidden" BOOLEAN NOT NULL DEFAULT FALSE,
+  parent_id BIGINT REFERENCES media_entries (id),
   "name" TEXT NOT NULL,
+  "slug" VARCHAR(255) NOT NULL,
+  "path" LTREE NOT NULL,
   tags TEXT[] NOT NULL DEFAULT array[]::TEXT[],
+  visibility media_visibility,
   deleted_at TIMESTAMPTZ,
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
-CREATE UNIQUE INDEX media_folders_parent_id_name_key
-  ON media_folders (parent_id, "name")
-  WHERE parent_id IS NOT NULL AND deleted_at IS NULL;
+CREATE FUNCTION set_media_entry_path()
+RETURNS TRIGGER
+LANGUAGE plpgsql
+AS $$
+DECLARE
+  parent_path LTREE;
+BEGIN
+  IF NEW.parent_id IS NULL THEN
+    NEW.path = NEW.slug::LTREE;
+  ELSE
+    SELECT "path" INTO parent_path
+    FROM media_entries
+    WHERE id = NEW.parent_id;
 
-CREATE UNIQUE INDEX media_folders_root_name_key
-  ON media_folders ("name")
-  WHERE parent_id IS NULL AND deleted_at IS NULL;
+    NEW.path = parent_path || NEW.slug::LTREE;
+  END IF;
 
-CREATE TABLE media_files (
-  id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-  folder_id BIGINT NOT NULL REFERENCES media_folders (id) ON DELETE RESTRICT,
-  visibility media_visibility NOT NULL DEFAULT 'private',
-  "name" TEXT NOT NULL,
-  original_name TEXT NOT NULL,
-  "description" TEXT,
-  tags TEXT[] NOT NULL DEFAULT array[]::TEXT[],
-  storage_key TEXT NOT NULL UNIQUE,
-  mime_type VARCHAR(255) NOT NULL,
-  size_bytes BIGINT NOT NULL CHECK (size_bytes >= 0),
-  deleted_at TIMESTAMPTZ,
-  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
-  updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+  IF TG_OP = 'UPDATE' AND NEW.path <> OLD.path THEN
+    UPDATE media_entries
+    SET "path" = NEW.path || subpath("path", nlevel(OLD.path))
+    WHERE "path" <@ OLD.path
+      AND id <> OLD.id;
+  END IF;
+
+  RETURN NEW;
+END;
+$$;
+
+CREATE TRIGGER set_media_entry_path
+BEFORE INSERT OR UPDATE OF parent_id, "slug"
+ON media_entries
+FOR EACH ROW
+EXECUTE FUNCTION set_media_entry_path();
+
+CREATE TABLE media_metadata (
+  entry_id BIGINT NOT NULL REFERENCES media_entries (id),
+  "name" varchar(255) NOT NULL,
+  "value" JSONB,
+  PRIMARY KEY (entry_id, "name")
 );
-
-CREATE UNIQUE INDEX media_files_folder_id_name_key
-  ON media_files (folder_id, "name")
-  WHERE deleted_at IS NULL;
 
 -- migrate:down
-DROP TABLE media_files;
-DROP TABLE media_folders;
+DROP TRIGGER set_media_entry_path ON media_entries;
+DROP FUNCTION set_media_entry_path();
+DROP TABLE media_metadata;
+DROP TABLE media_entries;
 DROP TYPE media_visibility;
+DROP EXTENSION ltree;
