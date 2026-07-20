@@ -12,7 +12,7 @@ export const media = oc.prefix("/media").router({
     .errors({
       NOT_FOUND: {},
     })
-    .input(Media.pick({ id: true }))
+    .input(z.union([Media.pick({ id: true }), z.object({ path: z.string() })]))
     .output(Media),
 
   query: oc
@@ -39,16 +39,31 @@ export const media = oc.prefix("/media").router({
       }),
     ),
 
-  update: oc
+  upsert: oc
     .route({
       description: "Update media entry",
     })
     .errors({
       NOT_FOUND: {},
+      UNPROCESSABLE_CONTENT: {},
     })
     .input(
       MediaInput.extend({
-        id: Media.shape.id,
+        id: Media.shape.id.optional(),
+      }),
+    )
+    .output(Media),
+
+  upload: oc
+    .route({
+      description: "Upload file and create media entry",
+    })
+    .errors({
+      UNPROCESSABLE_CONTENT: {},
+    })
+    .input(
+      MediaInput.partial().extend({
+        file: z.file(),
       }),
     )
     .output(Media),

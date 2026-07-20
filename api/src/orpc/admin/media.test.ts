@@ -111,6 +111,7 @@ describe("adminRouter.media", () => {
       await expect(client.media.get({ id: `id://Media/3` })).resolves.toEqual({
         id: `id://Media/3`,
         parentIds: [`id://Media/1`, `id://Media/2`],
+        path: "museum_scans.botanical_plates.plate_0001_png",
         name: "Plate 0001.png",
         slug: "plate_0001_png",
         tags: ["file", "png", "botany"],
@@ -243,10 +244,10 @@ describe("adminRouter.media", () => {
     });
   });
 
-  describe("update", () => {
+  describe("upsert", () => {
     it("updates an existing media entry", async () => {
       await expect(
-        client.media.update({
+        client.media.upsert({
           id: `id://Media/3`,
           parentId: `id://Media/2`,
           name: "Plate 0001 master.png",

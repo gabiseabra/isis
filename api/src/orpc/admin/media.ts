@@ -1,10 +1,14 @@
 import { adminApi } from "@isis/common/orpc/admin";
-import { never } from "@isis/common/utils/error";
+import { createErrorHandler, never } from "@isis/common/utils/error";
 import { implement } from "@orpc/server";
 import {
   queryMediaEntry,
   queryMediaEntryChildren,
 } from "../../services/media/db";
+import {
+  MediaInputUnprocessable,
+  MediaNotFound,
+} from "../../services/media/errors";
 import { getMedia } from "../../services/media/get";
 import { upsertMedia } from "../../services/media/upsert";
 import { ORPCContext } from "../context";
@@ -14,7 +18,7 @@ const c = implement(adminApi.media).$context<ORPCContext>();
 
 export const media = c.router({
   get: c.get.use(requireAuth).handler(async ({ input, errors }) => {
-    return (await getMedia(input.id)) ?? never(errors.NOT_FOUND());
+    return (await getMedia(input)) ?? never(errors.NOT_FOUND());
   }),
 
   query: c.query.use(requireAuth).handler(async ({ input }) => {
@@ -61,8 +65,23 @@ export const media = c.router({
     };
   }),
 
-  update: c.update.use(requireAuth).handler(async ({ input, errors }) => {
-    await upsertMedia(input);
-    return (await getMedia(input.id)) ?? never(errors.NOT_FOUND());
+  upsert: c.upsert.use(requireAuth).handler(async ({ input, errors }) => {
+    return upsertMedia(input).catch(
+      createErrorHandler()
+        .catch(MediaNotFound, () => never(errors.NOT_FOUND()))
+        .catch(MediaInputUnprocessable, (error) =>
+          never(
+            errors.UNPROCESSABLE_CONTENT({
+              message: error.message,
+            }),
+          ),
+        ),
+    );
+  }),
+
+  upload: c.upload.use(requireAuth).handler(async ({ input, errors }) => {
+    const { file: _file } = input;
+
+    throw errors.UNPROCESSABLE_CONTENT();
   }),
 });

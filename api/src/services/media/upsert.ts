@@ -1,7 +1,9 @@
 import { Media } from "@isis/common/dto/media";
 import { MediaInput } from "@isis/common/dto/media/input";
+import { createErrorHandler, never } from "@isis/common/utils/error";
 import { ID } from "@isis/common/utils/id";
 import { NonEmpty } from "@isis/common/utils/non-empty";
+import { DatabaseError } from "pg";
 import { unit } from "../../db/unit";
 import {
   addMediaMetadata,
@@ -10,6 +12,7 @@ import {
   removeMediaMetadata,
   updateMediaEntry,
 } from "./db";
+import { MediaInputUnprocessable, MediaNotFound } from "./errors";
 
 export async function upsertMedia({
   id,
@@ -19,9 +22,14 @@ export async function upsertMedia({
   id?: ID<"Media">;
 }): Promise<Media> {
   return unit(async () => {
-    const media = await (id
-      ? updateMediaEntry({ id, ...input })
-      : createMediaEntry(input));
+    const media =
+      (await (
+        id ? updateMediaEntry({ id, ...input }) : createMediaEntry(input)
+      ).catch(
+        createErrorHandler().catch(DatabaseError, (error) =>
+          never(new MediaInputUnprocessable(error.constraint)),
+        ),
+      )) ?? never(new MediaNotFound());
 
     await removeMediaMetadata(media.id);
     const metadataEntries = Object.entries(metadata).map(([key, value]) => ({

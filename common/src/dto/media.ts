@@ -1,9 +1,11 @@
 import z from "zod";
+import { Path } from "./path";
 import { zID } from "./primitives";
 
 export const Media = z.object({
   id: zID("Media"),
   parentIds: zID("Media").array(),
+  path: Path,
   name: z.string(),
   slug: z.string(),
   tags: z.string().array(),

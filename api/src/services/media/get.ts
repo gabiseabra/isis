@@ -2,14 +2,17 @@ import { Media } from "@isis/common/dto/media";
 import { ID } from "@isis/common/utils/id";
 import { getMediaEntry, getMediaMetadata, getMediaParentIds } from "./db";
 
-export async function getMedia(id: ID<"Media">): Promise<Media | null> {
-  const [entry, metadata, parentIds] = await Promise.all([
-    getMediaEntry(id),
-    getMediaMetadata(id),
-    getMediaParentIds(id),
-  ]);
+export async function getMedia(
+  input: ID<"Media"> | { id: ID<"Media"> } | { path: string },
+): Promise<Media | null> {
+  const entry = await getMediaEntry(input);
 
   if (!entry) return null;
+
+  const [metadata, parentIds] = await Promise.all([
+    getMediaMetadata(entry.id),
+    getMediaParentIds(entry.id),
+  ]);
 
   delete entry.parentId;
 

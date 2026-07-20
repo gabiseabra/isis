@@ -34,10 +34,18 @@ export function never(messageOrError: string | Error): never {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type Ctor<T> = { new (...args: any[]): T };
 
-export function createErrorHandler<T = never>() {
+type ErrorHandler<T> = {
+  (error: unknown): T;
+  catch<E extends Error>(
+    cls: Ctor<E>,
+    handler: (error: E) => T,
+  ): ErrorHandler<T>;
+};
+
+export function createErrorHandler<T = never>(): ErrorHandler<T> {
   const handlers = new Map<Ctor<Error>, (error: Error) => T>();
 
-  const instance = Object.assign(
+  const instance: ErrorHandler<T> = Object.assign(
     function handle(error: unknown) {
       for (const [cls, handler] of handlers.entries()) {
         if (error instanceof cls) return handler(error);
