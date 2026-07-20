@@ -30,6 +30,7 @@ export type NavProps = ComponentProps<"nav"> & {
   loading?: boolean;
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
+  header?: ReactNode;
   footer?: ReactNode;
 };
 
@@ -38,6 +39,7 @@ export function Nav({
   loading,
   open: controlledOpen,
   onOpenChange,
+  header,
   footer,
   children,
   className,
@@ -77,17 +79,17 @@ export function Nav({
           </IconControl>
         )}
 
-        <Col alignY="space-between" style={{ height: "100%" }}>
-          {loading ? (
-            <Col flex={1} alignX="center" alignY="center">
-              <Spinner size="m" color="blue" />
-            </Col>
-          ) : (
-            <Col className={styles.Content}>{children}</Col>
-          )}
+        {header && <div className={styles.Header}>{header}</div>}
 
-          <div className={styles.Footer}>{footer}</div>
-        </Col>
+        {loading ? (
+          <Col flex={1} alignX="center" alignY="center">
+            <Spinner size="m" color="blue" />
+          </Col>
+        ) : (
+          children
+        )}
+
+        {footer && <div className={styles.Footer}>{footer}</div>}
       </nav>
     </NavContext.Provider>
   );
@@ -100,6 +102,7 @@ export type NavItemProps = {
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
 
+  loading?: boolean;
   size?: "s" | "m" | "l" | "xl";
   color?: css.Color;
   title: ReactNode;
@@ -120,6 +123,7 @@ Nav.Item = function NavItem({
   as: Component,
   render,
   size = "s",
+  loading,
   color,
   title,
   icon,
@@ -196,6 +200,7 @@ Nav.Item = function NavItem({
 
 export type NavLinkProps = Omit<LinkProps, "color" | "title"> & {
   size?: "s" | "m" | "l" | "xl";
+  loading?: boolean;
   title: ReactNode;
   color?: css.Color;
   icon?: ReactNode;
@@ -206,6 +211,7 @@ export type NavLinkProps = Omit<LinkProps, "color" | "title"> & {
 
 Nav.Link = function NavLink({
   size,
+  loading,
   title,
   color,
   icon,
@@ -217,7 +223,7 @@ Nav.Link = function NavLink({
 }: NavLinkProps) {
   return (
     <Nav.Item
-      {...{ size, title, color, icon, badge, open, onOpenChange }}
+      {...{ size, loading, title, color, icon, badge, open, onOpenChange }}
       render={(content) => <Link {...props}>{content}</Link>}
     >
       {children}
@@ -230,6 +236,7 @@ export type NavButtonProps = Omit<
   "color" | "title"
 > & {
   size?: "s" | "m" | "l" | "xl";
+  loading?: boolean;
   title: ReactNode;
   color?: css.Color;
   icon?: ReactNode;
@@ -240,6 +247,7 @@ export type NavButtonProps = Omit<
 
 Nav.Button = function NavButton({
   size,
+  loading,
   title,
   color,
   icon,
@@ -251,7 +259,7 @@ Nav.Button = function NavButton({
 }: NavButtonProps) {
   return (
     <Nav.Item
-      {...{ size, title, color, icon, badge, open, onOpenChange }}
+      {...{ size, loading, title, color, icon, badge, open, onOpenChange }}
       render={(content) => <button {...props}>{content}</button>}
     >
       {children}

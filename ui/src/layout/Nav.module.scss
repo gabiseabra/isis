@@ -27,14 +27,8 @@
   min-width: var(--nav-width);
 }
 
-.Content,
 .ItemContent {
   gap: var(--nav-link-gap);
-}
-
-.Content,
-.Footer {
-  overflow: hidden;
 }
 
 .CollapseButton {

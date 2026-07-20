@@ -4,7 +4,7 @@ import styles from "./Spinner.module.scss";
 
 export type SpinnerProps = {
   size: "s" | "m" | "l";
-  color?: Color;
+  color?: Color | "muted";
 } & Omit<ComponentProps<"div">, "children">;
 
 export function Spinner({ size, color, className, ...props }: SpinnerProps) {
