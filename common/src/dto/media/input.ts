@@ -4,7 +4,7 @@ import { zID } from "../primitives";
 export const MediaInput = z.object({
   parentId: zID("Media").optional(),
   name: z.string(),
-  slug: z.string(),
+  slug: z.string().optional(),
   tags: z.string().array(),
   metadata: z.record(z.string(), z.unknown()),
   deletedAt: z.date().optional(),

@@ -13,6 +13,10 @@ CREATE TABLE media_entries (
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
+CREATE UNIQUE INDEX media_entries_path_unique
+  ON media_entries (path)
+  WHERE deleted_at IS NULL;
+
 CREATE FUNCTION set_media_entry_path()
 RETURNS TRIGGER
 LANGUAGE plpgsql

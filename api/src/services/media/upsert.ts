@@ -5,6 +5,7 @@ import { ID } from "@isis/common/utils/id";
 import { NonEmpty } from "@isis/common/utils/non-empty";
 import { DatabaseError } from "pg";
 import { unit } from "../../db/unit";
+import { slugify } from "../../utils/slugify";
 import {
   addMediaMetadata,
   createMediaEntry,
@@ -17,18 +18,29 @@ import { MediaInputUnprocessable, MediaNotFound } from "./errors";
 export async function upsertMedia({
   id,
   metadata,
-  ...input
+  ..._input
 }: MediaInput & {
   id?: ID<"Media">;
 }): Promise<Media> {
   return unit(async () => {
+    const input = {
+      slug: slugify(_input.name),
+      ..._input,
+    };
+
     const media =
       (await (
         id ? updateMediaEntry({ id, ...input }) : createMediaEntry(input)
       ).catch(
-        createErrorHandler().catch(DatabaseError, (error) =>
-          never(new MediaInputUnprocessable(error.constraint)),
-        ),
+        createErrorHandler().catch(DatabaseError, (error) => {
+          if (error.constraint === "media_entries_path_unique")
+            return never(
+              new MediaInputUnprocessable(
+                `Já existe um arquivo chamado "${input.slug}"`,
+              ),
+            );
+          return never(new MediaInputUnprocessable());
+        }),
       )) ?? never(new MediaNotFound());
 
     await removeMediaMetadata(media.id);
