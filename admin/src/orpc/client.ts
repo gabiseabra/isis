@@ -49,7 +49,7 @@ export function clearToken() {
 
 export const orpcClient: ORPCRouter = createORPCClient(
   new RPCLink({
-    url: import.meta.env.VITE_API_URL,
+    url: `${import.meta.env.VITE_API_URL}/admin`,
     method: inferRPCMethodFromContractRouter(adminApi),
     plugins: [new SimpleCsrfProtectionLinkPlugin()],
     headers() {

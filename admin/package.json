@@ -4,7 +4,7 @@
   "main": "dist/server.js",
   "type": "module",
   "scripts": {
-    "dev": "vite --port 6662",
+    "dev": "vite",
     "clean": "tsc -b --clean && rm -rf dist",
     "build": "npm run build:ts && npm run build:vite",
     "build:ts": "tsc -b",

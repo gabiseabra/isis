@@ -6,7 +6,7 @@ import { adminRouter } from "./orpc/admin";
 import { nodeRPCHandler } from "./orpc/handler";
 import { orpcMiddleware } from "./orpc/middleware";
 
-const API_PORT = 6660;
+const API_PORT = Number(process.env.API_PORT ?? 6660);
 
 async function createServer() {
   const app = express();

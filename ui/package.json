@@ -33,8 +33,8 @@
     }
   },
   "scripts": {
-    "start": "http-server ui/storybook-static -p 6663",
-    "dev": "storybook dev -p 6663 --ci",
+    "start": "http-server ui/storybook-static",
+    "dev": "storybook dev --ci",
     "build": "npm run build:ts && npm run build:sb",
     "build:ts": "tsc -b",
     "build:sb": "storybook build",

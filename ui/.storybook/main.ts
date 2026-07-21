@@ -1,6 +1,9 @@
 import type { StorybookConfig } from "@storybook/react-vite";
+import dotenv from "dotenv";
 import { fileURLToPath } from "node:url";
 import { mergeConfig } from "vite";
+
+dotenv.config({ path: "../.env" });
 
 const config: StorybookConfig = {
   framework: "@storybook/react-vite",
@@ -12,6 +15,9 @@ const config: StorybookConfig = {
   },
   viteFinal: (config) =>
     mergeConfig(config, {
+      server: {
+        port: Number(process.env.STORYBOOK_PORT ?? 6663),
+      },
       resolve: {
         alias: {
           "@isis/common": fileURLToPath(

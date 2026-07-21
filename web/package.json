@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "main": "index.js",
   "scripts": {
-    "dev": "vite --port 6661",
+    "dev": "vite",
     "clean": "tsc -b --clean && rm -rf dist",
     "build": "npm run build:ts && npm run build:vite",
     "build:ts": "tsc -b",

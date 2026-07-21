@@ -19,13 +19,13 @@ services:
     image: postgres:17-alpine
     restart: unless-stopped
     environment:
-      POSTGRES_DB: ${POSTGRES_DB}
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: isis
+      POSTGRES_USER: isis
+      POSTGRES_PASSWORD: isis
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      test: ["CMD-SHELL", "pg_isready -U isis -d isis"]
       interval: 5s
       timeout: 5s
       retries: 10
@@ -33,7 +33,7 @@ services:
   api:
     <<: *node-service
     ports:
-      - "${API_PORT:-6660}:6660"
+      - "${API_PORT:-6660}:${API_PORT:-6660}"
     depends_on:
       postgres:
         condition: service_healthy
@@ -42,7 +42,7 @@ services:
   web:
     <<: *node-service
     ports:
-      - "${WEB_PORT:-6661}:6661"
+      - "${WEB_PORT:-6661}:${WEB_PORT:-6661}"
     depends_on:
       - api
     command: npm run dev -w web -- --host 0.0.0.0
@@ -50,7 +50,7 @@ services:
   admin:
     <<: *node-service
     ports:
-      - "${ADMIN_PORT:-6662}:6662"
+      - "${ADMIN_PORT:-6662}:${ADMIN_PORT:-6662}"
     depends_on:
       - api
     command: npm run dev -w admin -- --host 0.0.0.0
@@ -58,7 +58,7 @@ services:
   storybook:
     <<: *node-service
     ports:
-      - "${STORYBOOK_PORT:-6663}:6663"
+      - "${STORYBOOK_PORT:-6663}:${STORYBOOK_PORT:-6663}"
     command: npm run dev -w ui -- --host 0.0.0.0
 
 volumes:

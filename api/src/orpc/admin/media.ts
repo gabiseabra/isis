@@ -10,6 +10,7 @@ import {
   MediaNotFound,
 } from "../../services/media/errors";
 import { getMedia } from "../../services/media/get";
+import { uploadMedia } from "../../services/media/upload";
 import { upsertMedia } from "../../services/media/upsert";
 import { ORPCContext } from "../context";
 import { requireAuth } from "../middleware/auth";
@@ -80,8 +81,14 @@ export const media = c.router({
   }),
 
   upload: c.upload.use(requireAuth).handler(async ({ input, errors }) => {
-    const { file: _file } = input;
-
-    throw errors.UNPROCESSABLE_CONTENT();
+    return uploadMedia(input).catch(
+      createErrorHandler().catch(MediaInputUnprocessable, (error) =>
+        never(
+          errors.UNPROCESSABLE_CONTENT({
+            message: error.message,
+          }),
+        ),
+      ),
+    );
   }),
 });
