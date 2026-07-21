@@ -33,7 +33,12 @@
 
 .Spinner[data-color="muted"] {
   --spinner-color: var(--color-muted);
-  --spinner-track: var(--color-surface-1);
+  --spinner-track: var(--color-surface-2);
+}
+
+.Spinner[data-size="xs"] {
+  --spinner-size: 12px;
+  --spinner-stroke: 2px;
 }
 
 .Spinner[data-size="s"] {

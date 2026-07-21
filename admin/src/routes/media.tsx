@@ -1,8 +1,7 @@
 import { Path } from "@isis/common/dto/path";
 import { Divider } from "@isis/ui/display/Divider";
 import { Card } from "@isis/ui/layout/Card";
-import { Col, Row } from "@isis/ui/layout/FlexBox";
-import { Resizable } from "@isis/ui/layout/Resizable";
+import { Col } from "@isis/ui/layout/FlexBox";
 import { useNavigate, useParams } from "react-router";
 import { useLocalStorage } from "usehooks-ts";
 import { MediaChildren } from "../components/media/MediaChildren";

@@ -2,13 +2,10 @@ import { Media } from "@isis/common/dto/media";
 import { Path } from "@isis/common/dto/path";
 import { extractErrorMessage } from "@isis/common/utils/error";
 import { IconButton } from "@isis/ui/display/IconButton";
-import { Span, Text } from "@isis/ui/display/Text";
-import { EmptyState } from "@isis/ui/feedback/EmptyState";
 import { Spinner } from "@isis/ui/feedback/Spinner";
 import { useToast } from "@isis/ui/feedback/Toast";
-import { Button } from "@isis/ui/form/Button";
 import { Input } from "@isis/ui/form/Input";
-import { Col, FlexBox, FlexBoxProps, Row } from "@isis/ui/layout/FlexBox";
+import { FlexBox, FlexBoxProps } from "@isis/ui/layout/FlexBox";
 import { Nav } from "@isis/ui/layout/Nav";
 import {
   skipToken,
@@ -101,8 +98,17 @@ export function MediaControls({
             variant="unstyled"
             value={newFolderName}
             onChangeValue={setNewFolderName}
-            placeholder="Criar pasta"
-            disabled={upsertMediaMutation.isPending}
+            disabled={
+              upsertMediaMutation.isPending ||
+              entryQuery.isPending ||
+              entryQuery.isError
+            }
+            placeholder={[
+              `Criar pasta`,
+              entryQuery.data && `em ${entryQuery.data?.name}`,
+            ]
+              .filter(Boolean)
+              .join(" ")}
           />
         )}
       />

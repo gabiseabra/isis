@@ -1,5 +1,5 @@
 import { Slot } from "radix-ui";
-import { HTMLAttributes, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { Divider } from "../display/Divider";
 import { Box, BoxProps } from "./Box";
 import styles from "./Resizable.module.scss";

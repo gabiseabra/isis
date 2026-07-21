@@ -3,7 +3,7 @@ import { Color } from "../utils/css";
 import styles from "./Spinner.module.scss";
 
 export type SpinnerProps = {
-  size: "s" | "m" | "l";
+  size?: "xs" | "s" | "m" | "l";
   color?: Color | "muted";
 } & Omit<ComponentProps<"div">, "children">;
 

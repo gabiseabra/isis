@@ -6,7 +6,7 @@ import { Col, Row } from "@isis/ui/layout/FlexBox";
 import { Nav, NavProps } from "@isis/ui/layout/Nav";
 import { Resizable } from "@isis/ui/layout/Resizable";
 import { useQuery } from "@tanstack/react-query";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { BiFolder } from "react-icons/bi";
 import { orpcQuery } from "../../orpc/client";
 import styles from "./MediaTree.module.scss";
@@ -26,10 +26,10 @@ type MediaTreeProps = NavProps & {
  */
 export function MediaTree({
   path,
+  autoFocus,
   loading,
   onClickMedia,
   onDoubleClickMedia,
-  children,
   width,
   onChangeWidth,
   ...props
@@ -74,16 +74,15 @@ export function MediaTree({
           ) : (
             childrenQuery.data?.items.map((entry) => (
               <MediaTreeNode
-                path={path}
                 key={entry.id}
+                path={path}
+                autoFocus={autoFocus}
                 entry={entry}
                 onClickMedia={onClickMedia}
                 onDoubleClickMedia={onDoubleClickMedia}
               />
             ))
           )}
-
-          {children}
         </Nav>
       </Row>
     </Resizable>
@@ -91,19 +90,23 @@ export function MediaTree({
 }
 
 export function MediaTreeNode({
+  path,
+  autoFocus,
   entry,
   onClickMedia,
   onDoubleClickMedia,
 }: {
   path?: Path;
+  autoFocus?: boolean;
   entry: Media;
   onClickMedia?: (entry: Media) => void;
   onDoubleClickMedia?: (entry: Media) => void;
 }) {
-  const [open, setOpen] = useState(false);
+  const active = path === entry.path || Path.contains(entry.path, path ?? "");
+
+  const [open, setOpen] = useState(active);
   const childrenQuery = useQuery(
     orpcQuery.media.queryChildren.queryOptions({
-      enabled: open,
       input: {
         page: 1,
         limit: 100,
@@ -112,21 +115,32 @@ export function MediaTreeNode({
     }),
   );
 
+  useEffect(() => {
+    if (active) {
+      setOpen(true);
+    }
+  }, [autoFocus, path]);
+
   return (
     <Nav.Button
       icon={<BiFolder />}
       title={entry.name}
       open={open}
+      active={active}
       onOpenChange={setOpen}
       onClick={() => onClickMedia?.(entry)}
       onDoubleClick={() => onDoubleClickMedia?.(entry)}
+      loading={childrenQuery.isPending}
+      collapsible={!!childrenQuery.data?.items.length}
     >
       {childrenQuery.data?.items.map((entry) => (
         <MediaTreeNode
           key={entry.id}
+          path={path}
+          autoFocus={autoFocus}
           entry={entry}
-          onClickMedia={() => onClickMedia?.(entry)}
-          onDoubleClickMedia={() => onDoubleClickMedia?.(entry)}
+          onClickMedia={onClickMedia}
+          onDoubleClickMedia={onDoubleClickMedia}
         />
       ))}
     </Nav.Button>

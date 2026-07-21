@@ -3,7 +3,7 @@ import { ID } from "@isis/common/utils/id";
 import { getMediaEntry, getMediaMetadata, getMediaParentIds } from "./db";
 
 export async function getMedia(
-  input: ID<"Media"> | { id: ID<"Media"> } | { path: string },
+  input: { id: ID<"Media"> } | { path: string },
 ): Promise<Media | null> {
   const entry = await getMediaEntry(input);
 

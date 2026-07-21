@@ -122,6 +122,7 @@
   color: var(--color-highlight);
 }
 
+.Item[data-active] > .ItemTitle,
 .Item > .ItemTitle:has(:is(input, textarea, select):focus),
 .Item > .ItemTitle:has(> :is(a, button)):hover,
 .Item > .ItemTitle:has(> :is(a, button):active) {
@@ -159,6 +160,14 @@
   inset-inline-end: 0;
   opacity: 0;
   pointer-events: none;
+}
+
+.ItemToggle > button > svg {
+  transition: transform 180ms ease-out;
+}
+
+.Item[data-open] > .ItemTitle .ItemToggle > button > svg {
+  transform: rotate(180deg);
 }
 
 .ItemContent {

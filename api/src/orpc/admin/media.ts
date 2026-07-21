@@ -29,7 +29,7 @@ export const media = c.router({
     });
     const items = await Promise.all(
       entries.map((_entry) =>
-        getMedia(_entry.id).then(
+        getMedia(_entry).then(
           (entry) =>
             entry ??
             never(`media entry disappeared while hydrating ${_entry.id}`),
@@ -51,7 +51,7 @@ export const media = c.router({
     });
     const items = await Promise.all(
       entries.map((_entry) =>
-        getMedia(_entry.id).then(
+        getMedia(_entry).then(
           (entry) =>
             entry ??
             never(`media entry disappeared while hydrating ${_entry.id}`),

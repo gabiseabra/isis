@@ -1,3 +1,4 @@
+import { LTree, Path } from "@isis/common/dto/path";
 import { ID } from "@isis/common/utils/id";
 import { sql, sqlOne, sqlOneMaybe } from "../../../db/sql";
 
@@ -7,7 +8,7 @@ class MediaEntryRow {
     public parent_id: number | null,
     public name: string,
     public slug: string,
-    public path: string | null,
+    public path: LTree,
     public tags: string[],
     public deleted_at: Date | null,
     public created_at: Date,
@@ -19,7 +20,7 @@ function mapMediaEntry(row: MediaEntryRow) {
   return {
     id: ID.create("Media", row.id),
     parentId: row.parent_id ? ID.create("Media", row.parent_id) : undefined,
-    path: row.path ?? "",
+    path: Path.fromLTreeString(row.path),
     name: row.name,
     slug: row.slug,
     tags: row.tags,
@@ -32,18 +33,13 @@ function mapMediaEntry(row: MediaEntryRow) {
 /// queries
 
 export async function getMediaEntry(
-  input: ID<"Media"> | { id: ID<"Media"> } | { path: string },
+  input: { id: ID<"Media"> } | { path: Path },
 ) {
-  const id =
-    typeof input === "string"
-      ? ID.parse(input).id
-      : "id" in input
-        ? ID.parse(input.id).id
-        : null;
-  const path = typeof input === "object" && "path" in input ? input.path : null;
+  const id = "id" in input ? ID.parse(input.id).id : null;
+  const path = "path" in input ? Path.toLTree(input.path) : null;
 
   const row = await sqlOneMaybe<MediaEntryRow>`
-    select id, parent_id, name, slug, (path::text || '') as path, tags, deleted_at, created_at, updated_at
+    select *
     from media_entries
     where (id = ${id} or path = ${path}::ltree)
       and deleted_at is null;
@@ -68,7 +64,7 @@ export async function getMediaParentIds(id: ID<"Media">) {
 
 export async function queryMediaEntry(input: {
   rootId?: ID<"Media">;
-  path?: string;
+  path?: Path;
   limit: number;
   offset: number;
   query?: string;
@@ -79,20 +75,21 @@ export async function queryMediaEntry(input: {
 }) {
   const rootId = input.rootId ? ID.parse(input.rootId).id : null;
   const rootPath = input.path ?? null;
+  const rootLTree: string | null = rootPath ? Path.toLTree(rootPath) : null;
   const ids = input.ids?.map((id) => ID.parse(id).id) ?? null;
   const sort = input.sort ?? "name";
   const order = input.order ?? "asc";
 
   const rows = await sql<MediaEntryRow>`
-    select media_entries.id, media_entries.parent_id, media_entries.name, media_entries.slug, (media_entries.path::text || '') as path, media_entries.tags, media_entries.deleted_at, media_entries.created_at, media_entries.updated_at
+    select media_entries.*
     from media_entries
-    left join media_entries root on root.id = ${rootId} or root.path = ${rootPath}::ltree
+    left join media_entries root on root.id = ${rootId} or root.path = ${rootLTree}::ltree
     where (
-        (${rootPath}::ltree is not null
-          and media_entries.path <@ ${rootPath}::ltree
-          and media_entries.path <> ${rootPath}::ltree)
+        (${rootLTree}::ltree is not null
+          and media_entries.path <@ ${rootLTree}::ltree
+          and media_entries.path <> ${rootLTree}::ltree)
         or
-        (${rootPath}::ltree is null
+        (${rootLTree}::ltree is null
           and (${rootId}::bigint is null
             or (media_entries.path <@ root.path and media_entries.id <> root.id)))
       )
@@ -117,7 +114,7 @@ export async function queryMediaEntry(input: {
 
 export async function queryMediaEntryChildren(input: {
   rootId?: ID<"Media">;
-  path?: string;
+  path?: Path;
   limit: number;
   offset: number;
   query?: string;
@@ -127,15 +124,16 @@ export async function queryMediaEntryChildren(input: {
 }) {
   const rootId = input.rootId ? ID.parse(input.rootId).id : null;
   const rootPath = input.path ?? null;
+  const rootLTree: string | null = rootPath ? Path.toLTree(rootPath) : null;
   const sort = input.sort ?? "name";
   const order = input.order ?? "asc";
 
   const rows = await sql<MediaEntryRow>`
-    select id, parent_id, name, slug, (path::text || '') as path, tags, deleted_at, created_at, updated_at
+    select *
     from media_entries
     where (
-        (${rootPath}::ltree is null and parent_id is not distinct from ${rootId}::bigint)
-        or (${rootPath}::ltree is not null and path <@ ${rootPath}::ltree and nlevel(path) = nlevel(${rootPath}::ltree) + 1)
+        (${rootLTree}::ltree is null and parent_id is not distinct from ${rootId}::bigint)
+        or (${rootLTree}::ltree is not null and path <@ ${rootLTree}::ltree and nlevel(path) = nlevel(${rootLTree}::ltree) + 1)
       )
       and concat_ws(' ', name, slug, path::text, array_to_string(tags, ' ')) ilike coalesce('%' || ${input.query ?? null} || '%', '%')
       and tags @> coalesce(${(input.tags ?? null) as string[]}::text[], array[]::text[])
@@ -181,7 +179,7 @@ export async function createMediaEntry(input: MediaRowInput) {
       ${input.tags},
       ${(input.deletedAt ?? null) as Date}
     )
-    returning id, parent_id, name, slug, (path::text || '') as path, tags, deleted_at, created_at, updated_at;
+    returning *;
   `;
 
   return mapMediaEntry(row);
@@ -202,7 +200,7 @@ export async function updateMediaEntry(
       updated_at = now()
     where id = ${ID.parse(input.id).id}
       and deleted_at is null
-    returning id, parent_id, name, slug, (path::text || '') as path, tags, deleted_at, created_at, updated_at;
+    returning *;
   `;
 
   return row ? mapMediaEntry(row) : null;

@@ -22,9 +22,9 @@ export const Path = Object.assign(z.string() as z.ZodType<Path>, {
   join(values: Path[]): Path {
     return values.map(Path.trim).join("/");
   },
-  contains(a: Path, b: Path) {
-    const parent = Path.trim(a);
-    const child = Path.trim(b);
+  contains(_parent: Path, _child: Path) {
+    const parent = Path.trim(_parent);
+    const child = Path.trim(_child);
 
     return child === parent || child.startsWith(`${parent}/`);
   },

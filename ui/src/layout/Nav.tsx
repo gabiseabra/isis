@@ -106,6 +106,9 @@ export type NavItemProps = {
   onOpenChange?: (open: boolean) => void;
 
   loading?: boolean;
+  collapsible?: boolean;
+  active?: boolean;
+
   size?: "s" | "m" | "l" | "xl";
   color?: css.Color;
   title: ReactNode;
@@ -127,6 +130,8 @@ Nav.Item = function NavItem({
   render,
   size = "s",
   loading,
+  collapsible,
+  active,
   color,
   title,
   icon,
@@ -144,6 +149,7 @@ Nav.Item = function NavItem({
 
   Component ??= DefaultNavItemElement;
   render ??= (children) => <Component>{children}</Component>;
+  collapsible ??= !!children;
 
   return (
     <Col
@@ -151,6 +157,7 @@ Nav.Item = function NavItem({
       className={[styles.Item, className].filter(Boolean).join(" ")}
       style={style}
       data-open={open || undefined}
+      data-active={active || undefined}
     >
       <Row
         className={styles.ItemTitle}
@@ -172,11 +179,14 @@ Nav.Item = function NavItem({
           </>,
         )}
 
-        {children && (
+        {loading ? (
+          <IconControl mr={1} size="xs">
+            <Spinner size="xs" color="muted" />
+          </IconControl>
+        ) : collapsible ? (
           <IconControl
             className={styles.ItemToggle}
             size="auto"
-            mr={1}
             p={0.75}
             style={{
               height: "calc(var(--nav-link-height) - 8px)",
@@ -193,7 +203,7 @@ Nav.Item = function NavItem({
               <BiChevronDown />
             </IconButton>
           </IconControl>
-        )}
+        ) : null}
       </Row>
 
       {children && open && <Col className={styles.ItemContent}>{children}</Col>}
@@ -204,6 +214,8 @@ Nav.Item = function NavItem({
 export type NavLinkProps = Omit<LinkProps, "color" | "title"> & {
   size?: "s" | "m" | "l" | "xl";
   loading?: boolean;
+  collapsible?: boolean;
+  active?: boolean;
   title: ReactNode;
   color?: css.Color;
   icon?: ReactNode;
@@ -215,6 +227,8 @@ export type NavLinkProps = Omit<LinkProps, "color" | "title"> & {
 Nav.Link = function NavLink({
   size,
   loading,
+  collapsible,
+  active,
   title,
   color,
   icon,
@@ -226,7 +240,18 @@ Nav.Link = function NavLink({
 }: NavLinkProps) {
   return (
     <Nav.Item
-      {...{ size, loading, title, color, icon, badge, open, onOpenChange }}
+      {...{
+        size,
+        loading,
+        collapsible,
+        active,
+        title,
+        color,
+        icon,
+        badge,
+        open,
+        onOpenChange,
+      }}
       render={(content) => <Link {...props}>{content}</Link>}
     >
       {children}
@@ -240,6 +265,8 @@ export type NavButtonProps = Omit<
 > & {
   size?: "s" | "m" | "l" | "xl";
   loading?: boolean;
+  collapsible?: boolean;
+  active?: boolean;
   title: ReactNode;
   color?: css.Color;
   icon?: ReactNode;
@@ -251,6 +278,8 @@ export type NavButtonProps = Omit<
 Nav.Button = function NavButton({
   size,
   loading,
+  collapsible,
+  active,
   title,
   color,
   icon,
@@ -262,7 +291,18 @@ Nav.Button = function NavButton({
 }: NavButtonProps) {
   return (
     <Nav.Item
-      {...{ size, loading, title, color, icon, badge, open, onOpenChange }}
+      {...{
+        size,
+        loading,
+        collapsible,
+        active,
+        title,
+        color,
+        icon,
+        badge,
+        open,
+        onOpenChange,
+      }}
       render={(content) => <button {...props}>{content}</button>}
     >
       {children}
