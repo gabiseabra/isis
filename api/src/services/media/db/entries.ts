@@ -77,6 +77,7 @@ export async function queryMediaEntry(input: {
   const rootPath = input.path ?? null;
   const rootLTree: string | null = rootPath ? Path.toLTree(rootPath) : null;
   const ids = input.ids?.map((id) => ID.parse(id).id) ?? null;
+  const query = input.query ?? null;
   const sort = input.sort ?? "name";
   const order = input.order ?? "asc";
 
@@ -84,6 +85,11 @@ export async function queryMediaEntry(input: {
     select media_entries.*
     from media_entries
     left join media_entries root on root.id = ${rootId} or root.path = ${rootLTree}::ltree
+    left join lateral (
+      select jsonb_object_agg(media_metadata.name, media_metadata.value) as metadata
+      from media_metadata
+      where media_metadata.entry_id = media_entries.id
+    ) media_query on true
     where (
         (${rootLTree}::ltree is not null
           and media_entries.path <@ ${rootLTree}::ltree
@@ -94,7 +100,17 @@ export async function queryMediaEntry(input: {
             or (media_entries.path <@ root.path and media_entries.id <> root.id)))
       )
       and media_entries.id = any(coalesce(${ids as number[]}::bigint[], array[media_entries.id]))
-      and concat_ws(' ', media_entries.name, media_entries.slug, media_entries.path::text, array_to_string(media_entries.tags, ' ')) ilike coalesce('%' || ${input.query ?? null} || '%', '%')
+      and case
+        when ${query}::text is null then true
+        else jsonb_expression_match(
+          coalesce(media_query.metadata, '{}'::jsonb) || jsonb_build_object(
+            'name', media_entries.name,
+            'slug', media_entries.slug,
+            'path', replace(media_entries.path::text, '.', '/')
+          ),
+          ${query}
+        )
+      end
       and media_entries.tags @> coalesce(${(input.tags ?? null) as string[]}::text[], array[]::text[])
       and media_entries.deleted_at is null
     order by
@@ -125,27 +141,43 @@ export async function queryMediaEntryChildren(input: {
   const rootId = input.rootId ? ID.parse(input.rootId).id : null;
   const rootPath = input.path ?? null;
   const rootLTree: string | null = rootPath ? Path.toLTree(rootPath) : null;
+  const query = input.query ?? null;
   const sort = input.sort ?? "name";
   const order = input.order ?? "asc";
 
   const rows = await sql<MediaEntryRow>`
-    select *
+    select media_entries.*
     from media_entries
+    left join lateral (
+      select jsonb_object_agg(media_metadata.name, media_metadata.value) as metadata
+      from media_metadata
+      where media_metadata.entry_id = media_entries.id
+    ) media_query on true
     where (
-        (${rootLTree}::ltree is null and parent_id is not distinct from ${rootId}::bigint)
-        or (${rootLTree}::ltree is not null and path <@ ${rootLTree}::ltree and nlevel(path) = nlevel(${rootLTree}::ltree) + 1)
+        (${rootLTree}::ltree is null and media_entries.parent_id is not distinct from ${rootId}::bigint)
+        or (${rootLTree}::ltree is not null and media_entries.path <@ ${rootLTree}::ltree and nlevel(media_entries.path) = nlevel(${rootLTree}::ltree) + 1)
       )
-      and concat_ws(' ', name, slug, path::text, array_to_string(tags, ' ')) ilike coalesce('%' || ${input.query ?? null} || '%', '%')
-      and tags @> coalesce(${(input.tags ?? null) as string[]}::text[], array[]::text[])
-      and deleted_at is null
+      and case
+        when ${query}::text is null then true
+        else jsonb_expression_match(
+          coalesce(media_query.metadata, '{}'::jsonb) || jsonb_build_object(
+            'name', media_entries.name,
+            'slug', media_entries.slug,
+            'path', replace(media_entries.path::text, '.', '/')
+          ),
+          ${query}
+        )
+      end
+      and media_entries.tags @> coalesce(${(input.tags ?? null) as string[]}::text[], array[]::text[])
+      and media_entries.deleted_at is null
     order by
-      case when ${sort} = 'name' and ${order} = 'asc' then name end asc,
-      case when ${sort} = 'name' and ${order} = 'desc' then name end desc,
-      case when ${sort} = 'created_at' and ${order} = 'asc' then created_at end asc,
-      case when ${sort} = 'created_at' and ${order} = 'desc' then created_at end desc,
-      case when ${sort} = 'updated_at' and ${order} = 'asc' then updated_at end asc,
-      case when ${sort} = 'updated_at' and ${order} = 'desc' then updated_at end desc,
-      id asc
+      case when ${sort} = 'name' and ${order} = 'asc' then media_entries.name end asc,
+      case when ${sort} = 'name' and ${order} = 'desc' then media_entries.name end desc,
+      case when ${sort} = 'created_at' and ${order} = 'asc' then media_entries.created_at end asc,
+      case when ${sort} = 'created_at' and ${order} = 'desc' then media_entries.created_at end desc,
+      case when ${sort} = 'updated_at' and ${order} = 'asc' then media_entries.updated_at end asc,
+      case when ${sort} = 'updated_at' and ${order} = 'desc' then media_entries.updated_at end desc,
+      media_entries.id asc
     limit ${input.limit}
     offset ${input.offset};
   `;

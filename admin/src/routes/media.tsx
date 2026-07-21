@@ -2,6 +2,7 @@ import { Path } from "@isis/common/dto/path";
 import { Divider } from "@isis/ui/display/Divider";
 import { Card } from "@isis/ui/layout/Card";
 import { Col } from "@isis/ui/layout/FlexBox";
+import { useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import { useLocalStorage } from "usehooks-ts";
 import { MediaChildren } from "../components/media/MediaChildren";
@@ -19,6 +20,7 @@ export function Component() {
     undefined,
   );
   const path = Path.fromString(useParams()["*"] ?? "");
+  const [activePath, setActivePath] = useState(path);
   const navigate = useNavigate();
 
   return (
@@ -35,6 +37,7 @@ export function Component() {
         width={navWidth}
         onChangeWidth={setNavWidth}
         onDoubleClickMedia={(media) => {
+          setActivePath(path);
           navigate(`/media/${media.path}`);
         }}
         header={
@@ -42,6 +45,7 @@ export function Component() {
             <MediaMetadata
               path={path}
               onGoBack={() => {
+                setActivePath(Path.parent(path));
                 navigate(`/media/${Path.parent(path)}`);
               }}
             />
@@ -61,9 +65,13 @@ export function Component() {
       <MediaChildren
         p={2}
         path={path}
+        activePath={activePath}
+        onClickMedia={(media) => {
+          setActivePath(media.path);
+        }}
         onDoubleClickMedia={(media) => {
-          console.log(media);
           if (media.metadata.type === "folder") {
+            setActivePath(media.path);
             navigate(`/media/${media.path}`);
           }
         }}

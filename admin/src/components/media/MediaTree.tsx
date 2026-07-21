@@ -39,7 +39,9 @@ export function MediaTree({
       input: {
         page: 1,
         limit: 100,
+        query: 'type:eq:"folder"',
         sort: "updated_at",
+        order: "desc",
       },
     }),
   );
@@ -111,6 +113,9 @@ export function MediaTreeNode({
         page: 1,
         limit: 100,
         rootId: entry.id,
+        query: 'type:eq:"folder"',
+        sort: "updated_at",
+        order: "desc",
       },
     }),
   );
