@@ -1,12 +1,24 @@
 import { Path } from "@isis/common/dto/path";
+import { Divider } from "@isis/ui/display/Divider";
 import { Card } from "@isis/ui/layout/Card";
+import { Col, Row } from "@isis/ui/layout/FlexBox";
+import { Resizable } from "@isis/ui/layout/Resizable";
 import { useNavigate, useParams } from "react-router";
+import { useLocalStorage } from "usehooks-ts";
 import { MediaChildren } from "../components/media/MediaChildren";
-import { MediaNav } from "../components/media/MediaNav";
+import { MediaControls } from "../components/media/MediaControls";
+import { MediaMetadata } from "../components/media/MediaMetadata";
+import { MediaTree } from "../components/media/MediaTree";
 
 export const path = "/media/*";
 
+const MEDIA_NAV_WIDTH_KEY = "isis-media-nav-width";
+
 export function Component() {
+  const [navWidth, setNavWidth] = useLocalStorage<number | undefined>(
+    MEDIA_NAV_WIDTH_KEY,
+    undefined,
+  );
   const path = Path.fromString(useParams()["*"] ?? "");
   const navigate = useNavigate();
 
@@ -19,12 +31,34 @@ export function Component() {
       my={3}
       style={{ overflow: "auto", background: "var(--color-surface-1)" }}
     >
-      <MediaNav
+      <MediaTree
         path={path}
-        onClickMedia={(media) => {
-          navigate(`/media/${media.path ?? ""}`);
+        width={navWidth}
+        onChangeWidth={setNavWidth}
+        onDoubleClickMedia={(media) => {
+          navigate(`/media/${media.path}`);
         }}
+        header={
+          <Col gap={1}>
+            <MediaMetadata
+              path={path}
+              onGoBack={() => {
+                navigate(`/media/${Path.parent(path)}`);
+              }}
+            />
+
+            <Divider direction="x" />
+          </Col>
+        }
+        footer={
+          <Col gap={1}>
+            <Divider direction="x" />
+
+            <MediaControls path={path} />
+          </Col>
+        }
       />
+
       <MediaChildren
         p={2}
         path={path}

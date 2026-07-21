@@ -1,5 +1,5 @@
 import { ReactNode } from "react";
-import { BiSearch } from "react-icons/bi";
+import { BiError, BiSearch } from "react-icons/bi";
 import { IconControl } from "../display/IconControl";
 import { Text } from "../display/Text";
 import { Col, ColProps, Row } from "../layout/FlexBox";
@@ -60,4 +60,12 @@ export function EmptyState({
       )}
     </Col>
   );
+}
+
+export function EmptySearch(props: EmptyStateProps) {
+  return <EmptyState icon={<BiSearch />} {...props} />;
+}
+
+export function ErrorState(props: EmptyStateProps) {
+  return <EmptyState icon={<BiError />} color="red" {...props} />;
 }

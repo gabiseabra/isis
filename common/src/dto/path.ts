@@ -28,4 +28,7 @@ export const Path = Object.assign(z.string() as z.ZodType<Path>, {
 
     return child === parent || child.startsWith(`${parent}/`);
   },
+  parent(a: Path): Path {
+    return Path.join(Path.split(Path.trim(a)).slice(0, -1));
+  },
 });

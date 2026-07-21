@@ -17,7 +17,7 @@ import {
   useQueryClient,
 } from "@tanstack/react-query";
 import { useState } from "react";
-import { BiFolderPlus, BiPlus, BiUpload } from "react-icons/bi";
+import { BiFolderPlus, BiPlus } from "react-icons/bi";
 import { orpcQuery } from "../../orpc/client";
 
 type MediaControlsProps = Omit<FlexBoxProps, "children"> & {
@@ -51,6 +51,8 @@ export function MediaControls({
         queryClient.refetchQueries({
           queryKey: orpcQuery.media.queryChildren.key(),
         });
+
+        setNewFolderName("");
 
         onCreateMedia?.(media);
       },
@@ -100,6 +102,7 @@ export function MediaControls({
             value={newFolderName}
             onChangeValue={setNewFolderName}
             placeholder="Criar pasta"
+            disabled={upsertMediaMutation.isPending}
           />
         )}
       />

@@ -1,0 +1,13 @@
+.MediaTree {
+  [data-resizable-handle] {
+    opacity: 0;
+    margin-right: calc(-1 * var(--space));
+    transition: opacity 150ms linear;
+  }
+}
+
+.MediaTree:hover {
+  [data-resizable-handle] {
+    opacity: 1;
+  }
+}

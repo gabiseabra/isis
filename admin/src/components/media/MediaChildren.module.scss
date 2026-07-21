@@ -1,0 +1,13 @@
+.MediaChildren {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: var(--space);
+}
+
+.MediaChildren[data-empty],
+.MediaChildren[data-loading],
+.MediaChildren[data-empty] {
+  justify-content: center;
+  align-items: center;
+}

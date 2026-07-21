@@ -29,13 +29,13 @@ export type Resizer = {
 };
 
 export type UseResizerOptions = {
-  size?: Size;
+  size?: Partial<Size>;
   onResize?: (size: Size, event: PointerEvent<HTMLDivElement>) => void;
   direction: "x" | "y" | "both";
   aspectRatio?: number;
   disabled?: boolean;
-  min?: Size;
-  max?: Size;
+  min?: Partial<Size>;
+  max?: Partial<Size>;
   containerRef?: RefObject<HTMLElement | null>;
 };
 
@@ -56,9 +56,11 @@ export function useResizer(options: UseResizerOptions): Resizer {
 
     dragRef.current = {
       initialSize: (() => {
-        if (options.size) return options.size;
         const bbox = element.getBoundingClientRect();
-        return { width: bbox.width, height: bbox.height };
+        return {
+          width: options.size?.width ?? bbox.width,
+          height: options.size?.height ?? bbox.height,
+        };
       })(),
       pointer: new Vector2(e.clientX, e.clientY),
       direction: 0,

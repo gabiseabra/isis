@@ -1,5 +1,5 @@
 import { Slot } from "radix-ui";
-import { useRef, useState } from "react";
+import { HTMLAttributes, useRef, useState } from "react";
 import { Divider } from "../display/Divider";
 import { Box, BoxProps } from "./Box";
 import styles from "./Resizable.module.scss";
@@ -7,7 +7,7 @@ import { Size, useResizer, UseResizerOptions } from "./use-resizer";
 
 export type ResizableProps = BoxProps &
   Omit<UseResizerOptions, "size"> & {
-    size?: Size;
+    size?: Partial<Size>;
     initialSize?: Size;
   };
 
@@ -19,6 +19,8 @@ export function Resizable({
   style,
   disabled,
   direction,
+  min,
+  max,
   size: controlledSize,
   onResize,
   ...props
@@ -30,6 +32,8 @@ export function Resizable({
     aspectRatio,
     disabled,
     direction,
+    min,
+    max,
     containerRef,
     size,
     onResize(size, e) {
@@ -55,9 +59,13 @@ export function Resizable({
     >
       {asChild ? <Slot.Slottable>{children}</Slot.Slottable> : children}
 
-      <div className={styles.Handle} {...resizer.register()}>
-        {!disabled &&
-          (direction === "both" ? (
+      {!disabled && (
+        <div
+          className={styles.Handle}
+          data-resizable-handle
+          {...resizer.register()}
+        >
+          {direction === "both" ? (
             <Divider direction="both" m={1} />
           ) : (
             <Divider
@@ -65,8 +73,9 @@ export function Resizable({
               mx={direction === "y" ? 1 : 0}
               my={direction === "x" ? 1 : 0}
             />
-          ))}
-      </div>
+          )}
+        </div>
+      )}
     </Root>
   );
 }

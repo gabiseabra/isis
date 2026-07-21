@@ -54,6 +54,7 @@ export function Nav({
       <nav
         data-open={open || undefined}
         data-loading={loading || undefined}
+        data-collapsible={collapsible || undefined}
         className={[styles.Nav, className].filter(Boolean).join(" ")}
         {...props}
       >

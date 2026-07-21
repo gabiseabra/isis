@@ -18,11 +18,14 @@
   font-size: 0.95em;
   font-family: var(--font-sans-serif);
   color: var(--color-text);
+
+  @include shadow.dropShadow(2, 0.5);
+}
+
+.Nav[data-collapsible] {
   transition:
     width 180ms ease-out,
     min-width 180ms ease-out;
-
-  @include shadow.dropShadow(2, 0.5);
 }
 
 .Nav[data-open] {

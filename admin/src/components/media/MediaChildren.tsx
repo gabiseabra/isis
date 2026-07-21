@@ -4,7 +4,7 @@ import { extractErrorMessage } from "@isis/common/utils/error";
 import { Slot } from "@isis/common/utils/slot";
 import { IconControl } from "@isis/ui/display/IconControl";
 import { Text } from "@isis/ui/display/Text";
-import { EmptyState } from "@isis/ui/feedback/EmptyState";
+import { EmptySearch, ErrorState } from "@isis/ui/feedback/EmptyState";
 import { Spinner } from "@isis/ui/feedback/Spinner";
 import { Button } from "@isis/ui/form/Button";
 import { Box, BoxProps } from "@isis/ui/layout/Box";
@@ -13,6 +13,7 @@ import { useQuery } from "@tanstack/react-query";
 import { MouseEvent, ReactNode } from "react";
 import { BiFolder } from "react-icons/bi";
 import { orpcQuery } from "../../orpc/client";
+import styles from "./MediaChildren.module.scss";
 
 type MediaChildrenProps = Omit<BoxProps, "children"> & {
   path?: Path;
@@ -26,15 +27,14 @@ type MediaChildrenProps = Omit<BoxProps, "children"> & {
 export function MediaChildren({
   path,
   loading,
-  error = (error) => (
-    <EmptyState size="m" color="red" title={extractErrorMessage(error)} />
-  ),
-  emptyState = <EmptyState size="m" title="Nenhum resultado" />,
+  error = (error) => <ErrorState size="m" title={extractErrorMessage(error)} />,
+  emptyState = <EmptySearch size="m" title="Nenhum resultado" />,
   onClickMedia,
   onClick,
   onDoubleClickMedia,
   onDoubleClick,
   style,
+  className,
   ...props
 }: MediaChildrenProps) {
   const childrenQuery = useQuery(
@@ -53,6 +53,10 @@ export function MediaChildren({
         flex: 1,
         ...style,
       }}
+      className={[styles.MediaChildren, className].filter(Boolean).join(" ")}
+      data-error={childrenQuery.isError || undefined}
+      data-loading={childrenQuery.isLoading || loading || undefined}
+      data-empty={!childrenQuery.data?.items.length || undefined}
       {...props}
     >
       {childrenQuery.isLoading || loading ? (
@@ -98,7 +102,7 @@ function MediaFile({
         onClick={onClick}
         onDoubleClick={onDoubleClick}
       >
-        <IconControl size="m">
+        <IconControl size="l">
           <BiFolder />
         </IconControl>
 
