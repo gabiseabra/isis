@@ -103,6 +103,7 @@ export function MediaTreeNode({
   onDoubleClickMedia?: (entry: Media) => void;
 }) {
   const active = path === entry.path || Path.contains(entry.path, path ?? "");
+  const defaultOpen = Path.contains(entry.path, path ?? "");
 
   const [open, setOpen] = useState(active);
   const childrenQuery = useQuery(
@@ -119,10 +120,10 @@ export function MediaTreeNode({
   );
 
   useEffect(() => {
-    if (active) {
+    if (autoFocus && defaultOpen) {
       setOpen(true);
     }
-  }, [autoFocus, path]);
+  }, [autoFocus, path, defaultOpen]);
 
   return (
     <Nav.Button
