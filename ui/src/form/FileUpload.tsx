@@ -8,6 +8,7 @@ import { IconControl } from "../display/IconControl";
 import { Span, Text } from "../display/Text";
 import { Spinner } from "../feedback/Spinner";
 import { Overlay } from "../overlay/Overlay";
+import { isRelatedTargetDescendent } from "../utils/event";
 import { Field, FieldProps } from "./Field";
 import styles from "./FileUpload.module.scss";
 import { BaseInputProps } from "./use-form";
@@ -180,14 +181,7 @@ export function FileUploadOverlay({
       asChild={asChild}
       onDragEnter={() => setDragging(true)}
       onDragLeave={(e) => {
-        if (
-          !(
-            e.relatedTarget &&
-            e.relatedTarget instanceof HTMLElement &&
-            e.currentTarget.contains(e.relatedTarget)
-          )
-        )
-          setDragging(false);
+        if (!isRelatedTargetDescendent(e)) setDragging(false);
       }}
       onDragOver={(event) => event.preventDefault()}
       onDrop={() => setDragging(false)}
