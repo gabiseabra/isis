@@ -1,6 +1,7 @@
 import { Media } from "@isis/common/dto/media";
 import { Path } from "@isis/common/dto/path";
 import { extractErrorMessage } from "@isis/common/utils/error";
+import { ID } from "@isis/common/utils/id";
 import { Slot } from "@isis/common/utils/slot";
 import { IconControl } from "@isis/ui/display/IconControl";
 import { Text } from "@isis/ui/display/Text";
@@ -19,7 +20,7 @@ import { useUploadMediaMutation } from "../../orpc/media/use-upload-media-mutati
 import styles from "./MediaChildren.module.scss";
 
 type MediaChildrenProps = Omit<BoxProps, "children"> & {
-  path?: Path;
+  rootId?: ID<"Media">;
   activePath?: Path;
   loading?: boolean;
   error?: Slot<(error: unknown) => ReactNode>;
@@ -30,7 +31,7 @@ type MediaChildrenProps = Omit<BoxProps, "children"> & {
 };
 
 export function MediaChildren({
-  path,
+  rootId,
   activePath,
   loading,
   error = (error) => <ErrorState size="m" title={extractErrorMessage(error)} />,
@@ -67,37 +68,49 @@ export function MediaChildren({
       input: {
         page: 1,
         limit: 100,
-        path,
+        rootId,
       },
     }),
   );
 
+  const isLoading = loading || childrenQuery.isLoading;
+  const isError = childrenQuery.isError;
+  const isEmpty = !childrenQuery.data?.items.length;
+
   return (
     <FileUploadOverlay
       loading={fileUploadMutation.isPending}
-      onChangeValue={(file) => fileUploadMutation.mutate({ file })}
+      onChangeValue={(file) =>
+        fileUploadMutation.mutate({
+          parentId: rootId,
+          file,
+        })
+      }
+      width="100%"
+      height="100%"
     >
       <Box
         style={{
           flex: 1,
           boxSizing: "border-box",
           overflowY: "auto",
+          height: isLoading || isError || isEmpty ? "100%" : "fit-content",
           ...style,
         }}
         className={[styles.MediaChildren, className].filter(Boolean).join(" ")}
-        data-error={childrenQuery.isError || undefined}
-        data-loading={childrenQuery.isLoading || loading || undefined}
-        data-empty={!childrenQuery.data?.items.length || undefined}
+        data-error={isError || undefined}
+        data-loading={isLoading || undefined}
+        data-empty={isEmpty || undefined}
         {...props}
       >
-        {childrenQuery.isLoading || loading ? (
+        {isLoading ? (
           <Spinner size="m" color="blue" />
-        ) : childrenQuery.isError ? (
+        ) : isError ? (
           Slot.extract(error, childrenQuery.error)
-        ) : !childrenQuery.data?.items.length ? (
+        ) : isEmpty ? (
           emptyState
         ) : (
-          childrenQuery.data.items.map((entry) => (
+          childrenQuery.data?.items.map((entry) => (
             <MediaEntry
               key={entry.id}
               entry={entry}
