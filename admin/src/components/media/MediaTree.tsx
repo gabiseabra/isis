@@ -52,7 +52,7 @@ export function MediaTree({
       direction="x"
       size={{ width }}
       min={{ width: 280 }}
-      max={{ width: 500 }}
+      max={{ width: 600 }}
       onResize={(size) => onChangeWidth?.(size.width)}
       disabled={!onChangeWidth}
       style={{ height: "100%" }}

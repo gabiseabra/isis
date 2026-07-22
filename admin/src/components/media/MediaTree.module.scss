@@ -6,7 +6,7 @@
   }
 }
 
-.MediaTree:hover {
+.MediaTree:has([data-resizable-handle]:hover) {
   [data-resizable-handle] {
     opacity: 1;
   }
