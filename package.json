@@ -6,6 +6,7 @@
   "version": "0.0.0",
   "main": "index.js",
   "workspaces": [
+    "scripts",
     "api",
     "admin",
     "web",
@@ -13,12 +14,11 @@
     "ui"
   ],
   "scripts": {
-    "env": "sh scripts/run-env.sh",
-    "env:load": "sh scripts/load-env.sh",
+    "env": "sh scripts/env-run.sh",
+    "env:setup": "sh scripts/env-setup.sh",
     "dev": "concurrently \"npm run dev -w web\" \"npm run dev -w admin\" \"npm run dev -w api\" \"npm run dev -w ui\"",
     "dev:docker": "docker compose up",
     "dev:docker:npm-install": "sh scripts/docker-npm-install.sh",
-    "setup-env": "sh scripts/setup-env.sh",
     "lint": "eslint .",
     "tsc": "tsc -b",
     "build": "npm run build --workspaces",

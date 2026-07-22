@@ -1,0 +1,15 @@
+{
+  "name": "@isis/scripts",
+  "version": "0.0.0",
+  "main": "index.js",
+  "type": "module",
+  "private": true,
+  "bin": {
+    "isis-env": "./env-run.sh"
+  },
+  "scripts": {
+    "docker:npm-instal": "./docker-npm-install.sh",
+    "env:setup": "./env-setup.sh",
+    "env:run": "./env-run.sh"
+  }
+}
