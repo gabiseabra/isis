@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { Field, type FieldProps } from "./Field";
 import { Input } from "./Input";
 
-type FieldStoryArgs = Pick<FieldProps, "label" | "description" | "error">;
+type FieldStoryProps = Pick<FieldProps, "label" | "description" | "error">;
 
 const meta = {
   title: "Form/Field",
@@ -11,7 +11,7 @@ const meta = {
     description: "",
     error: "",
   },
-} satisfies Meta<FieldStoryArgs>;
+} satisfies Meta<FieldStoryProps>;
 
 type Story = StoryObj<typeof meta>;
 

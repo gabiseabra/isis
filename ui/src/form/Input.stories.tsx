@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { Table } from "../layout/Table";
 import { Input, type InputProps } from "./Input";
 
-type InputStoryArgs = Pick<
+type InputStoryProps = Pick<
   InputProps,
   "placeholder" | "type" | "disabled" | "size" | "variant"
 >;
@@ -30,7 +30,7 @@ const meta = {
       options: ["default", "unstyled"],
     },
   },
-} satisfies Meta<InputStoryArgs>;
+} satisfies Meta<InputStoryProps>;
 
 type Story = StoryObj<typeof meta>;
 

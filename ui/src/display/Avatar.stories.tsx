@@ -3,11 +3,11 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { Table } from "../layout/Table";
 import { Avatar, type AvatarProps } from "./Avatar";
 
-type AvatarStoryArgs = Pick<AvatarProps, "src" | "title" | "fallback" | "size">;
+type AvatarStoryProps = Pick<AvatarProps, "src" | "title" | "fallback" | "size">;
 
 const avatarSizes = ["s", "m", "l"] as const;
 
-const meta: Meta<AvatarStoryArgs> = {
+const meta: Meta<AvatarStoryProps> = {
   title: "Display/Avatar",
   args: {
     src: "https://cataas.com/cat",
@@ -23,7 +23,7 @@ const meta: Meta<AvatarStoryArgs> = {
   },
 };
 
-type Story = StoryObj<AvatarStoryArgs>;
+type Story = StoryObj<AvatarStoryProps>;
 
 export default meta;
 

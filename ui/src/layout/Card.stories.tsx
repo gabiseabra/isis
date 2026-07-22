@@ -3,7 +3,7 @@ import { Text } from "../display/Text";
 import { Card, type CardProps } from "./Card";
 import { Table } from "./Table";
 
-type CardStoryArgs = Pick<CardProps, "elevation">;
+type CardStoryProps = Pick<CardProps, "elevation">;
 
 const elevations = [0, 1, 2] as const;
 
@@ -18,7 +18,7 @@ const meta = {
       options: elevations,
     },
   },
-} satisfies Meta<CardStoryArgs>;
+} satisfies Meta<CardStoryProps>;
 
 type Story = StoryObj<typeof meta>;
 

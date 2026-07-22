@@ -8,7 +8,7 @@ import {
   type FileUploadProps,
 } from "./FileUpload";
 
-type FileUploadStoryArgs = Pick<
+type FileUploadStoryProps = Pick<
   FileUploadProps,
   | "accept"
   | "size"
@@ -42,9 +42,9 @@ const meta = {
       options: fileUploadSizes,
     },
   },
-} satisfies Meta<FileUploadStoryArgs>;
+} satisfies Meta<FileUploadStoryProps>;
 
-type Story = StoryObj<FileUploadStoryArgs>;
+type Story = StoryObj<FileUploadStoryProps>;
 
 export default meta;
 

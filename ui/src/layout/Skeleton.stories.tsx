@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { Col, Row } from "./FlexBox";
 import { Skeleton, type SkeletonProps } from "./Skeleton";
 
-type SkeletonStoryArgs = Pick<SkeletonProps, "width" | "height" | "radius"> & {
+type SkeletonStoryProps = Pick<SkeletonProps, "width" | "height" | "radius"> & {
   rows: number;
 };
 
@@ -22,7 +22,7 @@ const meta = {
       </Col>
     ),
   ],
-} satisfies Meta<SkeletonStoryArgs>;
+} satisfies Meta<SkeletonStoryProps>;
 
 type Story = StoryObj<typeof meta>;
 

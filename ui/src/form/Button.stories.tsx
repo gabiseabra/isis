@@ -3,7 +3,7 @@ import { FaArrowRight, FaPlus } from "react-icons/fa";
 import { Table } from "../layout/Table";
 import { Button, type ButtonProps } from "./Button";
 
-type ButtonStoryArgs = Pick<
+type ButtonStoryProps = Pick<
   ButtonProps,
   "color" | "size" | "disabled" | "loading" | "pressed"
 > & {
@@ -25,7 +25,7 @@ const colors = [
 ] as const;
 const sizes = ["s", "m", "l"] as const;
 
-const meta: Meta<ButtonStoryArgs> = {
+const meta: Meta<ButtonStoryProps> = {
   title: "Form/Button",
   args: {
     content: "Hello button",

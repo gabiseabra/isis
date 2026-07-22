@@ -4,7 +4,7 @@ import { Row } from "../layout/FlexBox";
 import { OverlayProvider } from "./OverlayProvider";
 import { Tooltip, type TooltipProps } from "./Tooltip";
 
-type TooltipStoryArgs = Pick<
+type TooltipStoryProps = Pick<
   TooltipProps,
   "align" | "alignOffset" | "content" | "side" | "sideOffset" | "delay"
 >;
@@ -60,7 +60,7 @@ const meta = {
       </OverlayProvider>
     ),
   ],
-} satisfies Meta<TooltipStoryArgs>;
+} satisfies Meta<TooltipStoryProps>;
 
 type Story = StoryObj<typeof meta>;
 

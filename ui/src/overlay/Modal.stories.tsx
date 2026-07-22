@@ -6,7 +6,7 @@ import { Col } from "../layout/FlexBox";
 import { Modal } from "./Modal";
 import { OverlayProvider } from "./OverlayProvider";
 
-type ModalStoryArgs = {
+type ModalStoryProps = {
   defaultOpen: boolean;
   title: string;
   description: string;
@@ -26,13 +26,13 @@ const meta = {
       </OverlayProvider>
     ),
   ],
-} satisfies Meta<ModalStoryArgs>;
+} satisfies Meta<ModalStoryProps>;
 
 type Story = StoryObj<typeof meta>;
 
 export default meta;
 
-function ModalStory({ defaultOpen, title, description }: ModalStoryArgs) {
+function ModalStory({ defaultOpen, title, description }: ModalStoryProps) {
   const [open, setOpen] = useState(defaultOpen);
 
   return (

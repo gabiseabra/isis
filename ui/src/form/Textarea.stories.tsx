@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { Textarea, type TextareaProps } from "./Textarea";
 
-type TextareaStoryArgs = Pick<
+type TextareaStoryProps = Pick<
   TextareaProps,
   "placeholder" | "rows" | "autoGrow" | "disabled" | "variant"
 >;
@@ -21,7 +21,7 @@ const meta = {
       options: ["default", "unstyled"],
     },
   },
-} satisfies Meta<TextareaStoryArgs>;
+} satisfies Meta<TextareaStoryProps>;
 
 type Story = StoryObj<typeof meta>;
 

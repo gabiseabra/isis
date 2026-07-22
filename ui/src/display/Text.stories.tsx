@@ -3,7 +3,7 @@ import { Col } from "../layout/FlexBox";
 import { Table } from "../layout/Table";
 import { Span, Text, type TextProps } from "./Text";
 
-type TextStoryArgs = Pick<
+type TextStoryProps = Pick<
   TextProps,
   "as" | "size" | "color" | "font" | "indent" | "align"
 >;
@@ -33,7 +33,7 @@ const textFonts = [
   "sans-serif",
 ] as const;
 
-const meta: Meta<TextStoryArgs> = {
+const meta: Meta<TextStoryProps> = {
   title: "Display/Text",
   args: {
     as: "p",
@@ -71,7 +71,7 @@ const meta: Meta<TextStoryArgs> = {
   },
 };
 
-type Story = StoryObj<TextStoryArgs>;
+type Story = StoryObj<TextStoryProps>;
 
 export default meta;
 

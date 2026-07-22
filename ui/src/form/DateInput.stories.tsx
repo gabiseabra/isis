@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { useState } from "react";
 import { DateInput, type DateInputProps } from "./DateInput";
 
-type DateInputStoryArgs = Pick<
+type DateInputStoryProps = Pick<
   DateInputProps,
   "closeOnSelect" | "disabled" | "placeholder" | "size" | "variant"
 >;
@@ -27,13 +27,13 @@ const meta = {
       options: ["default", "unstyled"],
     },
   },
-} satisfies Meta<DateInputStoryArgs>;
+} satisfies Meta<DateInputStoryProps>;
 
 type Story = StoryObj<typeof meta>;
 
 export default meta;
 
-function DateInputStory(props: DateInputStoryArgs) {
+function DateInputStory(props: DateInputStoryProps) {
   const [value, setValue] = useState<Date>();
 
   return <DateInput {...props} value={value} onChangeValue={setValue} />;

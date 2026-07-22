@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { Checkbox, type CheckboxProps } from "./Checkbox";
 
-type CheckboxStoryArgs = Pick<CheckboxProps, "label" | "checked" | "disabled">;
+type CheckboxStoryProps = Pick<CheckboxProps, "label" | "checked" | "disabled">;
 
 const meta = {
   title: "Form/Checkbox",
@@ -10,7 +10,7 @@ const meta = {
     checked: false,
     disabled: false,
   },
-} satisfies Meta<CheckboxStoryArgs>;
+} satisfies Meta<CheckboxStoryProps>;
 
 type Story = StoryObj<typeof meta>;
 
