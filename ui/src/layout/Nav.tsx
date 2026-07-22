@@ -158,6 +158,7 @@ Nav.Item = function NavItem({
       style={style}
       data-open={open || undefined}
       data-active={active || undefined}
+      gap={0}
     >
       <Row
         className={styles.ItemTitle}
@@ -206,7 +207,7 @@ Nav.Item = function NavItem({
         ) : null}
       </Row>
 
-      {children && open && <Col className={styles.ItemContent}>{children}</Col>}
+      {children && <Col className={styles.ItemContent}>{children}</Col>}
     </Col>
   );
 };

@@ -173,11 +173,13 @@
 .ItemContent {
   position: relative;
   max-height: 0;
+  margin: 0;
   overflow: hidden;
   opacity: 0;
   transform: translateY(calc(var(--nav-link-gap) * -1));
   transition:
     max-height 180ms ease-out,
+    margin 180ms ease-out,
     opacity 120ms ease-out,
     transform 180ms ease-out;
 }
@@ -204,6 +206,8 @@
 }
 
 .Item[data-open] > .ItemContent {
+  margin-top: var(--space);
+  display: block;
   max-height: 100vh;
   opacity: 1;
   transform: translateY(0);
