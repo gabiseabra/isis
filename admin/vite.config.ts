@@ -3,6 +3,8 @@ import { fileURLToPath } from "node:url";
 import { defineConfig } from "vite";
 
 dotenv.config({ path: "../.env" });
+dotenv.config({ path: "../.env.local", override: true });
+dotenv.config({ path: `../.env.${process.env.NODE_ENV}`, override: true });
 
 export default defineConfig({
   resolve: {

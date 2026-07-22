@@ -1,10 +1,14 @@
 import cors from "cors";
-import "dotenv/config";
+import dotenv from "dotenv";
 import express from "express";
 import morgan from "morgan";
 import { adminRouter } from "./orpc/admin";
 import { nodeRPCHandler } from "./orpc/handler";
 import { orpcMiddleware } from "./orpc/middleware";
+
+dotenv.config({ path: "../.env" });
+dotenv.config({ path: "../.env.local", override: true });
+dotenv.config({ path: `../.env.${process.env.NODE_ENV}`, override: true });
 
 const API_PORT = Number(process.env.API_PORT ?? 6660);
 

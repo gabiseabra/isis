@@ -22,6 +22,8 @@ services:
       POSTGRES_DB: isis
       POSTGRES_USER: isis
       POSTGRES_PASSWORD: isis
+    ports:
+      - 6543:5432
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
@@ -57,6 +59,8 @@ services:
 
   storybook:
     <<: *node-service
+    environment:
+      SBCONFIG_PORT: ${STORYBOOK_PORT:-6663}
     ports:
       - "${STORYBOOK_PORT:-6663}:${STORYBOOK_PORT:-6663}"
     command: npm run dev -w ui -- --host 0.0.0.0

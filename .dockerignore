@@ -9,6 +9,8 @@ dist
 *.tsbuildinfo
 **/*.tsbuildinfo
 .env
+.env.*
 **/.env
+**/.env.*
 .DS_Store
 storybook-static
