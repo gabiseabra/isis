@@ -6,14 +6,16 @@ import { IconControl } from "@isis/ui/display/IconControl";
 import { Text } from "@isis/ui/display/Text";
 import { EmptySearch, ErrorState } from "@isis/ui/feedback/EmptyState";
 import { Spinner } from "@isis/ui/feedback/Spinner";
+import { useToast } from "@isis/ui/feedback/Toast";
 import { Button } from "@isis/ui/form/Button";
 import { FileUploadOverlay } from "@isis/ui/form/FileUpload";
 import { Box, BoxProps } from "@isis/ui/layout/Box";
 import { Col } from "@isis/ui/layout/FlexBox";
 import { useQuery } from "@tanstack/react-query";
-import { MouseEvent, ReactNode, useState } from "react";
+import { MouseEvent, ReactNode } from "react";
 import { BiFolder, BiImage } from "react-icons/bi";
 import { orpcQuery } from "../../orpc/client";
+import { useUploadMediaMutation } from "../../orpc/media/use-upload-media-mutation";
 import styles from "./MediaChildren.module.scss";
 
 type MediaChildrenProps = Omit<BoxProps, "children"> & {
@@ -24,6 +26,7 @@ type MediaChildrenProps = Omit<BoxProps, "children"> & {
   emptyState?: ReactNode;
   onClickMedia?: (entry: Media) => void;
   onDoubleClickMedia?: (entry: Media) => void;
+  onCreateMedia?: (entry: Media) => void;
 };
 
 export function MediaChildren({
@@ -36,10 +39,29 @@ export function MediaChildren({
   onClick,
   onDoubleClickMedia,
   onDoubleClick,
+  onCreateMedia,
   style,
   className,
   ...props
 }: MediaChildrenProps) {
+  const toast = useToast();
+  const fileUploadMutation = useUploadMediaMutation({
+    onSuccess(entry) {
+      toast.show({
+        type: "success",
+        message: `Arquivo criado: ${entry.name}`,
+      });
+
+      onCreateMedia?.(entry);
+    },
+    onError(error) {
+      toast.show({
+        type: "error",
+        title: "Houve um erro subindo o arquivo",
+        message: extractErrorMessage(error),
+      });
+    },
+  });
   const childrenQuery = useQuery(
     orpcQuery.media.queryChildren.queryOptions({
       input: {
@@ -51,7 +73,10 @@ export function MediaChildren({
   );
 
   return (
-    <FileUploadOverlay onChangeValue={(file) => console.log(file)}>
+    <FileUploadOverlay
+      loading={fileUploadMutation.isPending}
+      onChangeValue={(file) => fileUploadMutation.mutate({ file })}
+    >
       <Box
         style={{
           flex: 1,

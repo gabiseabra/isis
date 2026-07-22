@@ -7,15 +7,11 @@ import { useToast } from "@isis/ui/feedback/Toast";
 import { Input } from "@isis/ui/form/Input";
 import { FlexBox, FlexBoxProps } from "@isis/ui/layout/FlexBox";
 import { Nav } from "@isis/ui/layout/Nav";
-import {
-  skipToken,
-  useMutation,
-  useQuery,
-  useQueryClient,
-} from "@tanstack/react-query";
+import { skipToken, useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { BiFolderPlus, BiPlus } from "react-icons/bi";
 import { orpcQuery } from "../../orpc/client";
+import { useUpsertMediaMutation } from "../../orpc/media/use-upsert-media-mutation";
 
 type MediaControlsProps = Omit<FlexBoxProps, "children"> & {
   path?: Path;
@@ -28,7 +24,6 @@ export function MediaControls({
   ...props
 }: MediaControlsProps) {
   const toast = useToast();
-  const queryClient = useQueryClient();
 
   const [newFolderName, setNewFolderName] = useState("");
 
@@ -37,30 +32,24 @@ export function MediaControls({
       input: path ? { path } : skipToken,
     }),
   );
-  const upsertMediaMutation = useMutation(
-    orpcQuery.media.upsert.mutationOptions({
-      onSuccess(media) {
-        toast.show({
-          type: "success",
-          message: "Pasta criada.",
-        });
+  const upsertMediaMutation = useUpsertMediaMutation({
+    onSuccess(media) {
+      toast.show({
+        type: "success",
+        message: `Pasta criada: ${media.name}`,
+      });
 
-        queryClient.refetchQueries({
-          queryKey: orpcQuery.media.queryChildren.key(),
-        });
+      setNewFolderName("");
 
-        setNewFolderName("");
-
-        onCreateMedia?.(media);
-      },
-      onError(error) {
-        toast.show({
-          type: "error",
-          message: extractErrorMessage(error),
-        });
-      },
-    }),
-  );
+      onCreateMedia?.(media);
+    },
+    onError(error) {
+      toast.show({
+        type: "error",
+        message: extractErrorMessage(error),
+      });
+    },
+  });
 
   function createNewFolder() {
     upsertMediaMutation.mutate({
