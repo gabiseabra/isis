@@ -21,14 +21,17 @@ body,
   margin: 0;
   padding: 0;
   display: flex;
-  background-color: var(--color-surface-2);
 }
 
 body {
   overflow: visible;
 }
 
-body.sb-show-main {
+html {
+  background-color: var(--color-surface-2);
+}
+
+html:has(body.sb-show-main) {
   background-color: var(--color-surface-0);
 }
 
