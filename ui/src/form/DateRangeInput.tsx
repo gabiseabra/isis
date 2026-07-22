@@ -1,6 +1,6 @@
 import "@daypicker/react/dist/style.css";
 import { DateRange } from "@isis/common/dto/date-range";
-import { useRef, useState, type ComponentProps } from "react";
+import { ReactNode, useRef, useState, type ComponentProps } from "react";
 import { BiCalendar } from "react-icons/bi";
 import z from "zod";
 import { Calendar } from "../display/Calendar";
@@ -19,6 +19,8 @@ export type DateRangeInputProps = Omit<
     variant?: "default" | "unstyled";
     closeOnSelect?: boolean;
     fieldProps?: FieldProps;
+    label?: ReactNode;
+    description?: ReactNode;
   };
 
 export function DateRangeInput({

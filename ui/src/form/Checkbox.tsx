@@ -1,5 +1,5 @@
 import { Checkbox as CheckboxPrimitive } from "radix-ui";
-import { type ComponentProps } from "react";
+import { ReactNode, type ComponentProps } from "react";
 import { GiCheckMark } from "react-icons/gi";
 import { Row } from "../layout/FlexBox";
 import styles from "./Checkbox.module.scss";
@@ -12,6 +12,8 @@ export type CheckboxProps = Omit<
 > &
   BaseInputProps<boolean> & {
     fieldProps?: FieldProps;
+    label?: ReactNode;
+    description?: ReactNode;
   };
 
 export function Checkbox({

@@ -16,6 +16,8 @@ export type FileUploadProps = Omit<
 > & {
   size?: "m" | "l";
   title?: ReactNode;
+  label?: ReactNode;
+  description?: ReactNode;
   placeholder?: ReactNode;
   fieldProps?: FieldProps;
   labelProps?: ComponentProps<"label">;
@@ -149,12 +151,11 @@ export function FileUploadOverlay({
   asChild,
   dragging: _dragging,
   labelProps,
-  label,
   description,
   error,
   children,
   ...props
-}: FileUploadProps & {
+}: DistributiveOmit<FileUploadProps, "label"> & {
   asChild?: boolean;
   children?: ReactNode;
   dragging?: boolean;

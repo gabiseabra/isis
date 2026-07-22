@@ -7,6 +7,8 @@ export type InputProps = Omit<ComponentProps<"input">, "size"> &
   BaseInputProps<string> & {
     size?: "s" | "m" | "l";
     variant?: "default" | "unstyled";
+    label?: ReactNode;
+    description?: ReactNode;
     left?: ReactNode;
     right?: ReactNode;
     fieldProps?: FieldProps;

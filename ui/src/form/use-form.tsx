@@ -21,9 +21,7 @@ export type UseFormOptions<T extends AnySchema> = {
 
 export type BaseInputProps<T> = {
   id?: string;
-  label?: ReactNode;
-  description?: ReactNode;
-  error?: ReactNode;
+  error?: string;
 
   required?: boolean;
   value?: T;

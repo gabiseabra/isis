@@ -56,6 +56,8 @@ export type SelectProps<ID extends string, T, G> = Omit<
   groupId?: (groupKey: G) => string;
 
   // slots
+  label?: ReactNode;
+  description?: ReactNode;
   optionText?: Slot<(option: T, select: Select<T, G>) => ReactNode>;
   option?: Slot<(option: T, select: Select<T, G>) => ReactNode>;
   group?: Slot<

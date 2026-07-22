@@ -1,4 +1,4 @@
-import { type ComponentProps, useEffect, useRef } from "react";
+import { type ComponentProps, ReactNode, useEffect, useRef } from "react";
 import { Field, FieldProps } from "./Field";
 import styles from "./Textarea.module.scss";
 import { BaseInputProps } from "./use-form";
@@ -8,6 +8,8 @@ export type TextareaProps = ComponentProps<"textarea"> &
     autoGrow?: boolean;
     variant?: "default" | "unstyled";
     fieldProps?: FieldProps;
+    label?: ReactNode;
+    description?: ReactNode;
   };
 
 export function Textarea({
