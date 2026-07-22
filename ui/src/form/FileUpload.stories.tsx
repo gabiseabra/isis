@@ -18,6 +18,7 @@ type FileUploadStoryArgs = Pick<
   | "label"
   | "description"
   | "error"
+  | "loading"
 >;
 
 const fileUploadSizes = ["m", "l"] as const;
@@ -28,6 +29,7 @@ const meta = {
     accept: "",
     size: "l",
     disabled: false,
+    loading: false,
     multiple: true,
     title: "Arraste arquivos aqui",
     label: "Upload",

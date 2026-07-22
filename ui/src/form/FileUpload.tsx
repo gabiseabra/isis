@@ -1,10 +1,11 @@
 import { DistributiveOmit } from "@isis/common/types/union";
 import { Slot } from "radix-ui";
 import { ComponentProps, DragEvent, ReactNode, useState } from "react";
-import { FiUploadCloud } from "react-icons/fi";
+import { LiaCloudUploadAltSolid } from "react-icons/lia";
 import { TbExclamationCircle } from "react-icons/tb";
 import { IconControl } from "../display/IconControl";
 import { Span, Text } from "../display/Text";
+import { Spinner } from "../feedback/Spinner";
 import { Box } from "../layout/Box";
 import { Field, FieldProps } from "./Field";
 import styles from "./FileUpload.module.scss";
@@ -21,6 +22,7 @@ export type FileUploadProps = Omit<
   placeholder?: ReactNode;
   fieldProps?: FieldProps;
   labelProps?: ComponentProps<"label">;
+  loading?: boolean;
 } & (
     | ({ multiple?: false } & BaseInputProps<File>)
     | ({ multiple: true } & BaseInputProps<File[]>)
@@ -45,6 +47,7 @@ export function FileUpload({
   fieldProps,
   labelProps,
   children,
+  loading,
   ...props
 }: FileUploadProps) {
   const [dragging, setDragging] = useState(false);
@@ -120,11 +123,16 @@ export function FileUpload({
         />
 
         <IconControl
-          size={({ m: "s", l: "l" } as const)[size]}
+          size={size}
           color={disabled ? "disabled" : "blue"}
           style={{ pointerEvents: "none" }}
+          p={loading ? 1 : 0}
         >
-          <FiUploadCloud />
+          {loading ? (
+            <Spinner size={({ m: "s", l: "m" } as const)[size]} color="blue" />
+          ) : (
+            <LiaCloudUploadAltSolid />
+          )}
         </IconControl>
 
         {size === "l" && title && <Text align="center">{title}</Text>}
@@ -154,11 +162,15 @@ export function FileUploadOverlay({
   description,
   error,
   children,
+  width = "fit-content",
+  height = "fit-content",
   ...props
 }: DistributiveOmit<FileUploadProps, "label"> & {
   asChild?: boolean;
   children?: ReactNode;
   dragging?: boolean;
+  width?: number | string;
+  height?: number | string;
 }) {
   const [dragging, setDragging] = useState(false);
   return (
@@ -179,7 +191,7 @@ export function FileUploadOverlay({
       onDragOver={(event) => event.preventDefault()}
       onDrop={() => setDragging(false)}
       data-dragging={dragging || _dragging || undefined}
-      style={{ width: "fit-content", height: "fit-content" }}
+      style={{ width, height }}
     >
       {asChild ? <Slot.Slottable>{children}</Slot.Slottable> : children}
 
