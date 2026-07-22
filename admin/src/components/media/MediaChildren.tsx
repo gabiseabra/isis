@@ -151,14 +151,14 @@ function MediaEntry({
         onClick={onClick}
         onDoubleClick={onDoubleClick}
       >
-        <IconControl size="l">
+        <IconControl size="l" color={active ? "blue" : undefined}>
           {entry.metadata.type === "folder" ? <BiFolder /> : <BiImage />}
         </IconControl>
 
         <Text
           noWrap
           size="caption"
-          color="muted"
+          color={active ? "blue" : "muted"}
           style={{ fontSize: "0.75em" }}
         >
           {entry.name}
