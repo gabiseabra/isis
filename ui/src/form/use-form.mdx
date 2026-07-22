@@ -1,0 +1,155 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+<Meta title="Form/useForm" />
+
+# useForm
+
+This is a type-safe, schema-driven form state management hook.
+
+## The Form Controller
+
+`useForm` manages the state of a form with parsing and validation backed by a zod schema.
+
+```tsx
+const form = useForm({
+  schema: z.object({
+    title: z.string().min(1),
+    tags: z.string().array(),
+  }),
+  initialValue: {
+    title: "Example",
+    // tags: [] // initial values are optional
+  },
+  onSubmit({ title, tags }) {
+    // called with zod-parsed value when validation passes on submit
+  },
+});
+```
+
+It returns a `Form` instance carrying some state and methods to interact with the form:
+
+```ts
+// simplified
+type Form<T> = {
+  errors: Map<keyof T, ZodError>;
+  touched: Set<keyof T>;
+  submit(e: SubmitEvent): void;
+  reset(): void;
+  register<K extends keyof T>(field: K): BaseInputProps<T[K]>;
+  hasUnsavedChanges: boolean;
+};
+```
+
+## The Input Contract
+
+`useForm` works with any component that accepts the `BaseInputProps<T>` contract.
+
+```ts
+type BaseInputProps<T> = {
+  id?: string;
+  error?: string;
+  required?: boolean;
+  value?: T;
+  onChangeValue?(value: T): void;
+  touched?: boolean;
+  onTouch?(): void;
+};
+```
+
+`form.register(field)` returns this shape, so it can be spread onto a compatible input component. Typescript will ensure that the input's value type is compatible with the field's.
+
+```tsx
+<Input label="Name" {...form.register("name")} />
+<Autocomplete multiple label="Tags" {...form.register("tags")} />
+```
+
+## Basic Example
+
+The rest is handled by basic html form features. Here's the complete minimal form from the example:
+
+```tsx
+import { useForm } from "@isis/ui/form/use-form";
+import { Input } from "@isis/ui/form/Input";
+import { Button } from "@isis/ui/form/Button";
+
+const ThingInput = z.object({
+  title: z.string().min(1),
+  tags: z.string().array(),
+});
+
+function CreateThing() {
+  const form = useForm({
+    schema: ThingInput,
+    initialValue: {
+      title: "",
+      tags: [],
+    },
+    onSubmit(thing) {
+      // do smoehting async
+    },
+  });
+  return (
+    <form onSubmit={form.submit}>
+      <Input label="Name" {...form.register("name")} />
+      <Autocomplete multiple label="Tags" {...form.register("tags")} />
+      <Button type="submit">Create thing</Button>
+    </form>
+  );
+}
+```
+
+## Validation
+
+Validation happens in two places:
+
+### onTouch
+
+A field is validated when its onTouch() is called (this usually occurs on blur). onTouch() validates only that field using schema.shape[field].safeParse().
+If validation fails, the error is stored in the errors map.
+Field validation runs independently and displays errors as the user interacts.
+
+### onSubmit
+
+When form.submit is called, the entire values object is validated with schema.safeParse().
+If validation passes, onSubmit is called with the parsed data.
+Submit validation acts as a final gate that ensures the whole object is valid before mutating.
+
+## Handling Async Data
+
+initialValue is only used when the form mounted to initialize the state. If you fetch data asynchronously, the fetched data won't automatically replace the draft values. You should:
+
+### Reset when the loaded entity's identity changes
+
+This ensures that the form resets when you navigate to a different record, and does not reset on background refetches of the same record, preserving any unsaved changes the user made.
+
+```tsx
+const authorQuery = useAuthorQuery(authorId);
+
+const form = useForm({
+  schema: AuthorInput,
+  initialValue: {
+    name: "",
+    ...authorQuery.data, // initially undefined
+  },
+  onSubmit: (author) => {},
+});
+
+useEffect(() => {
+  form.reset();
+}, [authorQuery.data?.id]);
+```
+
+### Reset after a successful mutation
+
+This sets the saved record as the new baseline (so hasUnsavedChanges becomes false).
+
+```tsx
+const mutation = useMutation({
+  mutationFn: updateAuthor,
+  onSuccess: (savedAuthor) => {
+    // ... do whatever
+
+    form.reset();
+  },
+});
+```

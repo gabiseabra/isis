@@ -4,7 +4,7 @@ import { mergeConfig } from "vite";
 
 const config: StorybookConfig = {
   framework: "@storybook/react-vite",
-  stories: ["../src/**/*.stories.@(ts|tsx)"],
+  stories: ["../src/**/*.stories.@(ts|tsx)", "../src/**/*.mdx"],
   addons: ["@storybook/addon-docs"],
   core: {
     builder: "@storybook/builder-vite",

@@ -1,14 +1,7 @@
 import { WithRequired } from "@isis/common/types/object";
 import { hash } from "@isis/common/utils/hash";
 import { keys } from "@isis/common/utils/object";
-import {
-  ReactNode,
-  SubmitEvent,
-  useCallback,
-  useId,
-  useMemo,
-  useState,
-} from "react";
+import { SubmitEvent, useCallback, useId, useMemo, useState } from "react";
 import z, { ZodError } from "zod";
 
 type AnySchema = { [k: string]: z.ZodType };
@@ -91,12 +84,12 @@ export function useForm<T extends AnySchema>({
 
   const validate = <K extends keyof T>(field: K) => {
     const result = schema.shape[field].safeParse(values[field]);
-    if (result.error) {
-      setErrors((errors) => {
-        errors.set(field, result.error);
-        return new Map(Array.from(errors.entries()));
-      });
-    }
+    setErrors((errors) => {
+      const nextErrors = new Map(errors);
+      if (result.error) nextErrors.set(field, result.error);
+      else nextErrors.delete(field);
+      return nextErrors;
+    });
   };
 
   const register = <K extends keyof T>(field: K) => ({
