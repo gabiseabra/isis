@@ -7,10 +7,11 @@ import { Text } from "@isis/ui/display/Text";
 import { EmptySearch, ErrorState } from "@isis/ui/feedback/EmptyState";
 import { Spinner } from "@isis/ui/feedback/Spinner";
 import { Button } from "@isis/ui/form/Button";
+import { FileUploadOverlay } from "@isis/ui/form/FileUpload";
 import { Box, BoxProps } from "@isis/ui/layout/Box";
 import { Col } from "@isis/ui/layout/FlexBox";
 import { useQuery } from "@tanstack/react-query";
-import { MouseEvent, ReactNode } from "react";
+import { MouseEvent, ReactNode, useState } from "react";
 import { BiFolder, BiImage } from "react-icons/bi";
 import { orpcQuery } from "../../orpc/client";
 import styles from "./MediaChildren.module.scss";
@@ -50,41 +51,45 @@ export function MediaChildren({
   );
 
   return (
-    <Box
-      style={{
-        flex: 1,
-        ...style,
-      }}
-      className={[styles.MediaChildren, className].filter(Boolean).join(" ")}
-      data-error={childrenQuery.isError || undefined}
-      data-loading={childrenQuery.isLoading || loading || undefined}
-      data-empty={!childrenQuery.data?.items.length || undefined}
-      {...props}
-    >
-      {childrenQuery.isLoading || loading ? (
-        <Spinner size="m" color="blue" />
-      ) : childrenQuery.isError ? (
-        Slot.extract(error, childrenQuery.error)
-      ) : !childrenQuery.data?.items.length ? (
-        emptyState
-      ) : (
-        childrenQuery.data.items.map((entry) => (
-          <MediaEntry
-            key={entry.id}
-            entry={entry}
-            active={activePath === entry.path}
-            onClick={(e) => {
-              onClick?.(e);
-              onClickMedia?.(entry);
-            }}
-            onDoubleClick={(e) => {
-              onDoubleClick?.(e);
-              onDoubleClickMedia?.(entry);
-            }}
-          />
-        ))
-      )}
-    </Box>
+    <FileUploadOverlay onChangeValue={(file) => console.log(file)}>
+      <Box
+        style={{
+          flex: 1,
+          boxSizing: "border-box",
+          overflowY: "auto",
+          ...style,
+        }}
+        className={[styles.MediaChildren, className].filter(Boolean).join(" ")}
+        data-error={childrenQuery.isError || undefined}
+        data-loading={childrenQuery.isLoading || loading || undefined}
+        data-empty={!childrenQuery.data?.items.length || undefined}
+        {...props}
+      >
+        {childrenQuery.isLoading || loading ? (
+          <Spinner size="m" color="blue" />
+        ) : childrenQuery.isError ? (
+          Slot.extract(error, childrenQuery.error)
+        ) : !childrenQuery.data?.items.length ? (
+          emptyState
+        ) : (
+          childrenQuery.data.items.map((entry) => (
+            <MediaEntry
+              key={entry.id}
+              entry={entry}
+              active={activePath === entry.path}
+              onClick={(e) => {
+                onClick?.(e);
+                onClickMedia?.(entry);
+              }}
+              onDoubleClick={(e) => {
+                onDoubleClick?.(e);
+                onDoubleClickMedia?.(entry);
+              }}
+            />
+          ))
+        )}
+      </Box>
+    </FileUploadOverlay>
   );
 }
 

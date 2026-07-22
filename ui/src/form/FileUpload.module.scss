@@ -2,6 +2,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   gap: var(--space);
   box-sizing: border-box;
   width: auto;
@@ -23,30 +24,67 @@
   cursor: not-allowed;
 }
 
-.Icon {
-  font-size: 2rem;
-  color: var(--color-highlight);
-}
-
 .Input {
   display: none;
 }
 
 .FileUpload[data-size="m"] {
   flex-direction: row;
+  justify-content: flex-start;
   height: var(--line-height);
   padding: var(--space) calc(var(--space) * 2);
   border-style: dashed;
   box-sizing: content-box;
 }
 
-.FileUpload[data-size="m"] .Icon {
-  flex: 0 0 auto;
-  font-size: 1.25rem;
+.OverlayWrapper {
+  position: relative;
 }
 
-.Text {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+.Overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: calc(var(--space) * 4);
+  z-index: 2;
+}
+
+.Backdrop {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  background-color: #ffffff80;
+  backdrop-filter: blur(5px);
+  z-index: -1;
+}
+
+.Overlay > .Field {
+  opacity: 1;
+  transition: opacity 150ms linear;
+  z-index: 1;
+}
+.OverlayWrapper[data-dragging] .Field {
+  opacity: 1;
+}
+
+.Overlay > .Field {
+  height: 100%;
+}
+.Overlay > .Field > .FileUpload {
+  background-color: transparent;
+}
+
+.OverlayWrapper > .Overlay {
+  pointer-events: none;
+  opacity: 0;
+}
+
+.OverlayWrapper[data-dragging] > .Overlay {
+  pointer-events: all;
+  opacity: 1;
 }

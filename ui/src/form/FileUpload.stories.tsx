@@ -1,6 +1,12 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { useState } from "react";
-import { FileUpload, type FileUploadProps } from "./FileUpload";
+import { Text } from "../display/Text";
+import { Card } from "../layout/Card";
+import { Table } from "../layout/Table";
+import {
+  FileUpload,
+  FileUploadOverlay,
+  type FileUploadProps,
+} from "./FileUpload";
 
 type FileUploadStoryArgs = Pick<
   FileUploadProps,
@@ -13,6 +19,8 @@ type FileUploadStoryArgs = Pick<
   | "description"
   | "error"
 >;
+
+const fileUploadSizes = ["m", "l"] as const;
 
 const meta = {
   title: "Form/FileUpload",
@@ -29,7 +37,7 @@ const meta = {
   argTypes: {
     size: {
       control: "select",
-      options: ["m", "l"],
+      options: fileUploadSizes,
     },
   },
 } satisfies Meta<FileUploadStoryArgs>;
@@ -39,24 +47,49 @@ type Story = StoryObj<FileUploadStoryArgs>;
 export default meta;
 
 export const Default: Story = {
-  render: ({ multiple: _multiple, ...args }) => {
-    const [files, setFiles] = useState<File[]>([]);
-
-    return (
-      <FileUpload {...args} multiple value={files} onChangeValue={setFiles} />
-    );
-  },
+  render: (args) => <FileUpload {...args} />,
 };
 
-export const Medium: Story = {
-  args: {
-    size: "m",
+export const Sizes: Story = {
+  parameters: {
+    controls: {
+      exclude: ["size"],
+    },
   },
-  render: ({ multiple: _multiple, ...args }) => {
-    const [files, setFiles] = useState<File[]>([]);
+  render: (args) => (
+    <Table
+      variant="unstyled"
+      gap={2}
+      style={{ width: "100%" }}
+      columns={["element"]}
+      rows={fileUploadSizes.map((size) => ({
+        size,
+        element: <FileUpload {...args} size={size} />,
+      }))}
+      cell={(row) => row.element}
+      index={(row) => <Table.Label align="end">{row.size}</Table.Label>}
+    />
+  ),
+};
 
+export const Overlay: Story = {
+  parameters: {
+    controls: {
+      exclude: ["size"],
+    },
+  },
+  render: (args) => {
     return (
-      <FileUpload {...args} multiple value={files} onChangeValue={setFiles} />
+      <FileUploadOverlay {...args}>
+        <Card width={420} height={234} p={4} elevation={1}>
+          <Text as="h3" m={0}>
+            Card content
+          </Text>
+          <Text color="muted">
+            Drag files here and the file upload field will appear on top.
+          </Text>
+        </Card>
+      </FileUploadOverlay>
     );
   },
 };

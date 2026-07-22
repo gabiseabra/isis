@@ -76,7 +76,7 @@ export function MediaControls({
   return (
     <FlexBox gap={1} {...props}>
       <Nav.Item
-        title="lmao"
+        title=""
         render={() => (
           <Input
             left={
@@ -98,10 +98,13 @@ export function MediaControls({
             variant="unstyled"
             value={newFolderName}
             onChangeValue={setNewFolderName}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") createNewFolder();
+            }}
             disabled={
               upsertMediaMutation.isPending ||
-              entryQuery.isPending ||
-              entryQuery.isError
+              (entryQuery.isEnabled &&
+                (entryQuery.isPending || entryQuery.isError))
             }
             placeholder={[
               `Criar pasta`,

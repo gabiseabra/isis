@@ -3,11 +3,13 @@
   flex-direction: row;
   flex-wrap: wrap;
   gap: var(--space);
+  height: fit-content;
 }
 
-.MediaChildren[data-empty],
+.MediaChildren[data-error],
 .MediaChildren[data-loading],
 .MediaChildren[data-empty] {
   justify-content: center;
   align-items: center;
+  height: 100%;
 }
