@@ -12,17 +12,28 @@ import * as css from "../utils/css";
 type Boundary = FunctionComponent<Omit<BoundaryProps, "context">>;
 
 const BoundaryContext = createContext<{
-  stack: { element: HTMLElement; padding?: number; context?: Boundary[] }[];
+  stack: {
+    element: HTMLElement;
+    padding?: number;
+    context?: unknown[];
+  }[];
 }>({
   stack: [],
 });
 
-export const createBoundary = (): Boundary => {
-  function ScopedBoundary(props: Omit<BoundaryProps, "context">) {
-    return <Boundary context={[ScopedBoundary]} {...props} />;
+export function createBoundary<Props extends Omit<BoundaryProps, "context">>(
+  mapProps?: (props: Props) => Omit<BoundaryProps, "context">,
+) {
+  function ScopedBoundary(props: Props) {
+    return (
+      <Boundary
+        context={[ScopedBoundary]}
+        {...(mapProps ? mapProps(props) : props)}
+      />
+    );
   }
   return ScopedBoundary;
-};
+}
 
 export function useBoundary(context: Boundary) {
   const { element, padding } =
@@ -40,7 +51,7 @@ export function useBoundary(context: Boundary) {
 }
 
 export type BoundaryProps = Omit<ComponentProps<"div">, "ref"> & {
-  context?: Boundary[];
+  context?: unknown[];
   padding?: number;
   asChild?: boolean;
   ref?: Ref<HTMLElement>;

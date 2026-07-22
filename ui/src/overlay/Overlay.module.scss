@@ -1,0 +1,39 @@
+.Overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: calc(var(--space) * 4);
+  z-index: 1;
+
+  pointer-events: none;
+  opacity: 0;
+
+  &[data-open] {
+    pointer-events: all;
+    opacity: 1;
+  }
+}
+
+.Boundary {
+  position: relative;
+}
+
+.Backdrop {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  backdrop-filter: blur(5px);
+  z-index: -1;
+}
+
+.Backdrop[data-variant="light"] {
+  background-color: #ffffff80;
+}
+.Backdrop[data-variant="dark"] {
+  background-color: var(--color-shadow);
+}

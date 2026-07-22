@@ -1,4 +1,5 @@
 import { DistributiveOmit } from "@isis/common/types/union";
+import { setPath } from "@isis/common/utils/object";
 import { Slot } from "radix-ui";
 import { ComponentProps, DragEvent, ReactNode, useState } from "react";
 import { LiaCloudUploadAltSolid } from "react-icons/lia";
@@ -6,7 +7,7 @@ import { TbExclamationCircle } from "react-icons/tb";
 import { IconControl } from "../display/IconControl";
 import { Span, Text } from "../display/Text";
 import { Spinner } from "../feedback/Spinner";
-import { Box } from "../layout/Box";
+import { Overlay } from "../overlay/Overlay";
 import { Field, FieldProps } from "./Field";
 import styles from "./FileUpload.module.scss";
 import { BaseInputProps } from "./use-form";
@@ -158,6 +159,7 @@ export function FileUpload({
 export function FileUploadOverlay({
   asChild,
   dragging: _dragging,
+  fieldProps,
   labelProps,
   description,
   error,
@@ -174,9 +176,8 @@ export function FileUploadOverlay({
 }) {
   const [dragging, setDragging] = useState(false);
   return (
-    <Box
+    <Overlay.Boundary
       asChild={asChild}
-      className={styles.OverlayWrapper}
       onDragEnter={() => setDragging(true)}
       onDragLeave={(e) => {
         if (
@@ -190,19 +191,18 @@ export function FileUploadOverlay({
       }}
       onDragOver={(event) => event.preventDefault()}
       onDrop={() => setDragging(false)}
-      data-dragging={dragging || _dragging || undefined}
       style={{ width, height }}
     >
       {asChild ? <Slot.Slottable>{children}</Slot.Slottable> : children}
 
-      <div className={styles.Overlay}>
-        <div className={styles.Backdrop} />
-
+      <Overlay open={dragging}>
         <FileUpload
-          labelProps={{
-            ...labelProps,
-            style: { height: "100%", ...labelProps?.style },
-          }}
+          fieldProps={setPath(fieldProps ?? {}, "style.height", "100%")}
+          labelProps={setPath(labelProps ?? {}, "style", (style) => ({
+            height: "100%",
+            background: "transparent",
+            ...style,
+          }))}
           {...props}
         >
           {description && (
@@ -219,7 +219,9 @@ export function FileUploadOverlay({
             </Text>
           )}
         </FileUpload>
-      </div>
-    </Box>
+
+        <Overlay.Backdrop variant="light" />
+      </Overlay>
+    </Overlay.Boundary>
   );
 }

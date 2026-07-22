@@ -81,6 +81,7 @@ export const Overlay: Story = {
     },
   },
   render: (args) => {
+    delete args.label;
     return (
       <FileUploadOverlay {...args}>
         <Card width={420} height={234} p={4} elevation={1}>

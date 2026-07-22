@@ -1,5 +1,6 @@
 import { GenericObject } from "../types/object";
 import { DistributiveOmit } from "../types/union";
+import { Slot } from "./slot";
 
 export function omit<T extends object, const K extends (keyof T)[]>(
   obj: T,
@@ -90,4 +91,47 @@ export function entries<T extends object>(object: T): [keyof T, T[keyof T]][] {
   const out: [keyof T, T[keyof T]][] = [];
   for (const key in object) out.push([key, object[key]]);
   return out;
+}
+
+export function setKey<T extends object, K extends keyof T>(
+  object: T,
+  key: K,
+  value: Slot<(currentValue: T[K]) => T[K]>,
+) {
+  return { ...object, [key]: Slot.extract(value, object[key]) };
+}
+
+type DotPathValue<T, P extends string> = P extends `${infer K}.${infer R}`
+  ? K extends keyof NonNullable<T>
+    ? DotPathValue<NonNullable<T>[K], R>
+    : never
+  : P extends keyof NonNullable<T>
+    ? NonNullable<T>[P]
+    : never;
+
+type ValidDotPath<T, P extends string> =
+  DotPathValue<T, P> extends never ? never : P;
+
+export function setPath<T extends object, const P extends string>(
+  object: T,
+  path: P & ValidDotPath<T, P>,
+  value: Slot<(currentValue: DotPathValue<T, P>) => DotPathValue<T, P>>,
+): T {
+  const [key, ...rest] = path.split(".");
+
+  if (!rest.length) {
+    return {
+      ...object,
+      [key]: Slot.extract(value, object[key as keyof T] as DotPathValue<T, P>),
+    };
+  }
+
+  return {
+    ...object,
+    [key]: setPath(
+      (object[key as keyof T] as object | undefined) ?? {},
+      rest.join(".") as never,
+      value as never,
+    ),
+  };
 }
