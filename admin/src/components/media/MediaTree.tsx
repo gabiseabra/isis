@@ -55,6 +55,7 @@ export function MediaTree({
       max={{ width: 500 }}
       onResize={(size) => onChangeWidth?.(size.width)}
       disabled={!onChangeWidth}
+      style={{ height: "100%" }}
     >
       <Row className={styles.MediaTree} style={{ width }}>
         <Nav

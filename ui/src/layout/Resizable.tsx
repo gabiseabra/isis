@@ -52,8 +52,8 @@ export function Resizable({
       data-resizing={resizer.resizing || undefined}
       style={{
         ...style,
-        height: size?.height ?? style?.height,
-        width: size?.width ?? style?.width,
+        height: size?.height ?? style?.height ?? "fit-content",
+        width: size?.width ?? style?.width ?? "fit-content",
       }}
       {...props}
     >
