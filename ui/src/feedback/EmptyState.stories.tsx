@@ -1,7 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { FaBoxOpen } from "react-icons/fa";
 import { Table } from "../layout/Table";
-import { EmptyState, EmptyStateProps } from "./EmptyState";
+import { EmptySearch, EmptyStateProps, ErrorState } from "./EmptyState";
 
 type EmptyStateStoryProps = {
   size: EmptyStateProps["size"];
@@ -10,7 +9,7 @@ type EmptyStateStoryProps = {
   message: string;
 };
 
-const sizes = ["s", "m", "l"] as const;
+const sizes = ["s", "m"] as const;
 const colors = [
   "default",
   "gray",
@@ -33,7 +32,7 @@ const meta: Meta<EmptyStateStoryProps> = {
     size: "m",
     color: "muted",
     title: "Nothing to show yet",
-    message: "Content will appear here once there is something available.",
+    message: "",
   },
   argTypes: {
     size: {
@@ -52,8 +51,26 @@ type Story = StoryObj<typeof meta>;
 export default meta;
 
 export const Default: Story = {
-  render: ({ message, ...args }) => (
-    <EmptyState {...args}>{message}</EmptyState>
+  parameters: {
+    controls: {
+      exclude: ["color"],
+    },
+  },
+  render: ({ color: _color, message, ...args }) => (
+    <Table
+      variant="unstyled"
+      gap={2}
+      columns={["element"]}
+      rows={(["EmptySearch", "ErrorState"] as const).map((variant) => ({
+        variant,
+        Component: {
+          EmptySearch,
+          ErrorState,
+        }[variant],
+      }))}
+      cell={({ Component }) => <Component {...args}>{message}</Component>}
+      index={(row) => <Table.Label align="end">{row.variant}</Table.Label>}
+    />
   ),
 };
 
@@ -71,25 +88,13 @@ export const Sizes: Story = {
       rows={sizes.map((size) => ({
         size,
         element: (
-          <EmptyState key={size} {...args} size={size}>
+          <EmptySearch key={size} {...args} size={size}>
             {message}
-          </EmptyState>
+          </EmptySearch>
         ),
       }))}
       cell={(row, col) => row[col]}
       index={(row) => <Table.Label align="end">{row.size}</Table.Label>}
     />
-  ),
-};
-
-export const WithIcon: Story = {
-  args: {
-    title: "No matching results",
-    message: "Adjust the search or filters and try again.",
-  },
-  render: ({ message, ...args }) => (
-    <EmptyState {...args} icon={<FaBoxOpen />}>
-      {message}
-    </EmptyState>
   ),
 };

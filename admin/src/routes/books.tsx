@@ -1,4 +1,6 @@
+import { extractErrorMessage } from "@isis/common/utils/error";
 import { Text } from "@isis/ui/display/Text";
+import { ErrorState } from "@isis/ui/feedback/EmptyState";
 import { Button } from "@isis/ui/form/Button";
 import { Input } from "@isis/ui/form/Input";
 import { Col, Row } from "@isis/ui/layout/FlexBox";
@@ -48,7 +50,12 @@ export function Component() {
 
       <BooksTable
         rows={booksQuery.data?.items ?? []}
-        loading={booksQuery.isFetching}
+        loading={booksQuery.isPending}
+        errorState={
+          booksQuery.isError && (
+            <ErrorState title={extractErrorMessage(booksQuery.error)} />
+          )
+        }
         header={
           <Input left={<BiSearch />} value={query} onChangeValue={setQuery} />
         }

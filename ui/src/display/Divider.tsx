@@ -4,13 +4,13 @@ import * as css from "../utils/css";
 import styles from "./Divider.module.scss";
 
 export type DividerProps = {
-  direction: "x" | "y" | "both";
+  direction?: "x" | "y" | "both";
 } & Omit<HTMLAttributes<HTMLElement>, "children"> &
   css.MarginProps &
   css.PaddingProps;
 
 export function Divider({
-  direction,
+  direction = "x",
   className = "",
   style,
   ...props

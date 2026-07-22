@@ -10,11 +10,9 @@ export type IconControlProps = {
   asChild?: boolean;
 
   size?: "xs" | "s" | "m" | "l" | "xl" | "auto";
-  color?: css.Color | "muted" | "disabled" | "currentColor";
+  color?: css.Color | "currentColor";
   height?: number | string;
   width?: number | string;
-
-  badge?: string;
 
   children: ReactNode;
   className?: string;

@@ -20,12 +20,21 @@
   --font-serif: "Ovo", Times, serif;
   --font-sans-serif: "PT Sans", sans-serif;
   --font-monospace: "Inconsolata", Courier, monospace;
+  --font-h1: var(--font-heading);
+  --font-h2: var(--font-heading);
+  --font-h3: var(--font-heading);
+  --font-h4: var(--font-subheading);
+  --font-h5: var(--font-subheading);
 
   /* more heading options */
 
-  --weight-h1: 700;
   --weight-heading: 800;
   --weight-subheading: 400;
+  --weight-h1: 700;
+  --weight-h2: var(--weight-heading);
+  --weight-h3: var(--weight-heading);
+  --weight-h4: var(--weight-subheading);
+  --weight-h5: var(--weight-subheading);
 
   /* divider options */
 
@@ -97,31 +106,31 @@ a {
 
 h1 {
   font-size: 2.25em;
-  font-family: var(--font-h1, var(--font-heading));
-  font-weight: var(--weight-h1, var(--weight-heading));
+  font-family: var(--font-h1);
+  font-weight: var(--weight-h1);
   line-height: 1em;
 }
 
 h2 {
   font-size: 2em;
-  font-family: var(--font-h2, var(--font-heading));
-  font-weight: var(--weight-h2, var(--weight-heading));
+  font-family: var(--font-h2);
+  font-weight: var(--weight-h2);
   color: var(--color-heading);
   line-height: 1em;
 }
 
 h3 {
   font-size: 1.65em;
-  font-family: var(--font-h3, var(--font-heading));
-  font-weight: var(--weight-h3, var(--weight-heading));
+  font-family: var(--font-h3);
+  font-weight: var(--weight-h3);
   color: var(--color-heading);
   line-height: 1em;
 }
 
 h4 {
   font-size: 1.25em;
-  font-family: var(--font-h4, var(--font-subheading));
-  font-weight: var(--weight-h4, var(--weight-subheading));
+  font-family: var(--font-h4);
+  font-weight: var(--weight-h4);
   color: var(--color-heading);
   line-height: 1em;
 
@@ -131,8 +140,8 @@ h4 {
 
 h5 {
   font-size: 1em;
-  font-family: var(--font-h5, var(--font-subheading));
-  font-weight: var(--weight-h5, var(--weight-subheading));
+  font-family: var(--font-h5);
+  font-weight: var(--weight-h5);
   color: var(--color-heading);
   line-height: 1em;
 

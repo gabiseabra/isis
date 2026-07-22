@@ -10,7 +10,7 @@ export type IconBadgePosition =
 
 export type IconBadgeProps = {
   badge: ReactNode;
-  color?: Color | "disabled" | "muted" | "transparent";
+  color?: Color | "transparent";
   position?: IconBadgePosition;
   children: ReactNode;
 } & Omit<ComponentProps<"span">, "children" | "color">;

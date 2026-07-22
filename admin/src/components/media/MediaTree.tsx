@@ -65,14 +65,11 @@ export function MediaTree({
         >
           {childrenQuery.isError ? (
             <Col flex={1} alignY="center">
-              <ErrorState
-                size="m"
-                title={extractErrorMessage(childrenQuery.error)}
-              />
+              <ErrorState title={extractErrorMessage(childrenQuery.error)} />
             </Col>
           ) : !childrenQuery.data?.items.length ? (
             <Col flex={1} alignY="center">
-              <EmptySearch size="m" title="Sem resultados" />
+              <EmptySearch title="Sem resultados" />
             </Col>
           ) : (
             childrenQuery.data?.items.map((entry) => (

@@ -2,7 +2,7 @@ import { Path } from "@isis/common/dto/path";
 import { extractErrorMessage } from "@isis/common/utils/error";
 import { IconButton } from "@isis/ui/display/IconButton";
 import { Span, Text } from "@isis/ui/display/Text";
-import { EmptyState } from "@isis/ui/feedback/EmptyState";
+import { EmptyState, ErrorState } from "@isis/ui/feedback/EmptyState";
 import { Spinner } from "@isis/ui/feedback/Spinner";
 import { Col, ColProps, Row } from "@isis/ui/layout/FlexBox";
 import { Table } from "@isis/ui/layout/Table";
@@ -34,12 +34,7 @@ export function MediaMetadata({
 
     if (entryQuery.isError)
       return (
-        <EmptyState
-          size="m"
-          color="red"
-          icon={<BiError />}
-          title={extractErrorMessage(entryQuery.error)}
-        />
+        <ErrorState size="m" title={extractErrorMessage(entryQuery.error)} />
       );
   }
 

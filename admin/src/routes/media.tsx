@@ -57,12 +57,12 @@ export function Component() {
               }}
             />
 
-            <Divider direction="x" />
+            <Divider />
           </Col>
         }
         footer={
           <Col gap={1}>
-            <Divider direction="x" />
+            <Divider />
 
             <MediaControls path={path} />
           </Col>

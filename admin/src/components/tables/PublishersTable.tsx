@@ -1,4 +1,4 @@
-import { Author } from "@isis/common/dto/author";
+import { Publisher } from "@isis/common/dto/publisher";
 import { unique } from "@isis/common/utils/array";
 import { ID } from "@isis/common/utils/id";
 import { EmptySearch } from "@isis/ui/feedback/EmptyState";
@@ -6,18 +6,18 @@ import { Checkbox } from "@isis/ui/form/Checkbox";
 import { Table, TableProps } from "@isis/ui/layout/Table";
 import { ReactNode } from "react";
 
-type AuthorsTableProps = Omit<
-  TableProps<Author, keyof Author>,
+type PublishersTableProps = Omit<
+  TableProps<Publisher, keyof Publisher>,
   "columns" | "cell"
 > & {
-  selectedIds?: Author["id"][];
-  onChangeSelectedIds?: (row: Author["id"][]) => void;
-  onSetSelectedIds?: (row: Author["id"][]) => void;
+  selectedIds?: Publisher["id"][];
+  onChangeSelectedIds?: (row: Publisher["id"][]) => void;
+  onSetSelectedIds?: (row: Publisher["id"][]) => void;
   onResetSelectedIds?: () => void;
   errorState?: ReactNode;
 };
 
-export function AuthorsTable({
+export function PublishersTable({
   rows,
   selectedIds,
   onChangeSelectedIds,
@@ -25,24 +25,15 @@ export function AuthorsTable({
   onResetSelectedIds,
   errorState,
   ...props
-}: AuthorsTableProps) {
+}: PublishersTableProps) {
   return (
     <Table
       rows={errorState ? [] : rows}
-      columns={[
-        "id",
-        "name",
-        "birthYear",
-        "deathYear",
-        "createdAt",
-        "updatedAt",
-      ]}
+      columns={["id", "name", "createdAt", "updatedAt"]}
       headerCell={(col) =>
         ({
           id: "ID",
           name: "Nome",
-          birthYear: "Nascimento",
-          deathYear: "Morte",
           createdAt: "Criado",
           updatedAt: "Modificado",
         })[col]
@@ -51,8 +42,6 @@ export function AuthorsTable({
         ({
           id: ID.parse(row.id).id,
           name: row.name,
-          birthYear: row.birthYear ?? "—",
-          deathYear: row.deathYear ?? "—",
           createdAt: row.createdAt.toLocaleDateString(),
           updatedAt: row.updatedAt.toLocaleDateString(),
         })[col]

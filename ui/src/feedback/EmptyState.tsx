@@ -1,22 +1,23 @@
 import { ReactNode } from "react";
-import { BiError, BiSearch } from "react-icons/bi";
+import { BiError } from "react-icons/bi";
+import { LuFileSearch, LuSearch } from "react-icons/lu";
 import { IconControl } from "../display/IconControl";
 import { Text } from "../display/Text";
 import { Col, ColProps, Row } from "../layout/FlexBox";
 import { Color } from "../utils/css";
 
 export type EmptyStateProps = ColProps & {
-  color?: Color | "muted";
-  size: "s" | "m" | "l";
+  color?: Color;
+  size?: "s" | "m";
   icon?: ReactNode;
   title: ReactNode;
   children?: ReactNode;
 };
 
 export function EmptyState({
-  color = "muted",
-  size,
-  icon = <BiSearch />,
+  color,
+  size = "m",
+  icon,
   title,
   children,
   ...props
@@ -32,8 +33,7 @@ export function EmptyState({
             style={{
               height: {
                 s: 16,
-                m: 32,
-                l: 64,
+                m: 48,
               }[size],
             }}
           >
@@ -42,7 +42,7 @@ export function EmptyState({
         )}
 
         <Text
-          size={({ s: "body", m: "body", l: "h4" } as const)[size]}
+          size={({ s: "body", m: "h4" } as const)[size]}
           font="sans-serif"
           color={color}
         >
@@ -51,10 +51,7 @@ export function EmptyState({
       </TitleWrapper>
 
       {!!children && (
-        <Text
-          size={({ s: "caption", m: "body", l: "body" } as const)[size]}
-          color="muted"
-        >
+        <Text size="caption" color="muted">
           {children}
         </Text>
       )}
@@ -62,10 +59,16 @@ export function EmptyState({
   );
 }
 
-export function EmptySearch(props: EmptyStateProps) {
-  return <EmptyState icon={<BiSearch />} {...props} />;
+export function EmptySearch(props: Omit<EmptyStateProps, "icon">) {
+  return (
+    <EmptyState
+      icon={props.size === "s" ? <LuSearch /> : <LuFileSearch />}
+      color="muted"
+      {...props}
+    />
+  );
 }
 
-export function ErrorState(props: EmptyStateProps) {
+export function ErrorState(props: Omit<EmptyStateProps, "icon">) {
   return <EmptyState icon={<BiError />} color="red" {...props} />;
 }

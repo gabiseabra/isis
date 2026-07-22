@@ -1,5 +1,7 @@
+import { extractErrorMessage } from "@isis/common/utils/error";
 import { ID } from "@isis/common/utils/id";
 import { Text } from "@isis/ui/display/Text";
+import { ErrorState } from "@isis/ui/feedback/EmptyState";
 import { Button } from "@isis/ui/form/Button";
 import { Input } from "@isis/ui/form/Input";
 import { Col, Row } from "@isis/ui/layout/FlexBox";
@@ -50,6 +52,11 @@ export function Component() {
       <AuthorsTable
         rows={authorsQuery.data?.items ?? []}
         loading={authorsQuery.isFetching}
+        errorState={
+          authorsQuery.isError && (
+            <ErrorState title={extractErrorMessage(authorsQuery.error)} />
+          )
+        }
         header={
           <Input left={<BiSearch />} value={query} onChangeValue={setQuery} />
         }
@@ -61,7 +68,7 @@ export function Component() {
             hasNextPage={authorsQuery.data?.hasNextPage}
           />
         }
-        onTableClick={(row) => navigate(`/author/${ID.parse(row.id).id}`)}
+        onClickCell={(row) => navigate(`/author/${ID.parse(row.id).id}`)}
       />
     </Col>
   );

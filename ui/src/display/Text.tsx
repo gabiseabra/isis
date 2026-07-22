@@ -20,7 +20,7 @@ export type TextProps = {
 
 type TextTag = "div" | "p" | "blockquote" | "h1" | "h2" | "h3" | "h4" | "h5";
 
-type TextColor = css.Color | "disabled" | "muted" | "link" | "currentColor";
+type TextColor = css.Color | "link" | "currentColor";
 
 type TextSize = "caption" | "body" | "h1" | "h2" | "h3" | "h4" | "h5";
 

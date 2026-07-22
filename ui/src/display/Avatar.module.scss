@@ -1,4 +1,8 @@
-.Root {
+:root {
+  --avatar-size: 100%;
+}
+
+.Avatar {
   position: relative;
   width: var(--avatar-size);
   height: var(--avatar-size);
@@ -9,7 +13,15 @@
   font-size: calc(var(--avatar-size) / 2);
 }
 
-.Root[data-status="loading"] {
+.Image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/// statuses
+
+.Avatar[data-status="loading"] {
   background: var(--color-surface-2);
   color: transparent;
 
@@ -28,25 +40,23 @@
   }
 }
 
-.Image {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
+/// sizes
 
-.Root[data-size="s"] {
+.Avatar[data-size="s"] {
   --avatar-size: 16px;
 }
-.Root[data-size="m"] {
+.Avatar[data-size="m"] {
   --avatar-size: 32px;
 }
-.Root[data-size="l"] {
+.Avatar[data-size="l"] {
   --avatar-size: 64px;
 }
-.Root[data-size="auto"] {
+.Avatar[data-size="auto"] {
   --avatar-size: auto;
   font-size: 50%;
 }
+
+/// animations
 
 @keyframes avatar-shimmer {
   to {

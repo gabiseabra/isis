@@ -3,13 +3,13 @@ import { unique } from "@isis/common/utils/array";
 import { isNonNullable } from "@isis/common/utils/guards";
 import { ID } from "@isis/common/utils/id";
 import { Badge } from "@isis/ui/display/Badge";
-import { EmptyState } from "@isis/ui/feedback/EmptyState";
+import { EmptySearch } from "@isis/ui/feedback/EmptyState";
 import { Spinner } from "@isis/ui/feedback/Spinner";
 import { Checkbox } from "@isis/ui/form/Checkbox";
 import { Table, TableProps } from "@isis/ui/layout/Table";
 import { useQueries } from "@tanstack/react-query";
+import { ReactNode } from "react";
 import { FaExclamationCircle } from "react-icons/fa";
-import { TbListSearch } from "react-icons/tb";
 import { orpcQuery } from "../../orpc/client";
 
 type BooksTableProps = Omit<
@@ -20,6 +20,7 @@ type BooksTableProps = Omit<
   onChangeSelectedIds?: (row: Book["id"][]) => void;
   onSetSelectedIds?: (row: Book["id"][]) => void;
   onResetSelectedIds?: () => void;
+  errorState?: ReactNode;
 };
 
 export function BooksTable({
@@ -28,6 +29,7 @@ export function BooksTable({
   onChangeSelectedIds,
   onSetSelectedIds,
   onResetSelectedIds,
+  errorState,
   ...props
 }: BooksTableProps) {
   const authorIds = unique(rows.flatMap((book) => book.authorIds) ?? []);
@@ -52,7 +54,7 @@ export function BooksTable({
 
   return (
     <Table
-      rows={rows}
+      rows={errorState ? [] : rows}
       columns={[
         "id",
         "status",
@@ -132,12 +134,7 @@ export function BooksTable({
         })[col]
       }
       emptyState={
-        <EmptyState
-          py={4}
-          size="l"
-          icon={<TbListSearch />}
-          title="Sem resultados"
-        />
+        errorState ? errorState : <EmptySearch py={4} title="Sem resultados" />
       }
       index={
         selectedIds

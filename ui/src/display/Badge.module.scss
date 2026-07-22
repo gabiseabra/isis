@@ -1,49 +1,68 @@
 @use "../../styles/mixins/color" as color;
 
+:root {
+  --badge-size: 1em;
+  --badge-padding: var(--space);
+  --badge-radius: var(--radius);
+  --badge-color: currentColor;
+  --badge-bg: transparent;
+  --badge-status-size: 6px;
+}
+
 .Badge {
   display: inline-flex;
   align-items: center;
-  // justify-self: baseline;
-  // align-self: baseline;
 
-  padding: calc(var(--badge-space) * 0.75) var(--badge-space);
+  padding: calc(var(--badge-padding) * 0.75) var(--badge-padding);
   font-size: var(--badge-size);
   line-height: var(--badge-size);
-  border-radius: var(--radius);
+  border-radius: var(--badge-radius);
+  color: var(--badge-color);
+  background-color: var(--badge-bg);
   font-family: var(--font-body);
   font-weight: 500;
   font-family: var(--font-sans-serif);
 }
 
+/// active state
+
+.Badge[data-active] {
+  outline: 1.5px solid currentColor;
+}
+
+/// colors
+
 @each $name, $_ in color.$colors-codes {
   .Badge[data-color="#{$name}"] {
-    color: var(#{"--color-" + $name});
-    background-color: var(#{"--bg-" + $name});
+    --badge-color: var(#{"--color-" + $name});
+    --badge-bg: var(#{"--bg-" + $name});
   }
 }
 
+/// sizes
+
 .Badge[data-size="s"] {
   --badge-size: calc(var(--font-size-caption) * 0.85);
-  --badge-space: calc(var(--space) / 1.5);
+  --badge-padding: calc(var(--space) / 1.5);
 }
 
 .Badge[data-size="m"] {
   --badge-size: var(--font-size-caption);
-  --badge-space: var(--space);
+  --badge-padding: var(--space);
 }
 
 .Badge[data-size="l"] {
   --badge-size: calc(var(--font-size-caption) * 1.25);
-  --badge-space: calc(var(--space) * 1.25);
+  --badge-padding: calc(var(--space) * 1.25);
 }
+
+/// statuses
 
 .Badge[data-status="empty"],
 .Badge[data-status="in-progress"],
 .Badge[data-status="completed"] {
-  --status-size: 6px;
-
   position: relative;
-  padding-left: calc(var(--space) * 2 + var(--status-size));
+  padding-left: calc(var(--space) * 2 + var(--badge-status-size));
 
   &::before {
     content: "";
@@ -51,10 +70,10 @@
     position: absolute;
     left: var(--space);
     top: 50%;
-    margin-top: -3px;
+    margin-top: calc(var(--badge-status-size) / -2);
     margin-right: var(--space);
-    width: var(--status-size);
-    height: var(--status-size);
+    width: var(--badge-status-size);
+    height: var(--badge-status-size);
     border-radius: 50%;
   }
 }
@@ -77,8 +96,4 @@
   &::before {
     background: currentColor;
   }
-}
-
-.Badge[data-active] {
-  outline: 1.5px solid currentColor;
 }

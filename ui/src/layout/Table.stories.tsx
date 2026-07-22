@@ -3,7 +3,7 @@ import { BiSearch } from "react-icons/bi";
 import { useSessionStorage } from "usehooks-ts";
 import { Badge } from "../display/Badge";
 import { Text } from "../display/Text";
-import { EmptyState } from "../feedback/EmptyState";
+import { EmptySearch, EmptyState } from "../feedback/EmptyState";
 import { Input } from "../form/Input";
 import { Row } from "./FlexBox";
 import { Table, type TableProps } from "./Table";
@@ -96,9 +96,7 @@ export const WithEmptyState: Story = {
       getId={(row) => row.id}
       cell={demoCell}
       headerCell={(col) => <Table.Label>{col}</Table.Label>}
-      emptyState={
-        <EmptyState py={2} size="l" icon={<BiSearch />} title="No results" />
-      }
+      emptyState={<EmptySearch py={2} title="No results" />}
     />
   ),
 };

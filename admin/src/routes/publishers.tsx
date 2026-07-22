@@ -1,17 +1,16 @@
-import { ID } from "@isis/common/utils/id";
+import { extractErrorMessage } from "@isis/common/utils/error";
 import { Text } from "@isis/ui/display/Text";
-import { EmptyState } from "@isis/ui/feedback/EmptyState";
+import { ErrorState } from "@isis/ui/feedback/EmptyState";
 import { Button } from "@isis/ui/form/Button";
 import { Input } from "@isis/ui/form/Input";
 import { Col, Row } from "@isis/ui/layout/FlexBox";
 import { Pagination } from "@isis/ui/layout/Pagination";
-import { Table } from "@isis/ui/layout/Table";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { BiPlus, BiSearch } from "react-icons/bi";
-import { TbListSearch } from "react-icons/tb";
 import { useDebounceValue } from "usehooks-ts";
 import { Loading } from "../components/layout/Loading";
+import { PublishersTable } from "../components/tables/PublishersTable";
 import { authLoader } from "../loaders/authLoader";
 import { orpcQuery } from "../orpc/client";
 
@@ -46,33 +45,13 @@ export function Component() {
         </Button>
       </Row>
 
-      <Table
-        columns={["id", "name", "createdAt", "updatedAt"]}
+      <PublishersTable
         rows={publishersQuery.data?.items ?? []}
-        loading={publishersQuery.isFetching}
-        headerCell={(col) =>
-          ({
-            id: "ID",
-            name: "Nome",
-            createdAt: "Criado",
-            updatedAt: "Modificado",
-          })[col]
-        }
-        cell={(row, col) =>
-          ({
-            id: ID.parse(row.id).id,
-            name: row.name,
-            createdAt: row.createdAt.toLocaleDateString(),
-            updatedAt: row.updatedAt.toLocaleDateString(),
-          })[col]
-        }
-        emptyState={
-          <EmptyState
-            py={4}
-            size="l"
-            icon={<TbListSearch />}
-            title="Sem resultados"
-          />
+        loading={publishersQuery.isPending}
+        errorState={
+          publishersQuery.isError && (
+            <ErrorState title={extractErrorMessage(publishersQuery.error)} />
+          )
         }
         header={
           <Input left={<BiSearch />} value={query} onChangeValue={setQuery} />

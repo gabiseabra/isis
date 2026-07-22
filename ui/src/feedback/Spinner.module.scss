@@ -3,8 +3,8 @@
 .Spinner {
   --spinner-size: 24px;
   --spinner-stroke: 3px;
-  --spinner-color: var(--color-primary);
-  --spinner-track: var(--bg-primary);
+  --spinner-color: var(--color-default);
+  --spinner-track: var(--bg-default);
 
   display: inline-block;
   width: var(--spinner-size);
@@ -29,11 +29,6 @@
     --spinner-color: var(#{"--color-" + $name});
     --spinner-track: var(#{"--bg-" + $name});
   }
-}
-
-.Spinner[data-color="muted"] {
-  --spinner-color: var(--color-muted);
-  --spinner-track: var(--color-surface-2);
 }
 
 .Spinner[data-size="xs"] {

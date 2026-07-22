@@ -15,7 +15,7 @@ import React, {
 import { BiChevronDown } from "react-icons/bi";
 import { IconControl } from "../display/IconControl";
 import { Text } from "../display/Text";
-import { EmptyState } from "../feedback/EmptyState";
+import { EmptySearch, EmptyState } from "../feedback/EmptyState";
 import { Col, ColProps, Row } from "../layout/FlexBox";
 import { createBoundary, useBoundary } from "../overlay/Boundary";
 import { useOverlay } from "../overlay/OverlayProvider";
@@ -132,7 +132,7 @@ export function Select<ID extends string, T, G>({
   footer,
   left,
   right,
-  emptyState = <EmptyState size="s" title="Sem resultados" />,
+  emptyState = <EmptySearch size="s" title="Sem resultados" />,
 
   label,
   description,

@@ -15,7 +15,9 @@ export type Color =
   | "purple"
   | "pink"
   | "red"
-  | "primary";
+  | "primary"
+  | "disabled"
+  | "muted";
 
 export const _space = "var(--space)";
 

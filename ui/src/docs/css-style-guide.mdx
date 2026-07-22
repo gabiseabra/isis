@@ -1,0 +1,81 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+<Meta title="docs/CSS Modules" />
+
+# CSS Modules
+
+Follow this guide to write successful CSS modules in this project.
+
+## Structure
+
+Order component SCSS from stable defaults to specific overrides:
+
+1. Import shared mixins or maps first.
+2. Component CSS variables defaults.
+3. Define the base component visuals before variants or states.
+4. Group later rules with semantic comments such as `/// colors`.
+
+```scss
+@use "../../styles/mixins/color" as color;
+
+:root {
+  --badge-size: 1em;
+  --badge-radius: var(--radius);
+  --badge-color: var(--color-default);
+  --badge-bg: var(--bg-default);
+}
+
+.Badge {
+  // ... base styles
+  line-height: var(--badge-size);
+  border-radius: var(--badge-radius);
+  color: var(--badge-color);
+  background-color: var(--badge-bg);
+}
+
+/// colors
+
+@each $name, $_ in color.$colors-codes {
+  .Badge[data-color="#{$name}"] {
+    --badge-color: var(#{"--color-" + $name});
+    --badge-bg: var(#{"--bg-" + $name});
+  }
+}
+```
+
+## Variables
+
+Component should expose CSS variables as a public styling contract. Declare save defaults for all variables of a CSS module in a `:root` block. This allows a parent element to override the values by setting the variable. Use component-prefixed names for variables that consumers may override: `--badge-size`, `--badge-color`.
+
+```scss
+:root {
+  --icon-control-size: 24px;
+  --icon-control-color: currentColor;
+}
+
+.IconControl {
+  color: var(--icon-control-color);
+  width: var(--icon-control-size);
+  height: var(--icon-control-size);
+  font-size: var(--icon-control-size);
+}
+
+/// sizes
+
+.IconControl[data-size="s"] {
+  --icon-control-size: 16px;
+}
+// ...
+
+/// colors
+
+.IconControl[data-color="blue"] {
+  --icon-control-color: var(--color-blue);
+}
+```
+
+**DO:**
+
+- Parent components should style children by setting the child's contract variables in SCSS or JSX CSSProperties.
+- Use data attributes in JSX to provide props and state to CSS.
+- Variants should override CSS variables instead of properties whenever possible.

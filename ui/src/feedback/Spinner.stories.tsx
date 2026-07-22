@@ -5,7 +5,7 @@ import { Spinner, type SpinnerProps } from "./Spinner";
 
 type SpinnerStoryProps = Pick<SpinnerProps, "size">;
 
-const spinnerSizes = ["s", "m", "l"] as const;
+const spinnerSizes = ["xs", "s", "m", "l"] as const;
 
 const meta: Meta<SpinnerStoryProps> = {
   title: "Feedback/Spinner",

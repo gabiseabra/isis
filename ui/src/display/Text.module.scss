@@ -5,7 +5,8 @@
   display: flex;
 }
 
-// Theme palette classes
+/// colors
+
 @each $name, $_ in color.$colors-codes {
   .Text[data-color="#{$name}"],
   .Span[data-color="#{$name}"] {
@@ -23,12 +24,9 @@
   }
 }
 
-// Semantic colour aliases
-@each $key in (muted, disabled, link) {
-  .Text[data-color="#{$key}"],
-  .Span[data-color="#{$key}"] {
-    color: var(#{"--color-" + $key});
-  }
+.Text[data-color="link"],
+.Span[data-color="link"] {
+  color: var(--color-link);
 }
 
 .Text[data-color="currentColor"],
@@ -36,19 +34,18 @@
   color: currentColor;
 }
 
-// Sizes
-@each $name,
-  $size in (caption: "var(--font-size-caption)", body: "var(--font-size)")
-{
-  .Text[data-size="#{$name}"],
-  .Span[data-size="#{$name}"] {
-    font-size: #{$size};
-  }
-}
+// sizes
 
 .Text[data-size="caption"],
 .Span[data-size="caption"] {
+  font-size: var(--font-size-caption);
   line-height: calc(var(--line-height) * 0.75);
+}
+
+.Text[data-size="body"],
+.Span[data-size="body"] {
+  font-size: var(--font-size);
+  // line-height: calc(var(--line-height) * 0.75);
 }
 
 .Text[data-size="h1"],
@@ -76,7 +73,8 @@
   font-size: 1em;
 }
 
-// Fonts
+/// fonts
+
 .Text[data-font="body"] {
   font-family: var(--font-body);
 }
@@ -101,12 +99,15 @@
   font-family: var(--font-sans-serif);
 }
 
-// Indents
+// indents
+
 @for $i from 1 through 4 {
   .Text[data-indent="#{$i}"] {
     padding-left: calc(var(--space) * $i);
   }
 }
+
+/// text formatting
 
 .Span[data-italic] {
   font-style: italic;
@@ -142,18 +143,19 @@
 
 .Text[data-align="center"] {
   text-align: center;
+  justify-content: center;
 }
+
+/// alignments
 
 .Text[data-align="left"] {
   text-align: left;
+  justify-content: start;
 }
 
 .Text[data-align="right"] {
   text-align: right;
-}
-
-.Text[data-align="start"] {
-  text-align: start;
+  justify-content: end;
 }
 
 .Text[data-align="end"] {

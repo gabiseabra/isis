@@ -4,14 +4,14 @@ import styles from "./IconButton.module.scss";
 
 export type IconButtonProps = {
   variant?: "solid" | "sheer";
-  color?: css.Color | "muted" | "disabled" | "currentColor";
+  color?: css.Color | "currentColor";
   pressed?: boolean;
   radius?: number;
 } & ComponentProps<"button">;
 
 export function IconButton({
   variant = "sheer",
-  color = "currentColor",
+  color,
   radius,
   className,
   pressed,

@@ -44,7 +44,7 @@ export function Layout({ children }: { children: ReactNode }) {
       >
         <Nav.Item icon={<Logo />} title="Biblioteca Isis" />
 
-        <Divider direction="x" mx={1} my={1} />
+        <Divider mx={1} my={1} />
 
         <Nav.Link
           to="/books"

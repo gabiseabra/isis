@@ -34,7 +34,7 @@ export function Avatar({
       <Row
         alignX="center"
         alignY="center"
-        className={[styles.Root, className].filter(Boolean).join(" ")}
+        className={[styles.Avatar, className].filter(Boolean).join(" ")}
         data-size={size}
         data-status={loadingStatus}
       >

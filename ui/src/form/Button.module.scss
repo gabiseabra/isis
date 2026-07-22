@@ -197,14 +197,14 @@
   }
 }
 
-.Button[data-color="default"] {
-  --button-color: var(--color-text);
-  --button-bg: var(--color-surface-1);
-}
+// .Button[data-color="default"] {
+//   --button-color: var(--color-text);
+//   --button-bg: var(--color-surface-1);
+// }
 
 .Button[data-color="currentColor"] {
   --button-color: currentColor;
-  --button-bg: currentColor;
+  --button-bg: transparent;
 }
 
 .Button[data-size="s"] {

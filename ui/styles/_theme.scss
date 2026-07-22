@@ -5,8 +5,8 @@
 :root {
   /* site palette */
 
-  --color-primary: rgb(209, 91, 75);
-  --bg-primary: rgb(255, 234, 221);
+  --color-primary: #2d60e4;
+  --bg-primary: #c8e6ff;
 
   /* surface colors */
 
@@ -19,18 +19,23 @@
 
   --color-text: #393939;
   --color-heading: #393939;
-  --color-muted: #767479;
-  --color-disabled: #a7a5ab;
   --color-divider: #d7d6d9;
   --color-link: #3928bb;
+
   // selected text colors
   --color-highlight: rgb(41, 102, 231);
   --bg-highlight: rgba(228, 243, 255, 50%);
 
-  /* notion colors */
+  /* colors variants */
 
   --color-default: var(--color-text);
-  --bg-default: var(--bg-from);
+  --bg-default: #eeedf4;
+
+  --color-muted: #767479;
+  --bg-muted: #eeedf4;
+
+  --color-disabled: #a7a5ab;
+  --bg-disabled: #eeedf4;
 
   --color-gray: #706a85;
   --bg-gray: #eeedf4;

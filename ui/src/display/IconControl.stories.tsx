@@ -1,12 +1,12 @@
 import { createRecord } from "@isis/common/utils/object";
 import type { Meta, StoryObj } from "@storybook/react";
-import { FaBook, FaThumbsUp } from "react-icons/fa";
+import { FaBook } from "react-icons/fa";
 import { Table } from "../layout/Table";
 import { IconControl, type IconControlProps } from "./IconControl";
 
 type IconControlStoryProps = Pick<
   IconControlProps,
-  "size" | "color" | "badge" | "pressed" | "title"
+  "size" | "color" | "pressed" | "title"
 >;
 
 const iconControlSizes = ["xs", "s", "m", "l", "xl", "auto"] as const;
@@ -16,7 +16,6 @@ const meta: Meta<IconControlStoryProps> = {
   args: {
     size: "m",
     color: "primary",
-    badge: "",
     pressed: false,
     title: "",
   },
@@ -43,9 +42,6 @@ const meta: Meta<IconControlStoryProps> = {
         "muted",
       ],
     },
-    badge: {
-      control: "text",
-    },
     title: {
       control: "text",
     },
@@ -66,17 +62,6 @@ export const Default: Story = {
 
 export const Emoji: Story = {
   render: (props) => <IconControl {...props}>❤️</IconControl>,
-};
-
-export const WithBadge: Story = {
-  args: {
-    badge: "3",
-  },
-  render: (props) => (
-    <IconControl {...props}>
-      <FaThumbsUp />
-    </IconControl>
-  ),
 };
 
 export const Sizes: Story = {

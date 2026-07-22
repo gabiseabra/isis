@@ -1,14 +1,13 @@
 @use "../../styles/mixins/color" as color;
 @use "../../styles/mixins/shadow" as shadow;
 
-.IconControl {
-  --icon-size: var(--icon-size, 24px);
-  --icon-color: var(--icon-color, currentColor);
-  --icon-bg: var(--icon-bg, transparent);
-  --icon-badge-size: var(--icon-badge-size, 14px);
-  --icon-badge-color: var(--icon-badge-color, var(--color-highlight));
-  --icon-badge-bg: var(--icon-badge-bg, var(--bg-highlight));
+:root {
+  --icon-control-size: 24px;
+  --icon-control-color: currentColor;
+  --icon-control-bg: transparent;
+}
 
+.IconControl {
   position: relative;
 
   display: inline-flex;
@@ -18,16 +17,16 @@
 
   font-weight: 500;
   font-family: var(--font-body);
-  font-size: var(--icon-size);
-  line-height: var(--icon-size);
+  font-size: var(--icon-control-size);
+  line-height: var(--icon-control-size);
   padding: 0;
 
   border: none;
-  color: var(--icon-color);
-  background: var(--icon-bg);
+  color: var(--icon-control-color);
+  background: var(--icon-control-bg);
 
-  width: var(--icon-size);
-  height: var(--icon-size);
+  width: var(--icon-control-size);
+  height: var(--icon-control-size);
   box-sizing: border-box;
 
   & > :not(.Badge) {
@@ -37,105 +36,41 @@
   }
 }
 
-.Badge {
-  position: absolute;
-  left: calc(50% + var(--icon-size) / 2);
-  top: calc(50% + var(--icon-size) / 2);
-  transform: translate(-50%, -50%);
-  overflow: hidden;
-
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  height: var(--icon-badge-size);
-  min-width: var(--icon-badge-size);
-  width: auto;
-  border-radius: calc(var(--icon-badge-size) / 2);
-  color: var(--icon-badge-color);
-  font-size: calc(var(--icon-badge-size) * 0.8);
-  font-family: var(--font-sans-serif);
-  line-height: 1;
-
-  @include shadow.boxShadow(1, 1.5);
-
-  &::before {
-    position: absolute;
-    display: block;
-    content: " ";
-
-    width: 100%;
-    height: 100%;
-    background-color: var(--color-surface-0);
-    z-index: -2;
-  }
-  &::after {
-    position: absolute;
-    display: block;
-    content: " ";
-
-    width: 100%;
-    height: 100%;
-    background: var(--icon-badge-bg);
-    z-index: -1;
-  }
-}
+/// colors
 
 @each $name, $_ in color.$colors-codes {
   .IconControl[data-color="#{$name}"] {
-    --icon-color: var(#{"--color-" + $name});
-    --icon-background: var(#{"--bg-" + $name});
+    --icon-control-color: var(#{"--color-" + $name});
   }
 }
 
-.IconControl[data-color="muted"] {
-  --icon-color: var(--color-muted);
-  --icon-background: var(--color-surface-1);
-}
-
-.IconControl[data-color="disabled"] {
-  --icon-color: var(--color-disabled);
-  --icon-background: var(--color-surface-1);
-}
+/// sizes
 
 .IconControl[data-size="xs"] {
-  --icon-size: 12px;
-  --icon-badge-size: 10px;
+  --icon-control-size: 12px;
 }
 
 .IconControl[data-size="s"] {
-  --icon-size: 16px;
-  --icon-badge-size: 12px;
+  --icon-control-size: 16px;
 }
 
 .IconControl[data-size="m"] {
-  --icon-size: 24px;
-  --icon-badge-size: 14px;
+  --icon-control-size: 24px;
 }
 
 .IconControl[data-size="l"] {
-  --icon-size: 32px;
-  --icon-badge-size: 16px;
+  --icon-control-size: 32px;
 }
 
 .IconControl[data-size="xl"] {
-  --icon-size: 48px;
-  --icon-badge-size: 24px;
+  --icon-control-size: 48px;
 }
 
 .IconControl[data-size="auto"] {
-  --icon-badge-size: 45%;
-
   width: auto;
   height: 100%;
   aspect-ratio: 1 / 1;
 
   font-size: inherit;
   line-height: 1;
-
-  & > .Badge {
-    border-radius: 50%;
-    line-height: 100%;
-    font-size: 100%;
-    transform: translate(0, 0);
-  }
 }

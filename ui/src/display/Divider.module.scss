@@ -1,8 +1,14 @@
+:root {
+  --divider-corner-radius: calc(var(--radius) / 2);
+}
+
 .Divider {
   border-radius: var(--radius-divider);
   background: var(--color-divider);
   transition: background-color 120ms ease-out;
 }
+
+/// directions
 
 .Divider[data-direction="y"] {
   align-self: stretch;
@@ -22,8 +28,8 @@
   position: relative;
   width: stretch;
   height: stretch;
-  min-width: var(--divider-corner-radius, calc(var(--radius) / 2));
-  min-height: var(--divider-corner-radius, calc(var(--radius) / 2));
+  min-width: var(--divider-corner-radius);
+  min-height: var(--divider-corner-radius);
   flex: 1;
   background: transparent;
   border-radius: 0;
@@ -39,7 +45,7 @@
 }
 
 .Divider[data-direction="both"] > [data-side="x"] {
-  right: var(--divider-corner-radius, calc(var(--radius) / 2));
+  right: var(--divider-corner-radius);
   bottom: 0;
   left: 0;
   height: var(--size-divider);
@@ -49,7 +55,7 @@
 .Divider[data-direction="both"] > [data-side="y"] {
   top: 0;
   right: 0;
-  bottom: var(--divider-corner-radius, calc(var(--radius) / 2));
+  bottom: var(--divider-corner-radius);
   width: var(--size-divider);
   border-radius: var(--radius-divider) var(--radius-divider) 0 0;
 }
@@ -58,13 +64,10 @@
   right: 0;
   bottom: 0;
   box-sizing: border-box;
-  width: var(--divider-corner-radius, calc(var(--radius) / 2));
-  height: var(--divider-corner-radius, calc(var(--radius) / 2));
+  width: var(--divider-corner-radius);
+  height: var(--divider-corner-radius);
   border: 0 solid var(--color-divider);
   border-right-width: var(--size-divider);
   border-bottom-width: var(--size-divider);
-  border-bottom-right-radius: var(
-    --divider-corner-radius,
-    calc(var(--radius) / 2)
-  );
+  border-bottom-right-radius: var(--divider-corner-radius);
 }
