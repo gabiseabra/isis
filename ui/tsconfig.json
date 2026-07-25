@@ -1,13 +1,17 @@
 {
-  "extends": "../tsconfig.base.json",
+  "files": [],
   "compilerOptions": {
-    "outDir": "dist",
-    "types": [
-      "vite/client",
-    ],
+    "composite": true
   },
-  "include": [
-    "src/**/*",
-    ".storybook/**/*"
-  ],
+  "references": [
+    {
+      "path": "./tsconfig.build.json"
+    },
+    {
+      "path": "./tsconfig.cypress.json"
+    },
+    {
+      "path": "./tsconfig.jest.json"
+    }
+  ]
 }

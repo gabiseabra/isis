@@ -1,0 +1,20 @@
+{
+  "extends": "../tsconfig.base.json",
+  "compilerOptions": {
+    "types": [
+      "vite/client"
+    ],
+    "outDir": "./dist/ts",
+    "tsBuildInfoFile": "dist/ts/.tsbuildinfo"
+  },
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.tsx"
+  ],
+  "exclude": [
+    "src/**/*.cy.ts",
+    "src/**/*.cy.tsx",
+    "src/**/*.test.ts",
+    "src/**/*.test.tsx",
+  ],
+}

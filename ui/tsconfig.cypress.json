@@ -1,0 +1,24 @@
+{
+  "extends": "./tsconfig.build.json",
+  "compilerOptions": {
+    "rootDir": "..",
+    "types": [
+      "vite/client",
+      "cypress",
+      "cypress-real-events"
+    ],
+    "outDir": "./dist/cy",
+    "tsBuildInfoFile": "dist/cy/.tsbuildinfo"
+  },
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.tsx",
+    "src/**/*.cy.ts",
+    "src/**/*.cy.tsx",
+    "../test/cypress/**/*.ts"
+  ],
+  "exclude": [
+    "src/**/*.test.ts",
+    "src/**/*.test.tsx",
+  ]
+}

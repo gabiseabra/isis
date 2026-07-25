@@ -1,0 +1,16 @@
+{
+  "extends": "../tsconfig.base.json",
+  "compilerOptions": {
+    "rootDir": "..",
+    "types": [
+      "vite/client",
+      "cypress",
+      "cypress-real-events"
+    ],
+    "declaration": false,
+    "noEmit": true
+  },
+  "include": [
+    "cypress/**/*",
+  ],
+}

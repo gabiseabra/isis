@@ -1,21 +1,14 @@
 {
-  "extends": "../tsconfig.base.json",
+  "files": [],
   "compilerOptions": {
-    "module": "ESNext",
-    "moduleResolution": "Bundler",
-    "jsx": "react-jsx",
-    "types": [
-      "jest",
-      "matchers"
-    ],
-    "composite": false,
-    "declaration": false,
-    "noEmit": true
+    "composite": true
   },
-  "include": [
-    "**/*",
-  ],
-  "exclude": [
-    "cypress/**/*",
-  ],
+  "references": [
+    {
+      "path": "./tsconfig.cypress.json"
+    },
+    {
+      "path": "./tsconfig.jest.json"
+    }
+  ]
 }

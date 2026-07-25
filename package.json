@@ -25,6 +25,8 @@
     "clean": "npm run clean --workspaces && rm -rf ./node_modules",
     "test": "NODE_ENV=test DOTENV_CONFIG_PATH=.env.test node -r dotenv/config ./node_modules/jest/bin/jest.js --config ./test/jest.config.ts --runInBand",
     "test:up": "sh -c 'set -a; . ./.env.test; set +a; npm run db:drop -w api; npm run db:create -w api && npm run db:up -w api'",
+    "cy": "cypress open --component --browser electron --config-file test/cypress.config.ts",
+    "test:cy": "cypress run --component --config-file test/cypress.config.ts",
     "postinstall": "patch-package"
   },
   "devDependencies": {

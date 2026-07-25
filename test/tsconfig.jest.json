@@ -1,0 +1,17 @@
+{
+  "extends": "../tsconfig.base.json",
+  "compilerOptions": {
+    "types": [
+      "jest",
+      "matchers"
+    ],
+    "declaration": false,
+    "noEmit": true
+  },
+  "include": [
+    "**/*",
+  ],
+  "exclude": [
+    "cypress/**/*",
+  ],
+}

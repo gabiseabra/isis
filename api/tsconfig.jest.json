@@ -1,0 +1,15 @@
+{
+  "extends": "./tsconfig.build.json",
+  "compilerOptions": {
+    "types": [
+      "jest",
+    ],
+    "outDir": "./dist/jest",
+    "tsBuildInfoFile": "dist/jest/.tsbuildinfo"
+  },
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.test.ts",
+  ],
+  "exclude": [],
+}

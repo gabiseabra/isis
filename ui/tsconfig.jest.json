@@ -1,0 +1,22 @@
+{
+  "extends": "./tsconfig.build.json",
+  "compilerOptions": {
+    "types": [
+      "vite/client",
+      "jest",
+      "@testing-library/jest-dom"
+    ],
+    "outDir": "./dist/jest",
+    "tsBuildInfoFile": "dist/jest/.tsbuildinfo"
+  },
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.tsx",
+    "src/**/*.test.ts",
+    "src/**/*.test.tsx",
+  ],
+  "exclude": [
+    "src/**/*.cy.ts",
+    "src/**/*.cy.tsx"
+  ],
+}
