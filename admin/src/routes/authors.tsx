@@ -6,11 +6,11 @@ import { Button } from "@isis/ui/form/Button";
 import { Input } from "@isis/ui/form/Input";
 import { Col, Row } from "@isis/ui/layout/FlexBox";
 import { Pagination } from "@isis/ui/layout/Pagination";
+import { useDebouncedValue } from "@mantine/hooks";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { BiPlus, BiSearch } from "react-icons/bi";
 import { Link, useNavigate } from "react-router";
-import { useDebounceValue } from "usehooks-ts";
 import { Loading } from "../components/layout/Loading";
 import { AuthorsTable } from "../components/tables/AuthorsTable";
 import { authLoader } from "../loaders/authLoader";
@@ -26,7 +26,7 @@ export function Component() {
   const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(1);
   const [query, setQuery] = useState("");
-  const [debouncedQuery] = useDebounceValue(query, 250);
+  const [debouncedQuery] = useDebouncedValue(query, 250);
   const authorsQuery = useQuery(
     orpcQuery.authors.query.queryOptions({
       input: {

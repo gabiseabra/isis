@@ -1,9 +1,9 @@
+import { useSessionStorage } from "@mantine/hooks";
 import type { Meta, StoryObj } from "@storybook/react";
 import { BiSearch } from "react-icons/bi";
-import { useSessionStorage } from "usehooks-ts";
 import { Badge } from "../display/Badge";
 import { Text } from "../display/Text";
-import { EmptySearch, EmptyState } from "../feedback/EmptyState";
+import { EmptySearch } from "../feedback/EmptyState";
 import { Input } from "../form/Input";
 import { Row } from "./FlexBox";
 import { Table, type TableProps } from "./Table";
@@ -107,7 +107,10 @@ function TableWithResizableHeaderStory() {
       key: Col;
       width?: number;
     }[]
-  >("TableWithResizableHeaderStory9", [{ key: "name" }, { key: "email" }]);
+  >({
+    key: "TableWithResizableHeaderStory9",
+    defaultValue: [{ key: "name" }, { key: "email" }],
+  });
   return (
     <Table
       columns={columns}
