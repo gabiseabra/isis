@@ -1,43 +1,38 @@
+import { extractDeclaration } from "@isis/common/utils/source-code";
+import { useSessionStorage } from "@mantine/hooks";
 import type { Meta, StoryObj } from "@storybook/react";
-import { useId } from "react";
-import { useSessionStorage } from "usehooks-ts";
+import { Text } from "../display/Text";
 import { Card } from "./Card";
 import { Resizable, type ResizableProps } from "./Resizable";
+import ownSource from "./Resizable.stories.tsx?raw";
 
-type ResizableStoryProps = Pick<ResizableProps, "aspectRatio" | "direction"> & {
-  initialWidth?: number;
-  initialHeight?: number;
-};
+type ResizableStoryProps = Pick<ResizableProps, "positions" | "aspectRatio">;
+
+const positions = [
+  "top",
+  "left",
+  "right",
+  "bottom",
+  "top-left",
+  "top-right",
+  "bottom-left",
+  "bottom-right",
+] as const;
 
 const meta: Meta<ResizableStoryProps> = {
   title: "Layout/Resizable",
   args: {
-    direction: "x",
-    initialHeight: 300,
-    initialWidth: 300,
+    positions: ["right"],
   },
   argTypes: {
-    direction: {
-      control: "select",
-      options: ["x", "y", "both"],
-    },
     aspectRatio: {
       control: "number",
     },
-    initialHeight: {
-      control: "number",
-    },
-    initialWidth: {
-      control: "number",
+    positions: {
+      control: "multi-select",
+      options: positions,
     },
   },
-  decorators: [
-    (Story) => (
-      <div style={{ height: "calc(100vh - 32px)", width: "100%" }}>
-        <Story />
-      </div>
-    ),
-  ],
 };
 
 type Story = StoryObj<ResizableStoryProps>;
@@ -47,34 +42,39 @@ export default meta;
 function ResizableStory({
   id,
   aspectRatio,
-  direction,
-  initialWidth = 300,
-  initialHeight = 300,
+  positions,
 }: ResizableStoryProps & { id: string }) {
-  const localId = useId();
-  const [width, setWidth] = useSessionStorage(
-    `resizable-story-${id ?? localId}-width`,
-    initialWidth,
-  );
-  const [height, setHeight] = useSessionStorage(
-    `resizable-story-${id ?? localId}-height`,
-    initialHeight,
-  );
+  const [size, setSize] = useSessionStorage({
+    key: `resizable-story-${id}-size`,
+    defaultValue: { width: 420, height: 234 },
+  });
+
   return (
     <Resizable
       id={id}
       aspectRatio={aspectRatio}
-      direction={direction}
-      onResize={({ width, height }) => {
-        setWidth(width);
-        setHeight(height);
-      }}
+      positions={positions}
+      size={size}
+      onResize={setSize}
     >
-      <Card style={{ width, height }} />
+      <Card p={4} style={{ ...size, boxSizing: "border-box" }}>
+        <Text m={0} as="h2">
+          Card title
+        </Text>
+        <Text>Drag the sides / edges to resize this card.</Text>
+      </Card>
     </Resizable>
   );
 }
 
 export const Default: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: extractDeclaration(ownSource, "function", "ResizableStory"),
+        language: "tsx",
+      },
+    },
+  },
   render: (props) => <ResizableStory id="Default" {...props} />,
 };

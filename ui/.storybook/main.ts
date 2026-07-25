@@ -10,6 +10,9 @@ const config: StorybookConfig = {
     builder: "@storybook/builder-vite",
     allowedHosts: true,
   },
+  features: {
+    interactions: false,
+  },
   viteFinal: (config) =>
     mergeConfig(config, {
       resolve: {

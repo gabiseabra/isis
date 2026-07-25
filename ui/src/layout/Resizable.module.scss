@@ -1,61 +1,120 @@
+:root {
+  --resizable-hit-area: 20px;
+  --resizable-edge-size: 10px;
+  --resizable-side-length: 100%;
+  --resizable-frame-padding-main: calc(
+    (var(--resizable-hit-area) - var(--size-divider)) / 2
+  );
+  --resizable-frame-padding-cross: calc((var(--resizable-edge-size) * 2));
+}
+
 .Resizable {
+  --frame-side-edge-size: var(--resizable-edge-size);
   position: relative;
-  min-width: 40px;
-  min-height: 40px;
 }
 
 .Handle {
-  --resizable-handle-hit-area: calc(var(--size-divider) + var(--space) * 2);
+  opacity: 0;
+  transition: opacity 180ms ease-out;
 
+  &:hover {
+    opacity: 1;
+  }
+
+  [data-direction]:hover {
+    filter: brightness(1);
+  }
+}
+
+.Frame {
   position: absolute;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  touch-action: none;
-  user-select: none;
-  transition: filter 150ms ease-out;
-  filter: brightness(0.9);
-}
-
-.Resizable[data-direction="x"] > .Handle {
   top: 0;
-  right: 0;
-  bottom: 0;
-  width: var(--resizable-handle-hit-area);
-  cursor: col-resize;
-}
-
-.Resizable[data-direction="x"]:dir(rtl) > .Handle {
-  right: auto;
   left: 0;
-}
-
-.Resizable[data-direction="y"] > .Handle {
   right: 0;
   bottom: 0;
-  left: 0;
-  height: var(--resizable-handle-hit-area);
-  cursor: row-resize;
 }
 
-.Resizable[data-direction="y"] > .Handle > * {
-  width: 100%;
+.Handle {
+  position: absolute;
 }
 
-.Resizable[data-direction="both"] > .Handle {
-  right: 0;
-  bottom: 0;
-  width: 24px;
-  height: 24px;
-  cursor: nwse-resize;
-}
+/// resizing
 
-.Handle:hover {
-  filter: brightness(1);
-}
-
-.Resizable[data-resizing="true"] {
+.Resizable[data-resizing] {
   z-index: 1;
   outline: 2px solid var(--bg-highlight);
   outline-offset: 2px;
+}
+
+/// cursors
+
+.Handle:has([data-direction="x"]) {
+  cursor: ns-resize;
+  width: var(--resizable-side-length);
+  box-sizing: border-box;
+  padding-block: var(--resizable-frame-padding-main);
+  padding-inline: var(--resizable-frame-padding-cross);
+}
+
+.Handle:has([data-direction="y"]) {
+  cursor: ew-resize;
+  box-sizing: border-box;
+  height: var(--resizable-side-length);
+  padding-inline: var(--resizable-frame-padding-main);
+  padding-block: var(--resizable-frame-padding-cross);
+
+  [data-direction="y"] {
+    height: 100%;
+  }
+}
+
+.Handle:has([data-direction="both"]) {
+  padding: var(--resizable-frame-padding-main);
+  height: var(--resizable-edge-size);
+  width: var(--resizable-edge-size);
+  box-sizing: content-box;
+}
+
+.Handle:has([data-side="top-left"]),
+.Handle:has([data-side="bottom-right"]) {
+  cursor: nwse-resize;
+}
+
+.Handle:has([data-side="top-right"]),
+.Handle:has([data-side="bottom-left"]) {
+  cursor: nesw-resize;
+}
+
+/// edge rotations
+
+.Handle:has([data-side="bottom-left"]) {
+  transform: rotate(90deg);
+}
+
+.Handle:has([data-side="top-left"]) {
+  transform: rotate(180deg);
+}
+
+.Handle:has([data-side="top-right"]) {
+  transform: rotate(270deg);
+}
+
+/// positions
+
+.Handle:has([data-side^="bottom"]) {
+  bottom: 0;
+}
+
+.Handle:has([data-side$="right"]) {
+  right: 0;
+}
+
+.Handle:has([data-direction="x"]) {
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.Handle:has([data-direction="y"]) {
+  top: 50%;
+  transform: translateY(-50%);
 }

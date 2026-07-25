@@ -1,40 +1,37 @@
-import { Slot } from "radix-ui";
-import { useRef, useState } from "react";
-import { Divider } from "../display/Divider";
+import { useResizeObserver } from "@mantine/hooks";
+import { useState } from "react";
+import { Divider, DividerProps } from "../display/Divider";
 import { Box, BoxProps } from "./Box";
 import styles from "./Resizable.module.scss";
-import { Size, useResizer, UseResizerOptions } from "./use-resizer";
+import { Position, Size, useResizer, UseResizerOptions } from "./use-resizer";
 
-export type ResizableProps = BoxProps &
-  Omit<UseResizerOptions, "size"> & {
-    size?: Partial<Size>;
-    initialSize?: Size;
+export type ResizableProps = Omit<BoxProps, "side"> &
+  UseResizerOptions & {
+    positions: Position[];
   };
 
 export function Resizable({
-  asChild,
   aspectRatio,
   children,
   className,
   style,
   disabled,
-  direction,
   min,
   max,
   size: controlledSize,
   onResize,
+  positions,
   ...props
 }: ResizableProps) {
-  const containerRef = useRef<HTMLElement>(null);
+  const [containerRef, actualSize] = useResizeObserver();
   const [localSize, setLocalSize] = useState<Size | null>();
-  const size = controlledSize ?? localSize ?? undefined;
-  const resizer = useResizer({
+  const size = controlledSize ?? localSize ?? actualSize;
+
+  const resizable = useResizer({
     aspectRatio,
     disabled,
-    direction,
     min,
     max,
-    containerRef,
     size,
     onResize(size, e) {
       setLocalSize(size);
@@ -42,40 +39,58 @@ export function Resizable({
     },
   });
 
-  const Root = asChild ? Slot.Root : Box;
-
   return (
-    <Root
+    <Box
       ref={containerRef}
       className={[styles.Resizable, className].filter(Boolean).join(" ")}
-      data-direction={direction}
-      data-resizing={resizer.resizing || undefined}
+      data-resizing={resizable.isResizing || undefined}
       style={{
-        ...style,
         height: size?.height ?? style?.height ?? "fit-content",
         width: size?.width ?? style?.width ?? "fit-content",
+        ...style,
       }}
       {...props}
     >
-      {asChild ? <Slot.Slottable>{children}</Slot.Slottable> : children}
+      {children}
 
-      {!disabled && (
-        <div
-          className={styles.Handle}
-          data-resizable-handle
-          {...resizer.register()}
-        >
-          {direction === "both" ? (
-            <Divider direction="both" m={1} />
-          ) : (
-            <Divider
-              direction={direction === "y" ? "x" : "y"}
-              mx={direction === "y" ? 1 : 0}
-              my={direction === "x" ? 1 : 0}
+      <div className={styles.Frame}>
+        {positions.map((position) => (
+          <div key={position} className={styles.Handle}>
+            <FrameElement
+              position={position}
+              {...resizable.register(position)}
             />
-          )}
-        </div>
-      )}
-    </Root>
+          </div>
+        ))}
+      </div>
+    </Box>
   );
+}
+
+type FrameElementProps = Omit<DividerProps, "direction"> & {
+  position: Position;
+};
+
+function FrameElement({ position, ...props }: FrameElementProps) {
+  props.className = [props.className, styles.FrameSide]
+    .filter(Boolean)
+    .join(" ");
+
+  if (position === "top")
+    return <Divider data-side="top" direction="x" {...props} />;
+  if (position === "bottom")
+    return <Divider data-side="bottom" direction="x" {...props} />;
+  if (position === "left")
+    return <Divider data-side="left" direction="y" {...props} />;
+  if (position === "right")
+    return <Divider data-side="right" direction="y" {...props} />;
+  if (position === "top-left")
+    return <Divider data-side="top-left" direction="both" {...props} />;
+  if (position === "top-right")
+    return <Divider data-side="top-right" direction="both" {...props} />;
+  if (position === "bottom-left")
+    return <Divider data-side="bottom-left" direction="both" {...props} />;
+  if (position === "bottom-right")
+    return <Divider data-side="bottom-right" direction="both" {...props} />;
+  return position satisfies never;
 }

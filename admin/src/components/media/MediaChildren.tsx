@@ -2,7 +2,6 @@ import { Media } from "@isis/common/dto/media";
 import { Path } from "@isis/common/dto/path";
 import { extractErrorMessage } from "@isis/common/utils/error";
 import { ID } from "@isis/common/utils/id";
-import { Slot } from "@isis/common/utils/slot";
 import { IconControl } from "@isis/ui/display/IconControl";
 import { Text } from "@isis/ui/display/Text";
 import { EmptySearch, ErrorState } from "@isis/ui/feedback/EmptyState";
@@ -13,29 +12,25 @@ import { FileUploadOverlay } from "@isis/ui/form/FileUpload";
 import { Box, BoxProps } from "@isis/ui/layout/Box";
 import { Col } from "@isis/ui/layout/FlexBox";
 import { useQuery } from "@tanstack/react-query";
-import { MouseEvent, ReactNode } from "react";
+import { MouseEvent } from "react";
 import { BiFolder, BiImage } from "react-icons/bi";
 import { orpcQuery } from "../../orpc/client";
 import { useUploadMediaMutation } from "../../orpc/media/use-upload-media-mutation";
 import styles from "./MediaChildren.module.scss";
 
 type MediaChildrenProps = Omit<BoxProps, "children"> & {
-  rootId?: ID<"Media">;
+  mediaId?: ID<"Media">;
   activePath?: Path;
   loading?: boolean;
-  error?: Slot<(error: unknown) => ReactNode>;
-  emptyState?: ReactNode;
   onClickMedia?: (entry: Media) => void;
   onDoubleClickMedia?: (entry: Media) => void;
   onCreateMedia?: (entry: Media) => void;
 };
 
 export function MediaChildren({
-  rootId,
+  mediaId,
   activePath,
   loading,
-  error = (error) => <ErrorState title={extractErrorMessage(error)} />,
-  emptyState = <EmptySearch title="Nenhum resultado" />,
   onClickMedia,
   onClick,
   onDoubleClickMedia,
@@ -68,7 +63,7 @@ export function MediaChildren({
       input: {
         page: 1,
         limit: 100,
-        rootId,
+        rootId: mediaId,
       },
     }),
   );
@@ -82,7 +77,7 @@ export function MediaChildren({
       loading={fileUploadMutation.isPending}
       onChangeValue={(file) =>
         fileUploadMutation.mutate({
-          parentId: rootId,
+          parentId: mediaId,
           file,
         })
       }
@@ -106,9 +101,11 @@ export function MediaChildren({
         {isLoading ? (
           <Spinner size="m" color="blue" />
         ) : isError ? (
-          Slot.extract(error, childrenQuery.error)
+          <ErrorState title={extractErrorMessage(childrenQuery.error)} />
         ) : isEmpty ? (
-          emptyState
+          <EmptySearch title="Nenhum resultado">
+            Arraste aqui para adicionar arquivos.
+          </EmptySearch>
         ) : (
           childrenQuery.data?.items.map((entry) => (
             <MediaEntry

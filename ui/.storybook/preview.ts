@@ -4,7 +4,9 @@ import "../styles/global.scss";
 const preview: Preview = {
   parameters: {
     actions: { disable: true },
-    docs: { source: { type: "code" } },
+    docs: {
+      codePanel: true,
+    },
   },
 };
 
