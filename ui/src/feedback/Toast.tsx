@@ -19,6 +19,8 @@ import { Text } from "../display/Text";
 import { Col } from "../layout/FlexBox";
 import styles from "./Toast.module.scss";
 
+const DEFAULT_DURATION = 3000;
+
 export type ToastType = "error" | "success" | "warning" | "info" | "neutral";
 
 export type ToastProps = {
@@ -29,6 +31,7 @@ export type ToastProps = {
   children: ReactNode;
   icon?: ReactNode;
   duration?: number;
+  progress?: number;
   paused?: boolean;
   onPause?: () => void;
   onResume?: () => void;
@@ -71,7 +74,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
     const id = Math.random();
     setToasts((toasts) => [
       ...toasts,
-      { ...toast, id, open: true, paused: false },
+      { duration: 3000, ...toast, id, open: true, paused: false },
     ]);
   }, []);
 
@@ -115,10 +118,13 @@ export function Toast({
   children,
   icon,
   duration,
+  progress,
   paused,
   onPause,
   onResume,
-}: ToastProps) {
+}: ToastProps & {
+  progress?: number;
+}) {
   return (
     <RxToast.Root
       className={styles.Root}
@@ -169,15 +175,22 @@ export function Toast({
         </IconButton>
       </RxToast.Action>
 
-      {duration !== Infinity && (
+      {duration || progress !== undefined ? (
         <span className={styles.ProgressTrack} aria-hidden="true">
           <span
             className={styles.Progress}
             data-paused={paused || undefined}
-            style={{ animationDuration: `${duration || 5000}ms` }}
+            data-progress={!!progress || undefined}
+            style={
+              progress
+                ? {
+                    "--toast-progress": Math.min(1, Math.max(0, progress)),
+                  }
+                : { animationDuration: `${duration || DEFAULT_DURATION}ms` }
+            }
           />
         </span>
-      )}
+      ) : null}
     </RxToast.Root>
   );
 }

@@ -6,7 +6,7 @@ import { IconControl } from "@isis/ui/display/IconControl";
 import { Text } from "@isis/ui/display/Text";
 import { EmptySearch, ErrorState } from "@isis/ui/feedback/EmptyState";
 import { Spinner } from "@isis/ui/feedback/Spinner";
-import { useToast } from "@isis/ui/feedback/Toast";
+import { Toast, useToast } from "@isis/ui/feedback/Toast";
 import { Button } from "@isis/ui/form/Button";
 import { FileUploadOverlay } from "@isis/ui/form/FileUpload";
 import { BoxProps } from "@isis/ui/layout/Box";
@@ -126,6 +126,19 @@ export function MediaChildren({
               />
             ))
           )}
+
+          <Button onClick={() => toast.show({ type: "error", message: "123" })}>
+            show toast
+          </Button>
+          <Toast
+            open
+            // open={fileUploadMutation.isPending}
+            onClose={() => {}}
+            type="info"
+            progress={0.41}
+          >
+            Uploading...
+          </Toast>
         </FlexBox>
       </FlexBox>
     </FileUploadOverlay>

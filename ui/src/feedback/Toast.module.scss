@@ -76,6 +76,11 @@
   animation-play-state: paused;
 }
 
+.Progress[data-progress="true"] {
+  animation: none;
+  transform: scaleX(var(--toast-progress));
+}
+
 .Content {
   flex: 1;
   min-width: 0;
