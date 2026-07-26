@@ -5,7 +5,7 @@
       "jest",
       "matchers"
     ],
-    "declaration": false,
+    "outDir": "./build/jest",
     "noEmit": true
   },
   "include": [

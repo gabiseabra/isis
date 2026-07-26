@@ -1,20 +1,14 @@
 {
-  "extends": "../tsconfig.base.json",
+  "files": [],
   "compilerOptions": {
-    "outDir": "dist",
-    "rootDir": "src",
-    "module": "CommonJS",
-    "types": [
-      "node",
-      "jest",
-    ]
+    "composite": true
   },
-  "include": [
-    "src/**/*",
-  ],
   "references": [
     {
-      "path": "../common"
+      "path": "./tsconfig.build.json"
     },
-  ],
+    {
+      "path": "./tsconfig.jest.json"
+    }
+  ]
 }

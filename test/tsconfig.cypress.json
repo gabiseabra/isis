@@ -7,7 +7,7 @@
       "cypress",
       "cypress-real-events"
     ],
-    "declaration": false,
+    "outDir": "./build/cy",
     "noEmit": true
   },
   "include": [
