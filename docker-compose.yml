@@ -15,6 +15,20 @@ x-node-service: &node-service
     - admin_node_modules:/app/admin/node_modules
 
 services:
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    command: redis-server --appendonly yes
+    ports:
+      - 6379:6379
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
   postgres:
     image: postgres:17-alpine
     restart: unless-stopped
@@ -34,10 +48,14 @@ services:
 
   api:
     <<: *node-service
+    environment:
+      REDIS_URL: ${REDIS_URL:-redis://redis:6379}
     ports:
       - "${API_PORT:-6660}:${API_PORT:-6660}"
     depends_on:
       postgres:
+        condition: service_healthy
+      redis:
         condition: service_healthy
     command: sh -c "npm run db:wait -w api && npm run db:up -w api && npm run dev -w api"
 
@@ -67,6 +85,7 @@ services:
 
 volumes:
   postgres_data:
+  redis_data:
   node_modules:
   api_node_modules:
   common_node_modules:

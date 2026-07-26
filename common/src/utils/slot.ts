@@ -1,4 +1,3 @@
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 type AnySlotFunction<T = any> = (...args: any[]) => T;
 export type Slot<F extends AnySlotFunction = AnySlotFunction> =
   | F

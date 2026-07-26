@@ -30,6 +30,16 @@ module.exports = [
       ...prettierConfig.rules,
       "prettier/prettier": "error",
       "@typescript-eslint/no-namespace": "off",
+      "@typescript-eslint/no-explicit-any": "off",
+      "no-restricted-syntax": [
+        "error",
+        {
+          selector:
+            "TSAnyKeyword:not(TSTypeAliasDeclaration[id.name=/^Any/] TSAnyKeyword)",
+          message:
+            "Unexpected any. Only Any* type aliases may use explicit any.",
+        },
+      ],
       "@typescript-eslint/no-unused-vars": [
         "error",
         {

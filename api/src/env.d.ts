@@ -4,6 +4,7 @@ declare global {
       NODE_ENV: "development" | "production" | "test";
       API_PORT?: string;
       DATABASE_URL?: string;
+      REDIS_URL?: string;
       CORS_ORIGIN?: string;
       JWT_SECRET?: string;
       HETZNER_OBJECT_STORAGE_ACCESS_KEY?: string;

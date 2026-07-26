@@ -2,7 +2,6 @@ import { Context, onError, ORPCError, Router } from "@orpc/server";
 import { RPCHandler as FetchRPCHandler } from "@orpc/server/fetch";
 import { RPCHandler as NodeRPCHandler } from "@orpc/server/node";
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 type AnyRouter<T extends Context> = Router<any, T>;
 
 function errorHandler(error: unknown) {
