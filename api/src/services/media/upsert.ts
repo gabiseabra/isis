@@ -9,6 +9,7 @@ import { slugify } from "../../utils/slugify";
 import {
   addMediaMetadata,
   createMediaEntry,
+  getMediaMetadata,
   getMediaParentIds,
   removeMediaMetadata,
   updateMediaEntry,
@@ -17,7 +18,7 @@ import { MediaInputUnprocessable, MediaNotFound } from "./errors";
 
 export async function upsertMedia({
   id,
-  metadata,
+  metadata: rawMetadata,
   ..._input
 }: MediaInput & {
   id?: ID<"Media">;
@@ -44,7 +45,7 @@ export async function upsertMedia({
       )) ?? never(new MediaNotFound());
 
     await removeMediaMetadata(media.id);
-    const metadataEntries = Object.entries(metadata).map(([key, value]) => ({
+    const metadataEntries = Object.entries(rawMetadata).map(([key, value]) => ({
       key,
       value,
     }));
@@ -52,11 +53,16 @@ export async function upsertMedia({
       await addMediaMetadata(media.id, metadataEntries);
     }
 
+    const [parentIds, metadata] = await Promise.all([
+      await getMediaParentIds(media.id),
+      getMediaMetadata(media.id),
+    ]);
+
     delete media.parentId;
 
     return {
       ...media,
-      parentIds: await getMediaParentIds(media.id),
+      parentIds,
       metadata,
     };
   });

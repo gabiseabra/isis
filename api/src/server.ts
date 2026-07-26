@@ -5,6 +5,9 @@ import morgan from "morgan";
 import { adminRouter } from "./orpc/admin";
 import { nodeRPCHandler } from "./orpc/handler";
 import { orpcMiddleware } from "./orpc/middleware";
+import { errorMiddleware } from "./services/error/middleware";
+import { downloadMediaMiddleware } from "./services/media/download-middleware";
+import { authMiddleware } from "./services/sessions/auth-middleware";
 
 dotenv.config({ path: "../.env" });
 dotenv.config({ path: "../.env.local", override: true });
@@ -26,7 +29,11 @@ async function createServer() {
   );
   app.use(morgan("dev"));
 
-  app.use(orpcMiddleware("/admin", nodeRPCHandler(adminRouter)));
+  app.use("/admin/media", authMiddleware, downloadMediaMiddleware());
+
+  app.use(orpcMiddleware("/admin/api", nodeRPCHandler(adminRouter)));
+
+  app.use(errorMiddleware);
 
   const server = app.listen(API_PORT, () => {
     console.log(`Running a API server on http://localhost:${API_PORT}`);

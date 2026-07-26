@@ -5,7 +5,7 @@ export type LTree = string & { __type?: "ltree" };
 
 export const Path = Object.assign(z.string() as z.ZodType<Path>, {
   toLTree(value: Path): LTree {
-    return value.replace(/\//g, ".");
+    return value.replace(/^\/|\/$/, "").replace(/\//g, ".");
   },
   fromLTreeString(value: string): Path {
     return value.replace(/\./g, "/");

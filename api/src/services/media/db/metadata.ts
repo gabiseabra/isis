@@ -1,16 +1,36 @@
+import { MediaMetadata } from "@isis/common/dto/media/metadata";
 import { ID } from "@isis/common/utils/id";
 import { NonEmpty } from "@isis/common/utils/non-empty";
 import { sql } from "../../../db/sql";
 
+class MediaMetadataRow {
+  constructor(
+    public name: string,
+    public value: unknown | null,
+  ) {}
+}
+
+function mapMediaMetadata(rows: MediaMetadataRow[]) {
+  const rawMetadata = Object.fromEntries(
+    rows.map(({ name, value }) => [name, value] as const),
+  );
+  const metadata = MediaMetadata.safeParse(rawMetadata);
+  if (metadata.success) return metadata.data;
+  return {
+    ...rawMetadata,
+    type: "unknown" as const,
+  };
+}
+
 /// queries
 
 export async function getMediaMetadata(mediaId: ID<"Media">) {
-  const rows = await sql<{ name: string; value: unknown | null }>`
+  const rows = await sql<MediaMetadataRow>`
     select name, value from media_metadata
     where entry_id = ${ID.parse(mediaId).id};
   `;
 
-  return Object.fromEntries(rows.map((row) => [row.name, row.value] as const));
+  return mapMediaMetadata(rows);
 }
 
 /// relations: media

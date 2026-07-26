@@ -6,7 +6,7 @@ import { Text } from "../display/Text";
 import { Col, ColProps, Row } from "../layout/FlexBox";
 import { Color } from "../utils/css";
 
-export type EmptyStateProps = ColProps & {
+export type EmptyStateProps = Omit<ColProps, "title"> & {
   color?: Color;
   size?: "s" | "m";
   icon?: ReactNode;

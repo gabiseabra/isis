@@ -1,4 +1,5 @@
 import z from "zod";
+import { MediaMetadata } from "./media/metadata";
 import { Path } from "./path";
 import { zID } from "./primitives";
 
@@ -9,7 +10,7 @@ export const Media = z.object({
   name: z.string(),
   slug: z.string(),
   tags: z.string().array(),
-  metadata: z.record(z.string(), z.unknown()),
+  metadata: MediaMetadata,
   deletedAt: z.date().optional(),
   createdAt: z.date(),
   updatedAt: z.date(),

@@ -20,8 +20,6 @@ export const createORPCContext = (
 ): ORPCContext => ({
   request: {
     headers: {},
-    cookies: {},
-    signedCookies: {},
     ...context?.request,
   },
   response: {

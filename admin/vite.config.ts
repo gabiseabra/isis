@@ -22,8 +22,8 @@ export default defineConfig({
   server: {
     port: Number(process.env.ADMIN_PORT ?? 6662),
     forwardConsole: {
-      unhandledErrors: true,
-      logLevels: ["log", "info", "warn", "error", "debug"],
+      // unhandledErrors: true,
+      // logLevels: ["log", "info"],
     },
   },
 });

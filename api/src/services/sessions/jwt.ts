@@ -6,6 +6,8 @@ import z from "zod";
 
 class UnauthorizedError extends Error {}
 
+export const JWT_MAX_AGE = 7 * 24 * 60 * 60 * 1000;
+
 export type JWT = z.infer<typeof JWT>;
 
 export const JWT = Object.assign(
@@ -24,7 +26,7 @@ export const JWT = Object.assign(
           process.env.JWT_SECRET ?? never("JWT_SECRET not defined"),
           {
             algorithm: "HS256",
-            expiresIn: "7d",
+            expiresIn: JWT_MAX_AGE / 1000,
           },
         ),
       };

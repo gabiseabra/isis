@@ -1,21 +1,21 @@
 import z from "zod";
 
 export const MediaFileMetadata = z.object({
-  originalName: z.string().optional(),
-  description: z.string().optional(),
+  type: z.literal("file"),
+  fileName: z.string(),
+  fileType: z.string(),
+  fileSize: z.number(),
+  fileExtension: z.string(),
   storageKey: z.string(),
-  mimeType: z.string(),
-  sizeBytes: z.number(),
 });
-export const MediaFolderMetadata = z.object({});
+export const MediaFolderMetadata = z.object({
+  type: z.literal("folder"),
+});
 
 export const MediaMetadata = z.discriminatedUnion("type", [
-  MediaFileMetadata.extend({
-    type: z.literal("file"),
-  }),
-  MediaFolderMetadata.extend({
-    type: z.literal("folder"),
-  }),
+  MediaFileMetadata.catchall(z.unknown()),
+  MediaFolderMetadata.catchall(z.unknown()),
+  z.object({ type: z.literal("unknown") }).catchall(z.unknown()),
 ]);
 
 export type MediaMetadata = z.infer<typeof MediaMetadata>;
