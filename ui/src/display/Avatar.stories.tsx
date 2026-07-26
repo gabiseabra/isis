@@ -3,7 +3,10 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { Table } from "../layout/Table";
 import { Avatar, type AvatarProps } from "./Avatar";
 
-type AvatarStoryProps = Pick<AvatarProps, "src" | "title" | "fallback" | "size">;
+type AvatarStoryProps = Pick<
+  AvatarProps,
+  "src" | "title" | "fallback" | "size"
+>;
 
 const avatarSizes = ["s", "m", "l"] as const;
 

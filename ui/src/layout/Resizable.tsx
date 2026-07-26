@@ -1,5 +1,6 @@
+import { Slot } from "@isis/common/utils/slot";
 import { useResizeObserver } from "@mantine/hooks";
-import { useState } from "react";
+import { HTMLAttributes, ReactNode, useState } from "react";
 import { Divider, DividerProps } from "../display/Divider";
 import { Box, BoxProps } from "./Box";
 import styles from "./Resizable.module.scss";
@@ -7,6 +8,7 @@ import { Position, Size, useResizer, UseResizerOptions } from "./use-resizer";
 
 export type ResizableProps = Omit<BoxProps, "side"> &
   UseResizerOptions & {
+    frame?: Slot<(children: ReactNode[]) => ReactNode>;
     positions: Position[];
   };
 
@@ -21,6 +23,7 @@ export function Resizable({
   size: controlledSize,
   onResize,
   positions,
+  frame = (children) => <Frame>{children}</Frame>,
   ...props
 }: ResizableProps) {
   const [containerRef, actualSize] = useResizeObserver();
@@ -53,17 +56,28 @@ export function Resizable({
     >
       {children}
 
-      <div className={styles.Frame}>
-        {positions.map((position) => (
-          <div key={position} className={styles.Handle}>
-            <FrameElement
-              position={position}
-              {...resizable.register(position)}
-            />
+      {Slot.extract(
+        frame,
+        positions.map((position) => (
+          <div
+            key={position}
+            className={styles.Handle}
+            {...resizable.register(position)}
+          >
+            <FrameElement position={position} />
           </div>
-        ))}
-      </div>
+        )),
+      )}
     </Box>
+  );
+}
+
+function Frame({ className, ...props }: HTMLAttributes<HTMLElement>) {
+  return (
+    <div
+      className={[styles.Frame, className].filter(Boolean).join(" ")}
+      {...props}
+    />
   );
 }
 

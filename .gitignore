@@ -12,3 +12,4 @@ node_modules
 dist
 tsconfig.tsbuildinfo
 storybook-static
+test/cypress/screenshots/*

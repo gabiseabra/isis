@@ -14,6 +14,7 @@
 // ***********************************************************
 
 // Import commands.js using ES2015 syntax:
+import "../../../ui/styles/global.scss";
 import "./commands";
 
 import "cypress-real-events";

@@ -43,9 +43,9 @@ type Story = StoryObj<ComponentStoryProps>;
 
 export default meta;
 
-export const Default: Story = {
+export const Default = {
   render: (props) => <Component {...props} />,
-};
+} satisfies Story;
 ```
 
 ## Story props and helpers
@@ -122,12 +122,14 @@ Use short, product-readable story names:
 
 Each story documents one meaningful component state or feature. Put `render` in the story object, not in `meta`.
 
+Export story objects with `satisfies Story` instead of annotating the variable as `Story`. This keeps TypeScript aware of the concrete object members, such as a required `render`, while still checking the object against Storybook's story type.
+
 The default story should always be the most simple "happy path" case of the base component.
 
 ```tsx
-export const Default: Story = {
+export const Default = {
   render: (props) => <Button {...props} />
-}
+} satisfies Story;
 ```
 
 ## Aggregate stories
@@ -145,7 +147,7 @@ Example files for this pattern:
 - Inline / column layout: `ui/src/display/IconControl.stories.tsx` (`Sizes`).
 
 ```tsx
-export const Elevations: Story = {
+export const Elevations = {
   parameters: {
     controls: {
       exclude: ["elevation"],
@@ -170,13 +172,13 @@ export const Elevations: Story = {
       )}
     />
   ),
-};
+} satisfies Story;
 ```
 
 Inline component column layout, copied from `ui/src/display/IconControl.stories.tsx`:
 
 ```tsx
-export const Sizes: Story = {
+export const Sizes = {
   parameters: {
     controls: {
       exclude: ["size"],
@@ -198,7 +200,7 @@ export const Sizes: Story = {
       headerCell={(col) => <Table.Label>{col}</Table.Label>}
     />
   ),
-};
+} satisfies Story;
 ```
 
 ### Stateful stories
@@ -216,9 +218,9 @@ function SelectStory(props: SelectStoryProps) {
   );
 }
 
-export const Default: Story = {
+export const Default = {
   render: (props) => <SelectStory {...props} />,
-};
+} satisfies Story;
 ```
 
 ### Composition stories
@@ -226,7 +228,7 @@ export const Default: Story = {
 Bild the story from the component's own helper API and existing layout components.
 
 ```tsx
-export const Bounded: Story = {
+export const Bounded = {
   render: (props) => (
     <Select.Boundary padding={2} asChild>
       <Card elevation={1} px={10} py={20} alignX="center" alignY="center">
@@ -234,5 +236,5 @@ export const Bounded: Story = {
       </Card>
     </Select.Boundary>
   ),
-};
+} satisfies Story;
 ```

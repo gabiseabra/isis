@@ -49,7 +49,7 @@ export function MediaTree({
   return (
     <Resizable
       asChild
-      direction="x"
+      positions={["right"]}
       size={{ width }}
       min={{ width: 280 }}
       max={{ width: 600 }}
