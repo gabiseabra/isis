@@ -462,7 +462,7 @@ ALTER TABLE public.media_entries ALTER COLUMN id ADD GENERATED ALWAYS AS IDENTIT
 CREATE TABLE public.media_metadata (
     entry_id bigint NOT NULL,
     name character varying(255) NOT NULL,
-    value jsonb
+    value jsonb NOT NULL
 );
 
 
@@ -1032,4 +1032,5 @@ INSERT INTO public.schema_migrations (version) VALUES
     ('20260718130028'),
     ('20260718132348'),
     ('20260719020000'),
-    ('20260720041000');
+    ('20260720041000'),
+    ('20260726064500');

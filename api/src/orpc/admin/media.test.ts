@@ -116,6 +116,7 @@ describe("adminRouter.media", () => {
         slug: "plate_0001_png",
         tags: ["file", "png", "botany"],
         metadata: {
+          type: "unknown",
           kind: "file",
           mimeType: "image/png",
           sizeBytes: 2411722,

@@ -6,7 +6,7 @@ import { sql } from "../../../db/sql";
 class MediaMetadataRow {
   constructor(
     public name: string,
-    public value: unknown | null,
+    public value: unknown,
   ) {}
 }
 
