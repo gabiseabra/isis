@@ -1,6 +1,7 @@
 .FlexBox {
   display: flex;
   gap: var(--space);
+  box-sizing: border-box;
 }
 
 .FlexBox[data-direction="row"] {
