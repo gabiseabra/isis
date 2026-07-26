@@ -59,25 +59,20 @@ export function Nav({
         {...props}
       >
         {collapsible && (
-          <IconControl
-            asChild
-            size="s"
-            p={0.75}
+          <IconButton
+            variant="solid"
+            radius={1}
+            title={open ? "Abrir menu" : "Fechar menu"}
             className={styles.CollapseButton}
-            style={{ boxSizing: "content-box" }}
+            onClick={() => {
+              setLocalOpen(!open);
+              onOpenChange?.(!open);
+            }}
           >
-            <IconButton
-              variant="solid"
-              radius={1}
-              title={open ? "Abrir menu" : "Fechar menu"}
-              onClick={() => {
-                setLocalOpen(!open);
-                onOpenChange?.(!open);
-              }}
-            >
+            <IconControl size="s" style={{ boxSizing: "content-box" }}>
               <BiChevronLeft />
-            </IconButton>
-          </IconControl>
+            </IconControl>
+          </IconButton>
         )}
 
         {header && <div className={styles.Header}>{header}</div>}
