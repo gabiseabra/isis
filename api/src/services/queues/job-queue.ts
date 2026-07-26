@@ -3,15 +3,15 @@ import { never } from "@isis/common/utils/error";
 import * as Bull from "bullmq";
 import { RedisClient } from "../../redis/client";
 
-type AnyTaskMap = { [k: string]: (...args: any[]) => any };
-type TaskInputs<T extends AnyTaskMap, K extends keyof T = keyof T> = {
+type AnyJobMap = { [k: string]: (...args: any[]) => any };
+type TaskInputs<T extends AnyJobMap, K extends keyof T = keyof T> = {
   [k in keyof T]: Parameters<T[k]>;
 }[K];
-type TaskReturns<T extends AnyTaskMap> = {
+type TaskReturns<T extends AnyJobMap> = {
   [K in keyof T]: Awaited<ReturnType<T[K]>>;
 }[keyof T];
 
-export type Job<T extends AnyTaskMap, K extends keyof T = keyof T> = {
+export type Job<T extends AnyJobMap, K extends keyof T = keyof T> = {
   id: UUID;
   type: K;
   getStatus(): Promise<JobStatus<T>>;
@@ -31,7 +31,7 @@ export type ReadyJobResult<T> =
       error: unknown;
     };
 
-export class TaskQueue<T extends AnyTaskMap> {
+export class JobQueue<T extends AnyJobMap> {
   closed = false;
 
   private bullQueue: Bull.Queue<
@@ -84,6 +84,7 @@ export class TaskQueue<T extends AnyTaskMap> {
   }
 
   async close() {
+    if (this.closed) return;
     await this.bullWorker?.close();
     await this.bullQueue?.close();
     await this.bullQueueEvents?.close();
@@ -91,27 +92,25 @@ export class TaskQueue<T extends AnyTaskMap> {
   }
 
   async push<K extends keyof T & string>(
-    task: K,
+    type: K,
     ...args: TaskInputs<T, K>
   ): Promise<Job<T, K>> {
     if (this.closed) never("connection is closed");
 
     const jobId = UUID.create();
-    await this.bullQueue.add(task, args, { jobId });
-    return this.getJob(jobId, task);
+    await this.bullQueue.add(type, args, { jobId });
+    const job = await this.getJob(jobId);
+    if (job.type !== type) never("?");
+    return job as Job<T, K>;
   }
 
-  async getJob<K extends keyof T & string>(
-    id: UUID,
-    type: K,
-  ): Promise<Job<T, K>> {
+  async getJob(id: UUID): Promise<Job<T>> {
     if (this.closed) never("connection is closed");
 
     const job = (await this.bullQueue.getJob(id)) ?? never("eyy");
-    if (job.name !== type) never("?");
     return {
       id,
-      type,
+      type: job.name,
       getStatus: async () => {
         const state = await job.getState();
 
