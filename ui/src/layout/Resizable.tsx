@@ -32,7 +32,7 @@ export function Resizable({
   size: controlledSize,
   onResize,
   positions,
-  frame = (children) => <Frame>{children}</Frame>,
+  frame = (children) => <Resizable.Frame>{children}</Resizable.Frame>,
   hitArea,
   frameLength,
   ...props
@@ -89,14 +89,14 @@ export function Resizable({
   );
 }
 
-function Frame({ className, ...props }: HTMLAttributes<HTMLElement>) {
+Resizable.Frame = function Frame({ className, ...props }: BoxProps) {
   return (
-    <div
+    <Box
       className={[styles.Frame, className].filter(Boolean).join(" ")}
       {...props}
     />
   );
-}
+};
 
 type FrameElementProps = Omit<DividerProps, "direction"> & {
   position: Position;

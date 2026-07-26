@@ -165,8 +165,8 @@ export function FileUploadOverlay({
   description,
   error,
   children,
-  width = "fit-content",
-  height = "fit-content",
+  width,
+  height,
   ...props
 }: DistributiveOmit<FileUploadProps, "label"> & {
   asChild?: boolean;

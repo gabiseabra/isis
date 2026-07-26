@@ -1,15 +1,12 @@
 import { Path } from "@isis/common/dto/path";
-import { extractErrorMessage } from "@isis/common/utils/error";
 import { Divider } from "@isis/ui/display/Divider";
-import { ErrorState } from "@isis/ui/feedback/EmptyState";
 import { Spinner } from "@isis/ui/feedback/Spinner";
 import { Card } from "@isis/ui/layout/Card";
 import { Col, FlexBox } from "@isis/ui/layout/FlexBox";
 import { Resizable } from "@isis/ui/layout/Resizable";
-import { useLocalStorage, useResizeObserver } from "@mantine/hooks";
+import { useLocalStorage } from "@mantine/hooks";
 import { skipToken, useQuery } from "@tanstack/react-query";
-import { useRef, useState } from "react";
-import { useNavigate, useParams } from "react-router";
+import { useNavigate, useParams, useSearchParams } from "react-router";
 import { Size } from "../../../ui/src/layout/use-resizer";
 import { MediaChildren } from "../components/media/MediaChildren";
 import { MediaControls } from "../components/media/MediaControls";
@@ -21,21 +18,34 @@ import { orpcQuery } from "../orpc/client";
 export const path = "/media/*";
 
 const MEDIA_NAV_WIDTH_KEY = "isis-media-nav-width";
+const MEDIA_PREVIEW_SIZE_KEY = "isis-media-preview-size";
 
 export function Component() {
-  const [viewRef, viewRect] = useResizeObserver();
+  const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const [previewSize, setPreviewSize] = useLocalStorage<Size | undefined>({
+    key: MEDIA_PREVIEW_SIZE_KEY,
+    defaultValue: {
+      height: 300,
+      width: 250,
+    },
+  });
   const [navWidth, setNavWidth] = useLocalStorage<number | undefined>({
     key: MEDIA_NAV_WIDTH_KEY,
     defaultValue: undefined,
   });
+
   const path = Path.fromString(useParams()["*"] ?? "");
-  const [activePath, setActivePath] = useState(path);
-  const navigate = useNavigate();
+  const activeSlug = searchParams.get("file");
+  const activePath = activeSlug ? Path.join([path, activeSlug]) : path;
+
   const entryQuery = useQuery(
     orpcQuery.media.get.queryOptions({
-      input: path ? { path } : skipToken,
+      input: { path },
     }),
   );
+
   const activeEntryQuery = useQuery(
     orpcQuery.media.get.queryOptions({
       input: activePath ? { path: activePath } : skipToken,
@@ -49,68 +59,100 @@ export function Component() {
       width="auto"
       elevation={2}
       my={3}
+      gap={0}
       style={{ overflow: "auto", background: "var(--color-surface-1)" }}
     >
-      <MediaTree
-        path={path}
-        width={navWidth}
-        onChangeWidth={setNavWidth}
-        onDoubleClickMedia={(media) => {
-          setActivePath(path);
-          navigate(`/media/${media.path}`);
+      <Resizable
+        positions={["right"]}
+        size={{ width: navWidth }}
+        min={{ width: 200 }}
+        max={{ width: 600 }}
+        style={{
+          height: "100%",
+          borderRight: "1px solid var(--color-surface-1)",
         }}
-        header={
-          <Col gap={1}>
-            <MediaMetadata
-              path={path}
-              onGoBack={() => {
-                setActivePath(Path.parent(path));
-                navigate(`/media/${Path.parent(path)}`);
-              }}
-            />
+        onResize={({ width }) => setNavWidth(width)}
+        frame={(children) => (
+          <Resizable.Frame style={{ zIndex: 1, margin: "-10px" }}>
+            {children}
+          </Resizable.Frame>
+        )}
+      >
+        <MediaTree
+          path={path}
+          onDoubleClickMedia={(media) => {
+            navigate(`/media/${media.path}`);
+          }}
+          header={
+            <Col gap={1}>
+              <MediaMetadata
+                path={path}
+                onGoBack={() => {
+                  navigate(`/media/${Path.parent(path)}`);
+                }}
+              />
 
-            <Divider />
-          </Col>
-        }
-        footer={
-          <Col gap={1}>
-            <Divider />
+              <Divider />
+            </Col>
+          }
+          footer={
+            <Col gap={1}>
+              <Divider />
 
-            <MediaControls path={path} />
-          </Col>
-        }
-      />
+              <MediaControls path={path} />
+            </Col>
+          }
+        />
+      </Resizable>
 
       <FlexBox
-        ref={viewRef}
-        direction={viewRect && viewRect.width > 500 ? "inline" : "block"}
+        gap={0}
+        alignY="space-between"
+        width="100%"
+        height="100%"
+        style={{ overflow: "hidden" }}
       >
-        {entryQuery.isPending || activeEntryQuery.isPending ? (
-          <Spinner size="m" />
+        {path && entryQuery.isPending ? (
+          <FlexBox flex={1} alignX="center" alignY="center">
+            <Spinner size="m" />
+          </FlexBox>
         ) : (
           <>
-            {entryQuery.isError ? (
-              <ErrorState title={extractErrorMessage(entryQuery.error)} />
-            ) : activeEntryQuery.isError ? (
-              <ErrorState title={extractErrorMessage(activeEntryQuery.error)} />
-            ) : null}
-
             <MediaChildren
               p={2}
               mediaId={entryQuery.data?.id}
               activePath={activePath}
+              onClick={(e) => {
+                console.log(e);
+              }}
               onClickMedia={(media) => {
-                setActivePath(media.path);
+                const segments = Path.split(media.path);
+                setSearchParams({ file: segments[segments.length - 1] ?? "" });
               }}
               onDoubleClickMedia={(media) => {
                 if (media.metadata.type === "folder") {
-                  setActivePath(media.path);
                   navigate(`/media/${media.path}`);
                 }
               }}
             />
 
-            <Resizable>{/* <MediaPreview mediaId={} /> */}</Resizable>
+            {activePath && activePath !== path && activeEntryQuery.data && (
+              <Resizable
+                positions={["top"]}
+                size={previewSize}
+                min={{ width: 200, height: 200 }}
+                max={{ width: 600, height: 600 }}
+                style={{ width: "100%" }}
+                onResize={setPreviewSize}
+                frame={(children) => (
+                  <Resizable.Frame style={{ zIndex: 1, margin: "-10px" }}>
+                    {children}
+                  </Resizable.Frame>
+                )}
+              >
+                <MediaPreview mediaId={activeEntryQuery.data.id} />
+              </Resizable>
+            )}
           </>
         )}
       </FlexBox>

@@ -2,14 +2,12 @@ import { Media } from "@isis/common/dto/media";
 import { Path } from "@isis/common/dto/path";
 import { extractErrorMessage } from "@isis/common/utils/error";
 import { EmptySearch, ErrorState } from "@isis/ui/feedback/EmptyState";
-import { Col, Row } from "@isis/ui/layout/FlexBox";
+import { Col } from "@isis/ui/layout/FlexBox";
 import { Nav, NavProps } from "@isis/ui/layout/Nav";
-import { Resizable } from "@isis/ui/layout/Resizable";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { BiFolder } from "react-icons/bi";
 import { orpcQuery } from "../../orpc/client";
-import styles from "./MediaTree.module.scss";
 
 type MediaTreeProps = NavProps & {
   path?: Path;
@@ -17,8 +15,6 @@ type MediaTreeProps = NavProps & {
   onDoubleClickMedia?: (entry: Media) => void;
   /** auto focus on the path entry on change. */
   autoFocus?: boolean;
-  width?: number;
-  onChangeWidth?: (width: number) => void;
 };
 
 /**
@@ -30,8 +26,6 @@ export function MediaTree({
   loading,
   onClickMedia,
   onDoubleClickMedia,
-  width,
-  onChangeWidth,
   ...props
 }: MediaTreeProps) {
   const childrenQuery = useQuery(
@@ -47,45 +41,32 @@ export function MediaTree({
   );
 
   return (
-    <Resizable
-      asChild
-      positions={["right"]}
-      size={{ width }}
-      min={{ width: 280 }}
-      max={{ width: 600 }}
-      onResize={(size) => onChangeWidth?.(size.width)}
-      disabled={!onChangeWidth}
-      style={{ height: "100%" }}
+    <Nav
+      style={{ height: "100%", width: "100%", boxSizing: "border-box" }}
+      loading={childrenQuery.isLoading || loading}
+      {...props}
     >
-      <Row className={styles.MediaTree} style={{ width }}>
-        <Nav
-          style={{ height: "100%", width: "100%", boxSizing: "border-box" }}
-          loading={childrenQuery.isLoading || loading}
-          {...props}
-        >
-          {childrenQuery.isError ? (
-            <Col flex={1} alignY="center">
-              <ErrorState title={extractErrorMessage(childrenQuery.error)} />
-            </Col>
-          ) : !childrenQuery.data?.items.length ? (
-            <Col flex={1} alignY="center">
-              <EmptySearch title="Sem resultados" />
-            </Col>
-          ) : (
-            childrenQuery.data?.items.map((entry) => (
-              <MediaTreeNode
-                key={entry.id}
-                path={path}
-                autoFocus={autoFocus}
-                entry={entry}
-                onClickMedia={onClickMedia}
-                onDoubleClickMedia={onDoubleClickMedia}
-              />
-            ))
-          )}
-        </Nav>
-      </Row>
-    </Resizable>
+      {childrenQuery.isError ? (
+        <Col flex={1} alignY="center">
+          <ErrorState title={extractErrorMessage(childrenQuery.error)} />
+        </Col>
+      ) : !childrenQuery.data?.items.length ? (
+        <Col flex={1} alignY="center">
+          <EmptySearch title="Sem resultados" />
+        </Col>
+      ) : (
+        childrenQuery.data?.items.map((entry) => (
+          <MediaTreeNode
+            key={entry.id}
+            path={path}
+            autoFocus={autoFocus}
+            entry={entry}
+            onClickMedia={onClickMedia}
+            onDoubleClickMedia={onDoubleClickMedia}
+          />
+        ))
+      )}
+    </Nav>
   );
 }
 
