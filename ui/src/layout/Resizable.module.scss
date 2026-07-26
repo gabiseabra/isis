@@ -1,12 +1,13 @@
 :root {
   --resizable-hit-area: 20px;
   --resizable-edge-size: 10px;
-  --resizable-side-length: 100%;
-  --resizable-frame-padding-main: calc(
-    (var(--resizable-hit-area) - var(--size-divider)) / 2
-  );
-  --resizable-frame-padding-cross: calc((var(--resizable-edge-size) * 2));
+  --resizable-frame-length: calc(100% - var(--resizable-hit-area) * 2);
 }
+
+$padding-cross-axis: calc(
+  (var(--resizable-hit-area) - var(--size-divider)) / 2
+);
+$padding-main-axis: calc((100% - var(--resizable-frame-length)) / 2);
 
 .Resizable {
   --frame-side-edge-size: var(--resizable-edge-size);
@@ -52,18 +53,18 @@
 
 .Handle:has([data-direction="x"]) {
   cursor: ns-resize;
-  width: var(--resizable-side-length);
   box-sizing: border-box;
-  padding-block: var(--resizable-frame-padding-main);
-  padding-inline: var(--resizable-frame-padding-cross);
+  width: 100%;
+  padding-inline: $padding-main-axis;
+  padding-block: $padding-cross-axis;
 }
 
 .Handle:has([data-direction="y"]) {
   cursor: ew-resize;
   box-sizing: border-box;
-  height: var(--resizable-side-length);
-  padding-inline: var(--resizable-frame-padding-main);
-  padding-block: var(--resizable-frame-padding-cross);
+  height: 100%;
+  padding-block: $padding-main-axis;
+  padding-inline: $padding-cross-axis;
 
   [data-direction="y"] {
     height: 100%;
@@ -71,7 +72,7 @@
 }
 
 .Handle:has([data-direction="both"]) {
-  padding: var(--resizable-frame-padding-main);
+  padding: $padding-cross-axis;
   height: var(--resizable-edge-size);
   width: var(--resizable-edge-size);
   box-sizing: content-box;

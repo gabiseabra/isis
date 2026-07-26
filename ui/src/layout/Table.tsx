@@ -286,6 +286,8 @@ Table.ResizableHeader = function ResizableTableHeader<Row, Col extends string>({
             disabled={!resizable}
             positions={["right"]}
             onResize={({ width }) => onResize?.(col, width)}
+            hitArea="15px"
+            frameLength="calc(100% - 8px)"
           >
             <Table.Cell
               as="th"

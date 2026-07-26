@@ -1,7 +1,10 @@
+import { CSSValue } from "@isis/common/utils/css-property";
 import { Slot } from "@isis/common/utils/slot";
 import { useResizeObserver } from "@mantine/hooks";
+import { Slot as RadixSlot } from "radix-ui";
 import { HTMLAttributes, ReactNode, useState } from "react";
 import { Divider, DividerProps } from "../display/Divider";
+import { _space } from "../utils/css";
 import { Box, BoxProps } from "./Box";
 import styles from "./Resizable.module.scss";
 import { Position, Size, useResizer, UseResizerOptions } from "./use-resizer";
@@ -10,7 +13,13 @@ export type ResizableProps = Omit<BoxProps, "side"> &
   UseResizerOptions & {
     frame?: Slot<(children: ReactNode[]) => ReactNode>;
     positions: Position[];
+    hitArea?: CSSValue;
+    frameLength?: CSSValue;
+    edgeSize?: CSSValue;
   };
+
+export const _resizableHitArea = `--resizable-hit-area`;
+export const _resizableFrameLength = `--resizable-frame-length`;
 
 export function Resizable({
   aspectRatio,
@@ -24,6 +33,8 @@ export function Resizable({
   onResize,
   positions,
   frame = (children) => <Frame>{children}</Frame>,
+  hitArea,
+  frameLength,
   ...props
 }: ResizableProps) {
   const [containerRef, actualSize] = useResizeObserver();
@@ -48,13 +59,19 @@ export function Resizable({
       className={[styles.Resizable, className].filter(Boolean).join(" ")}
       data-resizing={resizable.isResizing || undefined}
       style={{
+        [_resizableHitArea]: hitArea,
+        [_resizableFrameLength]: frameLength,
         height: size?.height ?? style?.height ?? "fit-content",
         width: size?.width ?? style?.width ?? "fit-content",
         ...style,
       }}
       {...props}
     >
-      {children}
+      {props.asChild ? (
+        <RadixSlot.Slottable>{children}</RadixSlot.Slottable>
+      ) : (
+        children
+      )}
 
       {Slot.extract(
         frame,
