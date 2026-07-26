@@ -60,7 +60,7 @@ export function Component() {
       elevation={2}
       my={3}
       gap={0}
-      style={{ overflow: "auto", background: "var(--color-surface-1)" }}
+      style={{ overflow: "hidden", background: "var(--color-surface-1)" }}
     >
       <Resizable
         positions={["right"]}

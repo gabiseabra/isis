@@ -50,7 +50,7 @@ export function MediaPreview({ mediaId, style, ...props }: MediaPreviewProps) {
               <img src={src} style={{ width: "auto", height: "100%" }} />
             ))}
 
-          <Col flex={1} height="100%" p={2}>
+          <Col flex={1} height="100%" p={2} style={{ overflow: "auto" }}>
             <Table
               columns={["element"]}
               rows={entries(entryQuery.data.metadata)
