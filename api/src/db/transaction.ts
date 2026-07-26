@@ -1,5 +1,5 @@
 import { UUID } from "@isis/common/dto/uuid";
-import { inTransaction, runWithStoredClient, useClient } from "./client";
+import { PgClient } from "./client";
 
 /**
  * Options for transactions.
@@ -37,11 +37,11 @@ export async function transaction<T>(
   tx: () => Promise<T | TransactionRollback<T>>,
   options?: TransactionOptions,
 ): Promise<T> {
-  if (inTransaction()) {
+  if (PgClient.inTransaction()) {
     throw new Error("Nested transactions are not supported");
   }
 
-  using client = await useClient();
+  using client = await PgClient.usePool();
 
   await client.query("BEGIN");
 
@@ -60,7 +60,7 @@ export async function transaction<T>(
     }
 
     const transactionId = UUID.create();
-    const result = await runWithStoredClient({ transactionId, client }, tx);
+    const result = await PgClient.run({ transactionId, client }, tx);
 
     if (isTransactionRollback(result)) {
       await client.query("ROLLBACK");

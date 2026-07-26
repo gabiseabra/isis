@@ -1,4 +1,4 @@
-import { inTransaction } from "./client";
+import { PgClient } from "./client";
 import { transaction } from "./transaction";
 
 /**
@@ -8,7 +8,7 @@ import { transaction } from "./transaction";
  * Should be preferred over {@link transaction} as this supports nesting.
  */
 export async function unit<T>(unit: () => Promise<T>) {
-  if (inTransaction()) {
+  if (PgClient.inTransaction()) {
     return await unit();
   }
 

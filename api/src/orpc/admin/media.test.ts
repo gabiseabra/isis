@@ -2,9 +2,9 @@ import { MediaInput } from "@isis/common/dto/media/input";
 import { UUID } from "@isis/common/dto/uuid";
 import { upsertMedia } from "../../services/media/upsert";
 import {
-  setupDatabase,
-  tearDownDatabase,
-  truncateDatabase,
+  clearDatabaseTest,
+  setupDatabaseTest,
+  tearDownDatabaseTest,
 } from "../../test/setup-database";
 import {
   createORPCContext,
@@ -17,7 +17,7 @@ const dbID = UUID.create();
 let client: OrpcClient<typeof adminRouter>;
 
 beforeAll(async () => {
-  await setupDatabase(dbID);
+  await setupDatabaseTest(dbID);
   client = await setupOrpcClient(adminRouter, createORPCContext(), {
     name: "Test",
     email: "test@isis.com",
@@ -26,11 +26,11 @@ beforeAll(async () => {
 });
 
 afterAll(async () => {
-  await tearDownDatabase(dbID);
+  await tearDownDatabaseTest(dbID);
 });
 
 beforeEach(async () => {
-  await truncateDatabase(dbID);
+  await clearDatabaseTest(dbID);
   const museumScans = await upsertMedia(sampleData[0]);
   const botanicalPlates = await upsertMedia({
     ...sampleData[1],

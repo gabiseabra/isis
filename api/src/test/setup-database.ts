@@ -3,7 +3,7 @@ import crypto from "node:crypto";
 import fs from "node:fs/promises";
 import path from "node:path";
 import pg from "pg";
-import { setDatabaseUrl } from "../db/client";
+import { PgClient } from "../db/client";
 import { sql, sqlOne } from "../db/sql";
 
 const databaseUrl =
@@ -15,7 +15,7 @@ rootUrl.pathname = "/postgres";
 const getDB = (id: string) =>
   `isis_test_${crypto.createHash("sha256").update(id).digest("hex").slice(0, 32)}`;
 
-export async function setupDatabase(id: string) {
+export async function setupDatabaseTest(id: string) {
   const testUrl = new URL(databaseUrl);
   testUrl.pathname = `/${getDB(id)}`;
 
@@ -38,11 +38,11 @@ export async function setupDatabase(id: string) {
       );
   }
   await testPool.end();
-  await setDatabaseUrl(testUrl.toString());
+  await PgClient.setUrl(testUrl.toString());
 }
 
-export async function tearDownDatabase(id: string) {
-  await setDatabaseUrl(databaseUrl);
+export async function tearDownDatabaseTest(id: string) {
+  await PgClient.setUrl(databaseUrl);
   const pool = new pg.Pool({ connectionString: rootUrl.toString() });
   await pool.query(
     `drop database if exists ${pg.escapeIdentifier(getDB(id))} with (force)`,
@@ -50,7 +50,7 @@ export async function tearDownDatabase(id: string) {
   await pool.end();
 }
 
-export async function truncateDatabase(id: string) {
+export async function clearDatabaseTest(id: string) {
   const { db } = await sqlOne<{ db: string | null }>`
     select current_database()::text as db
   `;

@@ -1,6 +1,6 @@
 import { sql as sqlTag } from "@ts-safeql/sql-tag";
 import pg, { type QueryResultRow } from "pg";
-import { useClient } from "./client";
+import { PgClient } from "./client";
 
 pg.types.setTypeParser(pg.types.builtins.INT8, (value) => Number(value));
 
@@ -9,7 +9,7 @@ export async function sql<T extends QueryResultRow = never>(
   ...values: unknown[]
 ) {
   const query = sqlTag(strings, ...values);
-  using client = await useClient();
+  using client = await PgClient.usePool();
   const { rows } = await client.query<T>(query);
   return rows;
 }
