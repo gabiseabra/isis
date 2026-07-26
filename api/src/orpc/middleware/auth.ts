@@ -1,5 +1,6 @@
-import { createErrorHandler } from "@isis/common/utils/error";
+import { createErrorHandler, never } from "@isis/common/utils/error";
 import { os } from "@orpc/server";
+import { getAuthCookie } from "../../services/sessions/cookie";
 import { verifySession } from "../../services/sessions/verify";
 import { ORPCContext } from "../context";
 
@@ -12,10 +13,8 @@ export const requireAuth = os
     },
   })
   .middleware(async ({ context, next, errors }) => {
-    const authorization = context.request.headers.authorization;
-    if (!authorization || !authorization.startsWith("Bearer "))
-      throw errors.UNAUTHORIZED();
-    const token = authorization.slice(7);
+    const token = getAuthCookie(context) ?? never(errors.UNAUTHORIZED());
+
     return next({
       context: {
         ...context,

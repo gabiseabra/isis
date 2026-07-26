@@ -1,5 +1,6 @@
-import { Request } from "express";
+import { Request, Response } from "express";
 
 export type ORPCContext = {
-  request: Pick<Request, "headers">;
+  request: Pick<Request, "headers" | "cookies" | "signedCookies">;
+  response: Pick<Response, "cookie">;
 };

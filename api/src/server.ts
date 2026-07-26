@@ -8,14 +8,22 @@ import { orpcMiddleware } from "./orpc/middleware";
 
 dotenv.config({ path: "../.env" });
 dotenv.config({ path: "../.env.local", override: true });
-dotenv.config({ path: `../.env.${process.env.NODE_ENV}`, override: true });
+dotenv.config({
+  path: `../.env.${process.env.NODE_ENV ?? "development"}`,
+  override: true,
+});
 
 const API_PORT = Number(process.env.API_PORT ?? 6660);
 
 async function createServer() {
   const app = express();
 
-  app.use(cors({ origin: (process.env.CORS_ORIGIN ?? "").split(",") }));
+  app.use(
+    cors({
+      credentials: true,
+      origin: (process.env.CORS_ORIGIN ?? "").split(","),
+    }),
+  );
   app.use(morgan("dev"));
 
   app.use(orpcMiddleware("/admin", nodeRPCHandler(adminRouter)));

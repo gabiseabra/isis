@@ -13,6 +13,7 @@ export function orpcMiddleware(
       prefix,
       context: {
         request: req,
+        response: res,
       },
     });
 

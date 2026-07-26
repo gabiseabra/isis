@@ -52,6 +52,8 @@ export const orpcClient: ORPCRouter = createORPCClient(
     url: `${import.meta.env.VITE_API_URL}/admin`,
     method: inferRPCMethodFromContractRouter(adminApi),
     plugins: [new SimpleCsrfProtectionLinkPlugin()],
+    fetch: (request, init) =>
+      globalThis.fetch(request, { ...init, credentials: "include" }),
     headers() {
       const token = getToken();
       return new Headers(

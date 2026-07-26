@@ -1,6 +1,10 @@
 import { UUID } from "@isis/common/dto/uuid";
 import { setupDatabase, tearDownDatabase } from "../../test/setup-database";
-import { OrpcClient, setupOrpcClient } from "../../test/setup-orpc-client";
+import {
+  createORPCContext,
+  OrpcClient,
+  setupOrpcClient,
+} from "../../test/setup-orpc-client";
 import { adminRouter } from "../admin";
 
 const dbID = UUID.create();
@@ -8,15 +12,11 @@ let client: OrpcClient<typeof adminRouter>;
 
 beforeAll(async () => {
   await setupDatabase(dbID);
-  client = await setupOrpcClient(
-    adminRouter,
-    { request: { headers: {} } },
-    {
-      name: "Test",
-      email: "test@isis.com",
-      password: "test",
-    },
-  );
+  client = await setupOrpcClient(adminRouter, createORPCContext(), {
+    name: "Test",
+    email: "test@isis.com",
+    password: "test",
+  });
 });
 
 afterAll(async () => {

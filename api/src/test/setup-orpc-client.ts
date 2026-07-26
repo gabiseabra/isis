@@ -15,6 +15,21 @@ import { createUser } from "../services/users/create";
 export type OrpcClient<R extends Router<AnyContractRouter, ORPCContext>> =
   RouterClient<R>;
 
+export const createORPCContext = (
+  context?: Partial<ORPCContext>,
+): ORPCContext => ({
+  request: {
+    headers: {},
+    cookies: {},
+    signedCookies: {},
+    ...context?.request,
+  },
+  response: {
+    cookie: jest.fn(),
+    ...context?.response,
+  },
+});
+
 export async function setupOrpcClient<
   R extends Router<AnyContractRouter, ORPCContext>,
 >(
