@@ -2,7 +2,7 @@ import { CSSValue } from "@isis/common/utils/css-property";
 import { Slot } from "@isis/common/utils/slot";
 import { useResizeObserver } from "@mantine/hooks";
 import { Slot as RadixSlot } from "radix-ui";
-import { HTMLAttributes, ReactNode, useState } from "react";
+import { ReactNode, useState } from "react";
 import { Divider, DividerProps } from "../display/Divider";
 import { _space } from "../utils/css";
 import { Box, BoxProps } from "./Box";

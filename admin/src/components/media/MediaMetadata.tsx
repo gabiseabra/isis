@@ -2,12 +2,12 @@ import { Path } from "@isis/common/dto/path";
 import { extractErrorMessage } from "@isis/common/utils/error";
 import { IconButton } from "@isis/ui/display/IconButton";
 import { Span, Text } from "@isis/ui/display/Text";
-import { EmptyState, ErrorState } from "@isis/ui/feedback/EmptyState";
+import { ErrorState } from "@isis/ui/feedback/EmptyState";
 import { Spinner } from "@isis/ui/feedback/Spinner";
 import { Col, ColProps, Row } from "@isis/ui/layout/FlexBox";
 import { Table } from "@isis/ui/layout/Table";
 import { skipToken, useQuery } from "@tanstack/react-query";
-import { BiChevronLeft, BiError } from "react-icons/bi";
+import { BiChevronLeft } from "react-icons/bi";
 import { orpcQuery } from "../../orpc/client";
 
 type MediaMetadataProps = Omit<ColProps, "children"> & {

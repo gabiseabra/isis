@@ -15,7 +15,7 @@ import React, {
 import { BiChevronDown } from "react-icons/bi";
 import { IconControl } from "../display/IconControl";
 import { Text } from "../display/Text";
-import { EmptySearch, EmptyState } from "../feedback/EmptyState";
+import { EmptySearch } from "../feedback/EmptyState";
 import { Col, ColProps, Row } from "../layout/FlexBox";
 import { createBoundary, useBoundary } from "../overlay/Boundary";
 import { useOverlay } from "../overlay/OverlayProvider";

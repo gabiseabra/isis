@@ -111,7 +111,7 @@ describe("adminRouter.media", () => {
       await expect(client.media.get({ id: `id://Media/3` })).resolves.toEqual({
         id: `id://Media/3`,
         parentIds: [`id://Media/1`, `id://Media/2`],
-        path: "museum_scans.botanical_plates.plate_0001_png",
+        path: "museum_scans/botanical_plates/plate_0001_png",
         name: "Plate 0001.png",
         slug: "plate_0001_png",
         tags: ["file", "png", "botany"],
@@ -168,7 +168,11 @@ describe("adminRouter.media", () => {
 
     it("supports query", async () => {
       await expect(
-        client.media.query({ page: 1, limit: 10, query: "Plate" }),
+        client.media.query({
+          page: 1,
+          limit: 10,
+          query: 'name:like:"%Plate%"',
+        }),
       ).resolves.toMatchObject({
         items: [
           { id: `id://Media/2`, name: "Botanical Plates" },
