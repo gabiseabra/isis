@@ -20,7 +20,7 @@ export const Path = Object.assign(z.string() as z.ZodType<Path>, {
     return value.split("/").map(Path.fromString);
   },
   join(values: Path[]): Path {
-    return values.map(Path.trim).join("/");
+    return values.filter(Boolean).map(Path.trim).join("/");
   },
   contains(_parent: Path, _child: Path) {
     const parent = Path.trim(_parent);

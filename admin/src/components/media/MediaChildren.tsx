@@ -9,14 +9,13 @@ import { Spinner } from "@isis/ui/feedback/Spinner";
 import { useToast } from "@isis/ui/feedback/Toast";
 import { Button } from "@isis/ui/form/Button";
 import { FileUploadOverlay } from "@isis/ui/form/FileUpload";
-import { Box, BoxProps } from "@isis/ui/layout/Box";
+import { BoxProps } from "@isis/ui/layout/Box";
 import { Col, FlexBox } from "@isis/ui/layout/FlexBox";
 import { useQuery } from "@tanstack/react-query";
 import { MouseEvent } from "react";
 import { BiFolder, BiImage } from "react-icons/bi";
 import { orpcQuery } from "../../orpc/client";
 import { useUploadMediaMutation } from "../../orpc/media/use-upload-media-mutation";
-import styles from "./MediaChildren.module.scss";
 
 type MediaChildrenProps = Omit<BoxProps, "children"> & {
   mediaId?: ID<"Media">;
@@ -35,7 +34,6 @@ export function MediaChildren({
   onDoubleClickMedia,
   onCreateMedia,
   style,
-  className,
   ...props
 }: MediaChildrenProps) {
   const toast = useToast();
@@ -83,20 +81,24 @@ export function MediaChildren({
     >
       <FlexBox
         direction="inline"
-        flex={1}
-        width="100%"
-        height="100%"
-        className={[styles.MediaChildren, className].filter(Boolean).join(" ")}
-        data-error={isError || undefined}
-        data-loading={isLoading || undefined}
-        data-empty={isEmpty || undefined}
+        style={{
+          flex: 1,
+          overflowY: "auto",
+          width: "100%",
+          height: "100%",
+          ...style,
+        }}
         {...props}
       >
-        <Box
+        <FlexBox
+          direction="inline"
+          wrap
+          flex={1}
+          alignY="center"
+          alignX={isLoading || isError || isEmpty ? "center" : "start"}
           style={{
-            flex: 1,
             boxSizing: "border-box",
-            overflowY: "auto",
+            width: "100%",
             height: isLoading || isError || isEmpty ? "100%" : "fit-content",
             ...style,
           }}
@@ -124,7 +126,7 @@ export function MediaChildren({
               />
             ))
           )}
-        </Box>
+        </FlexBox>
       </FlexBox>
     </FileUploadOverlay>
   );
