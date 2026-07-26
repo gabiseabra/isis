@@ -43,15 +43,15 @@ module.exports = [
   },
   {
     files: ["api/src/**/*.ts"],
+    ...safeql.configs.useConfigFile,
     languageOptions: {
       parser: tsParser,
       parserOptions: {
         ecmaVersion: "latest",
         sourceType: "module",
-        project: ["./api/tsconfig.json"],
+        project: ["./api/tsconfig.jest.json"],
         tsconfigRootDir: __dirname,
       },
     },
-    ...safeql.configs.useConfigFile,
   },
 ];

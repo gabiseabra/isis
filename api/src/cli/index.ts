@@ -5,7 +5,10 @@ import { AnyCommand, Command } from "../utils/command";
 
 dotenv.config({ path: "../.env" });
 dotenv.config({ path: "../.env.local", override: true });
-dotenv.config({ path: `../.env.${process.env.NODE_ENV}`, override: true });
+dotenv.config({
+  path: `../.env.${process.env.NODE_ENV ?? "development"}`,
+  override: true,
+});
 
 async function main() {
   const [commandName, ...args] = process.argv.slice(2);
