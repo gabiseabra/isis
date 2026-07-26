@@ -122,12 +122,13 @@ export function Component() {
               p={2}
               mediaId={entryQuery.data?.id}
               activePath={activePath}
-              onClick={(e) => {
-                console.log(e);
+              onClick={() => {
+                setSearchParams({});
               }}
-              onClickMedia={(media) => {
+              onClickMedia={(media, e) => {
                 const segments = Path.split(media.path);
                 setSearchParams({ file: segments[segments.length - 1] ?? "" });
+                e.stopPropagation();
               }}
               onDoubleClickMedia={(media) => {
                 if (media.metadata.type === "folder") {

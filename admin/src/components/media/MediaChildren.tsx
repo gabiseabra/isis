@@ -22,8 +22,8 @@ type MediaChildrenProps = Omit<BoxProps, "children"> & {
   mediaId?: ID<"Media">;
   activePath?: Path;
   loading?: boolean;
-  onClickMedia?: (entry: Media) => void;
-  onDoubleClickMedia?: (entry: Media) => void;
+  onClickMedia?: (entry: Media, event: MouseEvent) => void;
+  onDoubleClickMedia?: (entry: Media, event: MouseEvent) => void;
   onCreateMedia?: (entry: Media) => void;
 };
 
@@ -81,7 +81,17 @@ export function MediaChildren({
         })
       }
     >
-      <FlexBox direction="inline" flex={1} width="100%" height="100%">
+      <FlexBox
+        direction="inline"
+        flex={1}
+        width="100%"
+        height="100%"
+        className={[styles.MediaChildren, className].filter(Boolean).join(" ")}
+        data-error={isError || undefined}
+        data-loading={isLoading || undefined}
+        data-empty={isEmpty || undefined}
+        {...props}
+      >
         <Box
           style={{
             flex: 1,
@@ -90,13 +100,6 @@ export function MediaChildren({
             height: isLoading || isError || isEmpty ? "100%" : "fit-content",
             ...style,
           }}
-          className={[styles.MediaChildren, className]
-            .filter(Boolean)
-            .join(" ")}
-          data-error={isError || undefined}
-          data-loading={isLoading || undefined}
-          data-empty={isEmpty || undefined}
-          {...props}
         >
           {isLoading ? (
             <Spinner size="m" color="blue" />
@@ -112,11 +115,11 @@ export function MediaChildren({
                 key={entry.id}
                 entry={entry}
                 active={activePath === entry.path}
-                onClick={() => {
-                  onClickMedia?.(entry);
+                onClick={(e) => {
+                  onClickMedia?.(entry, e);
                 }}
-                onDoubleClick={() => {
-                  onDoubleClickMedia?.(entry);
+                onDoubleClick={(e) => {
+                  onDoubleClickMedia?.(entry, e);
                 }}
               />
             ))
