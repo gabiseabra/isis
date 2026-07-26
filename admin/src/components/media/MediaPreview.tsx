@@ -1,24 +1,83 @@
+import { MediaInput } from "@isis/common/dto/media/input";
 import { extractErrorCode } from "@isis/common/utils/error";
 import { ID } from "@isis/common/utils/id";
 import { entries } from "@isis/common/utils/object";
 import { ErrorState } from "@isis/ui/feedback/EmptyState";
 import { Spinner } from "@isis/ui/feedback/Spinner";
+import { useToast } from "@isis/ui/feedback/Toast";
+import { Button } from "@isis/ui/form/Button";
+import { Input } from "@isis/ui/form/Input";
+import { useForm } from "@isis/ui/form/use-form";
 import { Card, CardProps } from "@isis/ui/layout/Card";
-import { Col } from "@isis/ui/layout/FlexBox";
+import { Col, Row } from "@isis/ui/layout/FlexBox";
 import { Table } from "@isis/ui/layout/Table";
+import { Modal } from "@isis/ui/overlay/Modal";
 import { useQuery } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
 import { orpcQuery } from "../../orpc/client";
+import { useUpsertMediaMutation } from "../../orpc/media/use-upsert-media-mutation";
 
 type MediaPreviewProps = CardProps & {
   mediaId: ID<"Media">;
+  onDeleteMedia?: () => void;
 };
 
 const HIDDEN_METADATA_KEYS = ["storageKey"];
 
-export function MediaPreview({ mediaId, style, ...props }: MediaPreviewProps) {
+export function MediaPreview({
+  mediaId,
+  onDeleteMedia,
+  style,
+  ...props
+}: MediaPreviewProps) {
+  const toast = useToast();
+
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+
   const entryQuery = useQuery(
     orpcQuery.media.get.queryOptions({ input: { id: mediaId } }),
   );
+
+  const upsertMediaQuery = useUpsertMediaMutation();
+
+  const form = useForm({
+    schema: MediaInput,
+    initialValue: {
+      ...entryQuery.data,
+    },
+    onSubmit(input) {
+      upsertMediaQuery.mutate({
+        id: mediaId,
+        ...input,
+      });
+    },
+  });
+
+  function deleteMedia() {
+    if (!entryQuery.data) {
+      toast.show({
+        type: "warning",
+        message: "Carregando...",
+      });
+      return;
+    }
+
+    upsertMediaQuery.mutate(
+      {
+        ...entryQuery.data,
+        deletedAt: new Date(),
+      },
+      {
+        onSuccess() {
+          onDeleteMedia?.();
+        },
+      },
+    );
+  }
+
+  useEffect(() => {
+    form.reset();
+  }, [entryQuery.data?.id]);
 
   const src =
     entryQuery.data &&
@@ -51,6 +110,22 @@ export function MediaPreview({ mediaId, style, ...props }: MediaPreviewProps) {
             ))}
 
           <Col flex={1} height="100%" p={2} style={{ overflow: "auto" }}>
+            <Row alignY="center">
+              <Input placeholder="Nome do arquivo" {...form.register("name")} />
+
+              <Button
+                disabled={!form.hasUnsavedChanges}
+                loading={upsertMediaQuery.isPending}
+                onClick={() => form.submit()}
+              >
+                Salvar
+              </Button>
+
+              <Button color="red" onClick={() => setDeleteModalOpen(true)}>
+                Deletar
+              </Button>
+            </Row>
+
             <Table
               columns={["element"]}
               rows={entries(entryQuery.data.metadata)
@@ -75,6 +150,25 @@ export function MediaPreview({ mediaId, style, ...props }: MediaPreviewProps) {
           </Col>
         </>
       )}
+
+      <Modal
+        open={deleteModalOpen}
+        onClose={() => setDeleteModalOpen(false)}
+        title="Deletar arquivo?"
+        footer={
+          <Button
+            color="red"
+            onClick={() => {
+              setDeleteModalOpen(false);
+              deleteMedia();
+            }}
+          >
+            Deletar
+          </Button>
+        }
+      >
+        Deseja mesmo deletar "{entryQuery.data?.name ?? "Unknown"}"?
+      </Modal>
     </Card>
   );
 }

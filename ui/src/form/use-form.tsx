@@ -27,7 +27,7 @@ export type BaseInputProps<T> = {
 export type Form<T extends AnySchema> = {
   errors: Map<keyof T, ZodError>;
   touched: Set<keyof T>;
-  submit(e: SubmitEvent): void;
+  submit(e?: SubmitEvent): void;
   reset(): void;
   register<K extends keyof T>(
     field: K,
@@ -54,8 +54,8 @@ export function useForm<T extends AnySchema>({
   const [touched, setTouched] = useState<Set<keyof FormValue<T>>>(new Set());
 
   const submit = useCallback(
-    (e: SubmitEvent) => {
-      e.preventDefault();
+    (e?: SubmitEvent) => {
+      e?.preventDefault();
 
       const value = schema.safeParse(values);
 

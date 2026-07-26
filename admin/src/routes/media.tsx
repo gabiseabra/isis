@@ -122,7 +122,7 @@ export function Component() {
               p={2}
               mediaId={entryQuery.data?.id}
               activePath={activePath}
-              onClick={() => {
+              onDoubleClick={() => {
                 setSearchParams({});
               }}
               onClickMedia={(media, e) => {
@@ -130,10 +130,11 @@ export function Component() {
                 setSearchParams({ file: segments[segments.length - 1] ?? "" });
                 e.stopPropagation();
               }}
-              onDoubleClickMedia={(media) => {
+              onDoubleClickMedia={(media, e) => {
                 if (media.metadata.type === "folder") {
                   navigate(`/media/${media.path}`);
                 }
+                e.stopPropagation();
               }}
             />
 
@@ -151,7 +152,12 @@ export function Component() {
                   </Resizable.Frame>
                 )}
               >
-                <MediaPreview mediaId={activeEntryQuery.data.id} />
+                <MediaPreview
+                  mediaId={activeEntryQuery.data.id}
+                  onDeleteMedia={() => {
+                    setSearchParams({});
+                  }}
+                />
               </Resizable>
             )}
           </>
