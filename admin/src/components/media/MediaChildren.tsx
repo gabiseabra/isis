@@ -1,4 +1,5 @@
 import { Media } from "@isis/common/dto/media";
+import { MediaInput } from "@isis/common/dto/media/input";
 import { Path } from "@isis/common/dto/path";
 import { extractErrorMessage } from "@isis/common/utils/error";
 import { ID } from "@isis/common/utils/id";
@@ -12,7 +13,7 @@ import { FileUploadOverlay } from "@isis/ui/form/FileUpload";
 import { BoxProps } from "@isis/ui/layout/Box";
 import { Col, FlexBox } from "@isis/ui/layout/FlexBox";
 import { useQuery } from "@tanstack/react-query";
-import { MouseEvent } from "react";
+import { MouseEvent, useEffect, useMemo, useState } from "react";
 import { BiFolder, BiImage } from "react-icons/bi";
 import { orpcQuery } from "../../orpc/client";
 import { useUploadMediaMutation } from "../../orpc/media/use-upload-media-mutation";
@@ -36,24 +37,13 @@ export function MediaChildren({
   style,
   ...props
 }: MediaChildrenProps) {
-  const toast = useToast();
-  const fileUploadMutation = useUploadMediaMutation({
-    onSuccess(entry) {
-      toast.show({
-        type: "success",
-        message: `Arquivo criado: ${entry.name}`,
-      });
+  const [pendingUploads, setPendingUploads] = useState<
+    {
+      id: number;
+      file: File;
+    }[]
+  >([]);
 
-      onCreateMedia?.(entry);
-    },
-    onError(error) {
-      toast.show({
-        type: "error",
-        title: "Houve um erro subindo o arquivo",
-        message: extractErrorMessage(error),
-      });
-    },
-  });
   const childrenQuery = useQuery(
     orpcQuery.media.queryChildren.queryOptions({
       input: {
@@ -71,13 +61,16 @@ export function MediaChildren({
   return (
     <FileUploadOverlay
       asChild
-      loading={fileUploadMutation.isPending}
-      onChangeValue={(file) =>
-        fileUploadMutation.mutate({
-          parentId: mediaId,
-          file,
-        })
-      }
+      multiple
+      onChangeValue={(files) => {
+        setPendingUploads((uploads) => [
+          ...uploads,
+          ...files.map((file) => ({
+            id: Math.random(),
+            file,
+          })),
+        ]);
+      }}
     >
       <FlexBox
         direction="inline"
@@ -126,22 +119,120 @@ export function MediaChildren({
               />
             ))
           )}
-
-          <Button onClick={() => toast.show({ type: "error", message: "123" })}>
-            show toast
-          </Button>
-          <Toast
-            open
-            // open={fileUploadMutation.isPending}
-            onClose={() => {}}
-            type="info"
-            progress={0.41}
-          >
-            Uploading...
-          </Toast>
         </FlexBox>
+
+        {pendingUploads.map(({ id, file }) => (
+          <MediaUpload
+            key={id}
+            input={{
+              file,
+              parentId: mediaId,
+              name: file.name,
+              tags: [],
+              metadata: {},
+            }}
+            onSuccess={onCreateMedia}
+            onClose={() =>
+              setPendingUploads((uploads) => {
+                console.log(id, uploads);
+                return uploads.filter((u) => u.id !== id);
+              })
+            }
+          />
+        ))}
       </FlexBox>
     </FileUploadOverlay>
+  );
+}
+
+function MediaUpload({
+  input,
+  onClose,
+  onSuccess,
+  onError,
+}: {
+  input: MediaInput & {
+    file: File;
+  };
+  onClose?: () => void;
+  onSuccess?: (media: Media) => void;
+  onError?: (error: unknown) => void;
+}) {
+  const controller = useMemo(() => new AbortController(), []);
+
+  const [upload, setUpload] = useState<
+    | { status: "success"; media: Media }
+    | { status: "error"; error: unknown }
+    | { status: "pending" }
+  >({ status: "pending" });
+
+  const uploadMutation = useUploadMediaMutation({
+    onSuccess(media) {
+      setUpload({ status: "success", media });
+      onSuccess?.(media);
+    },
+    onError(error) {
+      setUpload({ status: "error", error });
+      onError?.(error);
+    },
+  });
+
+  function startUpload() {
+    setUpload({ status: "pending" });
+    uploadMutation.mutate({
+      ...input,
+      signal: controller.signal,
+    });
+  }
+
+  useEffect(() => {
+    startUpload();
+
+    return () => {
+      controller.abort();
+    };
+  }, []);
+
+  if (upload.status === "error")
+    return (
+      <Toast
+        type="error"
+        open
+        onClose={() => onClose?.()}
+        duration={3000}
+        title="Upload do arquivo falhou"
+      >
+        {extractErrorMessage(upload.error)}
+      </Toast>
+    );
+
+  if (upload.status === "success")
+    return (
+      <Toast
+        type="success"
+        open
+        onClose={() => onClose?.()}
+        duration={3000}
+        title="Arquivo criado"
+      >
+        {upload.media.name}
+      </Toast>
+    );
+
+  return (
+    <Toast
+      type="info"
+      open={uploadMutation.isPending}
+      onClose={() => {
+        controller.abort();
+        onClose?.();
+      }}
+      duration={Infinity}
+      progress={uploadMutation.progress}
+      title="Subindo arquivo"
+    >
+      {input.name}
+    </Toast>
   );
 }
 

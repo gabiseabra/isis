@@ -1,6 +1,7 @@
 import { adminApi } from "@isis/common/orpc/admin";
 import { createErrorHandler, never } from "@isis/common/utils/error";
 import { implement } from "@orpc/server";
+import { createUploadUrl } from "../../services/hetzner/upload";
 import {
   queryMediaEntry,
   queryMediaEntryChildren,
@@ -10,7 +11,6 @@ import {
   MediaNotFound,
 } from "../../services/media/errors";
 import { getMedia } from "../../services/media/get";
-import { uploadMedia } from "../../services/media/upload";
 import { upsertMedia } from "../../services/media/upsert";
 import { ORPCContext } from "../context";
 import { requireAuth } from "../middleware/auth";
@@ -80,15 +80,7 @@ export const media = c.router({
     );
   }),
 
-  upload: c.upload.use(requireAuth).handler(async ({ input, errors }) => {
-    return uploadMedia(input).catch(
-      createErrorHandler().catch(MediaInputUnprocessable, (error) =>
-        never(
-          errors.UNPROCESSABLE_CONTENT({
-            message: error.message,
-          }),
-        ),
-      ),
-    );
-  }),
+  createUploadUrl: c.createUploadUrl
+    .use(requireAuth)
+    .handler(async ({ input }) => createUploadUrl(input)),
 });

@@ -54,17 +54,20 @@ export const media = oc.prefix("/media").router({
     )
     .output(Media),
 
-  upload: oc
+  createUploadUrl: oc
     .route({
-      description: "Upload file and create media entry",
-    })
-    .errors({
-      UNPROCESSABLE_CONTENT: {},
+      description: "Create signed media upload URL",
     })
     .input(
-      MediaInput.partial().extend({
-        file: z.file(),
+      z.object({
+        name: z.string(),
+        type: z.string(),
       }),
     )
-    .output(Media),
+    .output(
+      z.object({
+        key: z.string(),
+        url: z.string(),
+      }),
+    ),
 });

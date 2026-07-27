@@ -1,3 +1,4 @@
+import { WithOptional } from "@isis/common/types/object";
 import { Toast as RxToast } from "radix-ui";
 import {
   createContext,
@@ -25,20 +26,20 @@ export type ToastType = "error" | "success" | "warning" | "info" | "neutral";
 
 export type ToastProps = {
   open: boolean;
-  onClose: () => void;
+  onClose?: () => void;
   type: ToastType;
   title?: ReactNode;
   children: ReactNode;
   icon?: ReactNode;
-  duration?: number;
   progress?: number;
+  duration: number;
   paused?: boolean;
   onPause?: () => void;
   onResume?: () => void;
 };
 
 export type ToastParams = Omit<
-  ToastProps,
+  WithOptional<ToastProps, "duration">,
   "open" | "onClose" | "paused" | "onPause" | "onResume" | "children"
 > & {
   message: ReactNode;
@@ -95,6 +96,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
         {toasts.map(({ id, message, ...toast }) => (
           <Toast
             key={id}
+            duration={DEFAULT_DURATION}
             {...toast}
             onClose={() => closeToast(id)}
             onPause={() => setToastPaused(id, true)}
@@ -122,9 +124,7 @@ export function Toast({
   paused,
   onPause,
   onResume,
-}: ToastProps & {
-  progress?: number;
-}) {
+}: ToastProps) {
   return (
     <RxToast.Root
       className={styles.Root}
@@ -175,18 +175,18 @@ export function Toast({
         </IconButton>
       </RxToast.Action>
 
-      {duration || progress !== undefined ? (
+      {duration !== Infinity || progress !== undefined ? (
         <span className={styles.ProgressTrack} aria-hidden="true">
           <span
             className={styles.Progress}
             data-paused={paused || undefined}
-            data-progress={!!progress || undefined}
+            data-progress={progress !== undefined || undefined}
             style={
-              progress
+              progress !== undefined
                 ? {
                     "--toast-progress": Math.min(1, Math.max(0, progress)),
                   }
-                : { animationDuration: `${duration || DEFAULT_DURATION}ms` }
+                : { animationDuration: `${duration}ms` }
             }
           />
         </span>

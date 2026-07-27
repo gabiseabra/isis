@@ -5,7 +5,6 @@ export const MediaFileMetadata = z.object({
   fileName: z.string(),
   fileType: z.string(),
   fileSize: z.number(),
-  fileExtension: z.string(),
   storageKey: z.string(),
 });
 export const MediaFolderMetadata = z.object({

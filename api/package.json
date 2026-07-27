@@ -26,7 +26,10 @@
     "db:seed": "sh -c 'for f in src/db/schema/seed/*.sql; do psql \"$DATABASE_URL\" -f \"$f\"; done'"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.1095.0",
+    "@aws-sdk/s3-request-presigner": "^3.1095.0",
     "@isis/common": "*",
+    "@orpc/experimental-publisher": "^1.14.10",
     "@orpc/server": "^1.14.6",
     "@ts-safeql/sql-tag": "^0.2.2",
     "@types/jsonwebtoken": "^9.0.10",

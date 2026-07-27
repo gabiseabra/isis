@@ -28,7 +28,10 @@ export async function setupDatabaseTest(id: string) {
   await PgClient.withUrl(testUrl.toString(), async () => {
     using client = await PgClient.usePool();
     await client.query(
-      await fs.readFile(path.join(__dirname, "../db/schema/schema.sql"), "utf8"),
+      await fs.readFile(
+        path.join(__dirname, "../db/schema/schema.sql"),
+        "utf8",
+      ),
     );
     for (const file of (
       await fs.readdir(path.join(__dirname, "../db/schema/seed"))
