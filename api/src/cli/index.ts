@@ -1,6 +1,6 @@
 import dotenv from "dotenv";
 import z, { ZodError } from "zod";
-import { PgClient } from "../db/client";
+import { shutDown } from "../services/runtime/shut-down";
 import { AnyCommand, Command } from "../utils/command";
 
 dotenv.config({ path: "../.env" });
@@ -21,7 +21,7 @@ async function main() {
 
 if (require.main === module)
   main()
-    .finally(() => PgClient.close())
+    .finally(() => shutDown())
     .catch((error) => {
       if (error instanceof ZodError) console.error(z.prettifyError(error));
       if (error instanceof Error) console.error(error.message);

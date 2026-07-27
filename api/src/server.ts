@@ -7,6 +7,7 @@ import { nodeRPCHandler } from "./orpc/handler";
 import { orpcMiddleware } from "./orpc/middleware";
 import { errorMiddleware } from "./services/error/middleware";
 import { downloadMediaMiddleware } from "./services/media/download-middleware";
+import { shutDown } from "./services/runtime/shut-down";
 import { authMiddleware } from "./services/sessions/auth-middleware";
 
 dotenv.config({ path: "../.env" });
@@ -43,6 +44,8 @@ async function createServer() {
   const shutdown = async () => {
     if (isShuttingDown) return;
     isShuttingDown = true;
+
+    await shutDown();
 
     server.close(() => {
       console.log("HTTP server closed");

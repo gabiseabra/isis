@@ -2,7 +2,6 @@ import { never } from "@isis/common/utils/error";
 import crypto from "node:crypto";
 import fs from "node:fs/promises";
 import path from "node:path";
-import pg from "pg";
 import { PgClient } from "../db/client";
 import { sql, sqlOne } from "../db/sql";
 
@@ -19,35 +18,42 @@ export async function setupDatabaseTest(id: string) {
   const testUrl = new URL(databaseUrl);
   testUrl.pathname = `/${getDB(id)}`;
 
-  const pool = new pg.Pool({ connectionString: rootUrl.toString() });
-  await pool.query(`create database ${pg.escapeIdentifier(getDB(id))}`);
-  await pool.end();
-  const testPool = new pg.Pool({ connectionString: testUrl.toString() });
-  await testPool.query(
-    await fs.readFile(path.join(__dirname, "../db/schema/schema.sql"), "utf8"),
-  );
-  for (const file of (
-    await fs.readdir(path.join(__dirname, "../db/schema/seed"))
-  ).sort()) {
-    if (file.endsWith(".sql"))
-      await testPool.query(
-        await fs.readFile(
-          path.join(__dirname, "../db/schema/seed", file),
-          "utf8",
-        ),
-      );
-  }
-  await testPool.end();
+  await PgClient.withUrl(rootUrl.toString(), async () => {
+    using client = await PgClient.usePool();
+    await client.query(
+      `create database ${PgClient.escapeIdentifier(getDB(id))}`,
+    );
+  });
+
+  await PgClient.withUrl(testUrl.toString(), async () => {
+    using client = await PgClient.usePool();
+    await client.query(
+      await fs.readFile(path.join(__dirname, "../db/schema/schema.sql"), "utf8"),
+    );
+    for (const file of (
+      await fs.readdir(path.join(__dirname, "../db/schema/seed"))
+    ).sort()) {
+      if (file.endsWith(".sql"))
+        await client.query(
+          await fs.readFile(
+            path.join(__dirname, "../db/schema/seed", file),
+            "utf8",
+          ),
+        );
+    }
+  });
+
   await PgClient.setUrl(testUrl.toString());
 }
 
 export async function tearDownDatabaseTest(id: string) {
   await PgClient.setUrl(databaseUrl);
-  const pool = new pg.Pool({ connectionString: rootUrl.toString() });
-  await pool.query(
-    `drop database if exists ${pg.escapeIdentifier(getDB(id))} with (force)`,
-  );
-  await pool.end();
+  await PgClient.withUrl(rootUrl.toString(), async () => {
+    using client = await PgClient.usePool();
+    await client.query(
+      `drop database if exists ${PgClient.escapeIdentifier(getDB(id))} with (force)`,
+    );
+  });
 }
 
 export async function clearDatabaseTest(id: string) {

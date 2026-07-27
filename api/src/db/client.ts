@@ -1,7 +1,12 @@
+import { never } from "@isis/common/utils/error";
 import { AsyncLocalStorage } from "node:async_hooks";
 import pg from "pg";
+import { onShutDown } from "../services/runtime/shut-down";
 
-let globalPool = new pg.Pool({ connectionString: process.env.DATABASE_URL });
+let globalPool = new pg.Pool({
+  connectionString:
+    process.env.DATABASE_URL ?? never("DATABASE_URL not configured"),
+});
 
 /**
  * A pool client whose lifecycle is managed.
@@ -55,12 +60,28 @@ export const PgClient = {
   },
 
   async close() {
-    await globalPool.end();
+    await globalPool?.end();
   },
 
   async setUrl(databaseUrl: string) {
     await PgClient.close();
     globalPool = new pg.Pool({ connectionString: databaseUrl });
+  },
+
+  async withUrl<T>(databaseUrl: string, fn: () => Promise<T>) {
+    const previousPool = globalPool;
+    globalPool = new pg.Pool({ connectionString: databaseUrl });
+
+    try {
+      return await fn();
+    } finally {
+      await PgClient.close();
+      globalPool = previousPool;
+    }
+  },
+
+  escapeIdentifier(identifier: string) {
+    return pg.escapeIdentifier(identifier);
   },
 
   run<T>(
@@ -114,3 +135,7 @@ function getStoredClient():
 
   return { ...storedClient, client };
 }
+
+onShutDown(async () => {
+  await PgClient.close();
+});

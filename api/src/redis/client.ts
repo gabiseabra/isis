@@ -1,4 +1,5 @@
 import IORedis from "ioredis";
+import { onShutDown } from "../services/runtime/shut-down";
 
 const REDIS_URL = process.env.REDIS_URL ?? "redis://localhost:6379";
 
@@ -40,3 +41,5 @@ function createRedisClient(url: string) {
 
   return redis;
 }
+
+onShutDown(() => RedisClient.close());
