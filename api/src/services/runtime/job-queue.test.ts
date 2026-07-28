@@ -1,5 +1,5 @@
 import { UUID } from "@isis/common/dto/uuid";
-import { setupRedisTest } from "../../test/setup-redis";
+import { setupRedisTest } from "../../test-utils/setup-redis";
 import { JobQueue } from "./job-queue";
 import { shutDown } from "./shut-down";
 

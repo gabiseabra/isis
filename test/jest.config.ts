@@ -50,7 +50,9 @@ export default {
 
 function resolveTsconfig(workspace: string) {
   const workspaceRoot = `${projectRoot}/${workspace}`;
-  return fs.existsSync(`${workspaceRoot}/tsconfig.build.json`)
-    ? `${workspaceRoot}/tsconfig.build.json`
-    : `${workspaceRoot}/tsconfig.json`;
+  return fs.existsSync(`${workspaceRoot}/tsconfig.jest.json`)
+    ? `${workspaceRoot}/tsconfig.jest.json`
+    : fs.existsSync(`${workspaceRoot}/tsconfig.build.json`)
+      ? `${workspaceRoot}/tsconfig.build.json`
+      : `${workspaceRoot}/tsconfig.json`;
 }

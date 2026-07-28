@@ -8,22 +8,19 @@ import { sql, sqlOne } from "../db/sql";
 const databaseUrl =
   process.env.DATABASE_URL ?? never("DATABASE_URL not defined");
 
-const rootUrl = new URL(databaseUrl);
-rootUrl.pathname = "/postgres";
-
 const getDB = (id: string) =>
   `isis_test_${crypto.createHash("sha256").update(id).digest("hex").slice(0, 32)}`;
 
+/**
+ * Creates an isolated test DB for the id, loads schema and sorted seed SQL,
+ * then points PgClient at the isolated DB.
+ */
 export async function setupDatabaseTest(id: string) {
+  using client = await PgClient.usePool();
   const testUrl = new URL(databaseUrl);
   testUrl.pathname = `/${getDB(id)}`;
 
-  await PgClient.withUrl(rootUrl.toString(), async () => {
-    using client = await PgClient.usePool();
-    await client.query(
-      `create database ${PgClient.escapeIdentifier(getDB(id))}`,
-    );
-  });
+  await client.query(`create database ${PgClient.escapeIdentifier(getDB(id))}`);
 
   await PgClient.withUrl(testUrl.toString(), async () => {
     using client = await PgClient.usePool();
@@ -49,16 +46,22 @@ export async function setupDatabaseTest(id: string) {
   await PgClient.setUrl(testUrl.toString());
 }
 
+/**
+ * Force-drops the id-derived test DB from the root postgres DB and restores the
+ * PgClient database url.
+ */
 export async function tearDownDatabaseTest(id: string) {
-  await PgClient.setUrl(databaseUrl);
-  await PgClient.withUrl(rootUrl.toString(), async () => {
-    using client = await PgClient.usePool();
-    await client.query(
-      `drop database if exists ${PgClient.escapeIdentifier(getDB(id))} with (force)`,
-    );
-  });
+  using client = await PgClient.usePool();
+  await client.query(
+    `drop database if exists ${PgClient.escapeIdentifier(getDB(id))} with (force)`,
+  );
+  await PgClient.setUrl(databaseUrl.toString());
 }
 
+/**
+ * Verifies the current DB is the id-derived test DB before truncating domain
+ * tables, preventing accidental truncation of a non-test DB.
+ */
 export async function clearDatabaseTest(id: string) {
   const { db } = await sqlOne<{ db: string | null }>`
     select current_database()::text as db

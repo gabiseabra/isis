@@ -7,12 +7,12 @@
 // 6. mismatched type/nonexistent field returns false.
 // 7. malformed expression rejects/throws.
 
-import { UUID } from "@isis/common/dto/uuid";
-import {
+const { UUID } = require("@isis/common/dto/uuid");
+const {
   setupDatabaseTest,
   tearDownDatabaseTest,
-} from "../../test-utils/setup-database";
-import { sqlOne } from "../sql";
+} = require("../test-utils/setup-database");
+const { sqlOne } = require("./sql");
 
 const dbID = UUID.create();
 
@@ -41,7 +41,7 @@ describe("jsonb_query_match", () => {
         false,
       ],
     ])("%s", async (_name, expression, expected) => {
-      const row = await sqlOne<{ matched: boolean }>`
+      const row = await /** @type {typeof sqlOne<{ matched: boolean }>} */ (sqlOne)`
         select jsonb_query_match(
           '{
             "name": "Ada Lovelace",
@@ -69,7 +69,7 @@ describe("jsonb_query_match", () => {
       ["matches contains", 'name %= "Love"', true],
       ["returns false when substring is missing", 'name %= "Byron"', false],
     ])("%s", async (_name, expression, expected) => {
-      const row = await sqlOne<{ matched: boolean }>`
+      const row = await /** @type {typeof sqlOne<{ matched: boolean }>} */ (sqlOne)`
         select jsonb_query_match(
           '{
             "name": "Ada Lovelace",
@@ -101,7 +101,7 @@ describe("jsonb_query_match", () => {
         false,
       ],
     ])("%s", async (_name, expression, expected) => {
-      const row = await sqlOne<{ matched: boolean }>`
+      const row = await /** @type {typeof sqlOne<{ matched: boolean }>} */ (sqlOne)`
         select jsonb_query_match(
           '{
             "name": "Ada Lovelace",
@@ -141,7 +141,7 @@ describe("jsonb_query_match", () => {
         false,
       ],
     ])("%s", async (_name, expression, expected) => {
-      const row = await sqlOne<{ matched: boolean }>`
+      const row = await /** @type {typeof sqlOne<{ matched: boolean }>} */ (sqlOne)`
         select jsonb_query_match(
           '{
             "name": "Ada Lovelace",
@@ -188,7 +188,7 @@ describe("jsonb_query_match", () => {
         false,
       ],
     ])("%s", async (_name, expression, expected) => {
-      const row = await sqlOne<{ matched: boolean }>`
+      const row = await /** @type {typeof sqlOne<{ matched: boolean }>} */ (sqlOne)`
         select jsonb_query_match(
           '{
             "name": "Ada Lovelace",
@@ -220,7 +220,7 @@ describe("jsonb_query_match", () => {
         false,
       ],
     ])("%s", async (_name, expression, expected) => {
-      const row = await sqlOne<{ matched: boolean }>`
+      const row = await /** @type {typeof sqlOne<{ matched: boolean }>} */ (sqlOne)`
         select jsonb_query_match(
           '{
             "name": "Ada Lovelace",
@@ -241,7 +241,7 @@ describe("jsonb_query_match", () => {
 
   describe("malformed expression", () => {
     it("rejects malformed expressions", async () => {
-      await expect(sqlOne<{ matched: boolean }>`
+      await expect(/** @type {typeof sqlOne<{ matched: boolean }>} */ (sqlOne)`
         select jsonb_query_match(
           '{
             "name": "Ada Lovelace",

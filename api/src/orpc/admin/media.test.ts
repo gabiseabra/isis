@@ -5,12 +5,12 @@ import {
   clearDatabaseTest,
   setupDatabaseTest,
   tearDownDatabaseTest,
-} from "../../test/setup-database";
+} from "../../test-utils/setup-database";
 import {
   createORPCContext,
   OrpcClient,
   setupOrpcClient,
-} from "../../test/setup-orpc-client";
+} from "../../test-utils/setup-orpc-client";
 import { adminRouter } from "../admin";
 
 const dbID = UUID.create();
