@@ -7,7 +7,7 @@ import {
   getAuthor,
   queryAuthors,
   updateAuthor,
-} from "../../services/authors/db";
+} from "../../authors/db";
 import { ORPCContext } from "../context";
 import { requireAuth } from "../middleware/auth";
 

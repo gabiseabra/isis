@@ -4,7 +4,7 @@ import { createErrorHandler, never } from "@isis/common/utils/error";
 import { ID } from "@isis/common/utils/id";
 import { NonEmpty } from "@isis/common/utils/non-empty";
 import { DatabaseError } from "pg";
-import { unit } from "../../db/unit";
+import { unit } from "../db/unit";
 import {
   addMediaMetadata,
   createMediaEntry,

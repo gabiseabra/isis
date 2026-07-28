@@ -1,6 +1,6 @@
 import { Author } from "@isis/common/dto/author";
 import { ID } from "@isis/common/utils/id";
-import { sql, sqlOne, sqlOneMaybe } from "../../db/sql";
+import { sql, sqlOne, sqlOneMaybe } from "../db/sql";
 
 class AuthorRow {
   constructor(

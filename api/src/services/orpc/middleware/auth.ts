@@ -1,7 +1,7 @@
 import { createErrorHandler, never } from "@isis/common/utils/error";
 import { os } from "@orpc/server";
-import { getAuthCookie } from "../../services/sessions/cookie";
-import { verifySession } from "../../services/sessions/verify";
+import { getAuthCookie } from "../../sessions/cookie";
+import { verifySession } from "../../sessions/verify";
 import { ORPCContext } from "../context";
 
 export const requireAuth = os

@@ -1,6 +1,6 @@
 import { LTree, Path } from "@isis/common/dto/path";
 import { ID } from "@isis/common/utils/id";
-import { sql, sqlOne, sqlOneMaybe } from "../../../db/sql";
+import { sql, sqlOne, sqlOneMaybe } from "../../db/sql";
 
 class MediaEntryRow {
   constructor(

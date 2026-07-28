@@ -1,6 +1,6 @@
 import { Publisher } from "@isis/common/dto/publisher";
 import { ID } from "@isis/common/utils/id";
-import { sql, sqlOne, sqlOneMaybe } from "../../db/sql";
+import { sql, sqlOne, sqlOneMaybe } from "../db/sql";
 
 class PublisherRow {
   constructor(

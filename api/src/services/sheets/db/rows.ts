@@ -2,8 +2,8 @@ import { SheetCell, SheetRow } from "@isis/common/dto/sheet";
 import { groupBy } from "@isis/common/utils/array";
 import { ID } from "@isis/common/utils/id";
 import { NonEmpty } from "@isis/common/utils/non-empty";
-import { nest } from "../../../db/nest";
-import { sql, sqlOne } from "../../../db/sql";
+import { nest } from "../../db/nest";
+import { sql, sqlOne } from "../../db/sql";
 
 class SheetRowRow {
   constructor(

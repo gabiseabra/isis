@@ -1,6 +1,6 @@
 import { never } from "@isis/common/utils/error";
 import IORedis, { RedisOptions } from "ioredis";
-import { onShutDown } from "../services/runtime/shut-down";
+import { onShutDown } from "../runtime/shut-down";
 
 let globalConnection: IORedis;
 const connections = new Map<number, IORedis>();

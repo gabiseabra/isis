@@ -2,7 +2,7 @@ import { BookInput } from "@isis/common/dto/book/input";
 import { BookStatus } from "@isis/common/dto/book/status";
 import { never } from "@isis/common/utils/error";
 import { ID } from "@isis/common/utils/id";
-import { unit } from "../../../db/unit";
+import { unit } from "../../db/unit";
 import { getBook } from "../db";
 import { BookInputUnprocessable, BookNotFound } from "../errors";
 import { upsertBook } from "../upsert";

@@ -1,5 +1,5 @@
 import { Language } from "@isis/common/dto/language";
-import { sql } from "../../db/sql";
+import { sql } from "../db/sql";
 
 class LanguageRow {
   constructor(

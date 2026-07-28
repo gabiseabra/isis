@@ -1,5 +1,5 @@
 import { IORedisPublisher } from "@orpc/experimental-publisher/ioredis";
-import { RedisClient } from "../../redis/client";
+import { RedisClient } from "../redis/client";
 
 const commander = RedisClient.duplicate(Math.random(), {
   maxRetriesPerRequest: 123,

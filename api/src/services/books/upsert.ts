@@ -2,7 +2,7 @@ import { Book } from "@isis/common/dto/book";
 import { BookInput } from "@isis/common/dto/book/input";
 import { ID } from "@isis/common/utils/id";
 import { NonEmpty } from "@isis/common/utils/non-empty";
-import { unit } from "../../db/unit";
+import { unit } from "../db/unit";
 import {
   addBookAuthors,
   addBookLanguages,

@@ -4,7 +4,7 @@ import { hasPropertyValue } from "@isis/common/utils/guards";
 import { hash } from "@isis/common/utils/hash";
 import { NonEmpty } from "@isis/common/utils/non-empty";
 import crypto from "node:crypto";
-import { unit } from "../../db/unit";
+import { unit } from "../db/unit";
 import {
   bulkCreateSheetColumn,
   bulkCreateSheetRow,

@@ -8,11 +8,11 @@
 // 7. malformed expression rejects/throws.
 
 import { UUID } from "@isis/common/dto/uuid";
-import { shutDown } from "../services/runtime/shut-down";
 import {
   setupDatabaseTest,
   tearDownDatabaseTest,
-} from "../test-utils/setup-pg-client";
+} from "../../test-utils/setup-pg-client";
+import { shutDown } from "../runtime/shut-down";
 import { sqlOne } from "./sql";
 
 const dbID = UUID.create();

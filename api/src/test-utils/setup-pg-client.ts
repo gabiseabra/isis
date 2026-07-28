@@ -2,8 +2,8 @@ import { never } from "@isis/common/utils/error";
 import crypto from "node:crypto";
 import fs from "node:fs/promises";
 import path from "node:path";
-import { PgClient } from "../db/client";
-import { sql, sqlOne } from "../db/sql";
+import { PgClient } from "../services/db/client";
+import { sql, sqlOne } from "../services/db/sql";
 
 const databaseUrl =
   process.env.DATABASE_URL ?? never("DATABASE_URL not defined");
@@ -30,17 +30,17 @@ export async function setupDatabaseTest(id: string) {
     using client = await PgClient.usePool();
     await client.query(
       await fs.readFile(
-        path.join(__dirname, "../db/schema/schema.sql"),
+        path.join(__dirname, "../services/db/schema/schema.sql"),
         "utf8",
       ),
     );
     for (const file of (
-      await fs.readdir(path.join(__dirname, "../db/schema/seed"))
+      await fs.readdir(path.join(__dirname, "../services/db/schema/seed"))
     ).sort()) {
       if (file.endsWith(".sql"))
         await client.query(
           await fs.readFile(
-            path.join(__dirname, "../db/schema/seed", file),
+            path.join(__dirname, "../services/db/schema/seed", file),
             "utf8",
           ),
         );

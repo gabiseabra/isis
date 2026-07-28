@@ -1,5 +1,5 @@
 import { Country } from "@isis/common/dto/country";
-import { sql } from "../../db/sql";
+import { sql } from "../db/sql";
 
 class CountryRow {
   constructor(

@@ -2,7 +2,7 @@ import { Book } from "@isis/common/dto/book";
 import { BookStatus } from "@isis/common/dto/book/status";
 import { WithRequired } from "@isis/common/types/object";
 import { ID } from "@isis/common/utils/id";
-import { sql, sqlOne, sqlOneMaybe } from "../../db/sql";
+import { sql, sqlOne, sqlOneMaybe } from "../db/sql";
 
 class BookRow {
   constructor(

@@ -1,5 +1,5 @@
 import { ID } from "@isis/common/utils/id";
-import { sqlOne, sqlOneMaybe } from "../../../db/sql";
+import { sqlOne, sqlOneMaybe } from "../../db/sql";
 
 class DraftBookMetadataRow {
   constructor(

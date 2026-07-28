@@ -11,7 +11,7 @@ dotenv.config({
 
 const connectionConfig = process.env.DATABASE_URL
   ? { databaseUrl: process.env.DATABASE_URL }
-  : { migrationsDir: "./src/db/schema" };
+  : { migrationsDir: "./src/services/db/schema" };
 
 export default defineConfig({
   connections: {

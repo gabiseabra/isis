@@ -1,7 +1,7 @@
 import { UUID } from "@isis/common/dto/uuid";
 import { never } from "@isis/common/utils/error";
 import * as Bull from "bullmq";
-import { RedisClient } from "../../redis/client";
+import { RedisClient } from "../redis/client";
 
 const bullConnection = RedisClient.duplicate(Math.random(), {
   maxRetriesPerRequest: null,

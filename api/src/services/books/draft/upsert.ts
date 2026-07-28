@@ -4,7 +4,7 @@ import { never } from "@isis/common/utils/error";
 import { ID } from "@isis/common/utils/id";
 import { NonEmpty } from "@isis/common/utils/non-empty";
 import { entries } from "@isis/common/utils/object";
-import { unit } from "../../../db/unit";
+import { unit } from "../../db/unit";
 import { createSheetFromJson } from "../../sheets/create-from-json";
 import { bulkUpsertSheetCell } from "../../sheets/db";
 import { getBook } from "../db";

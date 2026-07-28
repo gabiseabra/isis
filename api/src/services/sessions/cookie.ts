@@ -1,4 +1,4 @@
-import { ORPCContext } from "../../orpc/context";
+import { ORPCContext } from "../orpc/context";
 import { JWT_MAX_AGE } from "./jwt";
 
 const AUTHORIZATION_COOKIE = "isis-authorization";

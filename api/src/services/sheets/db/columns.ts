@@ -2,7 +2,7 @@ import { SheetColumn } from "@isis/common/dto/sheet";
 import { ID } from "@isis/common/utils/id";
 import { NonEmpty } from "@isis/common/utils/non-empty";
 import { createRecord } from "@isis/common/utils/object";
-import { sql, sqlOne } from "../../../db/sql";
+import { sql, sqlOne } from "../../db/sql";
 
 class SheetColumnRow {
   constructor(

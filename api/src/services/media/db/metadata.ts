@@ -1,7 +1,7 @@
 import { MediaMetadata } from "@isis/common/dto/media/metadata";
 import { ID } from "@isis/common/utils/id";
 import { NonEmpty } from "@isis/common/utils/non-empty";
-import { sql } from "../../../db/sql";
+import { sql } from "../../db/sql";
 
 class MediaMetadataRow {
   constructor(

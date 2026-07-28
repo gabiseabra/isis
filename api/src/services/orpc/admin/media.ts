@@ -1,14 +1,11 @@
 import { adminApi } from "@isis/common/orpc/admin";
 import { createErrorHandler, never } from "@isis/common/utils/error";
 import { implement } from "@orpc/server";
-import { createUploadUrl } from "../../services/hetzner/upload";
-import { queryMediaEntry } from "../../services/media/db";
-import {
-  MediaInputUnprocessable,
-  MediaNotFound,
-} from "../../services/media/errors";
-import { getMedia } from "../../services/media/get";
-import { upsertMedia } from "../../services/media/upsert";
+import { createUploadUrl } from "../../hetzner/upload";
+import { queryMediaEntry } from "../../media/db";
+import { MediaInputUnprocessable, MediaNotFound } from "../../media/errors";
+import { getMedia } from "../../media/get";
+import { upsertMedia } from "../../media/upsert";
 import { ORPCContext } from "../context";
 import { requireAuth } from "../middleware/auth";
 

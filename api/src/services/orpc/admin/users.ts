@@ -1,8 +1,8 @@
 import { adminApi } from "@isis/common/orpc/admin";
 import { createErrorHandler } from "@isis/common/utils/error";
 import { implement } from "@orpc/server";
-import { setAuthCookie } from "../../services/sessions/cookie";
-import { createSession } from "../../services/sessions/create";
+import { setAuthCookie } from "../../sessions/cookie";
+import { createSession } from "../../sessions/create";
 import { ORPCContext } from "../context";
 import { requireAuth } from "../middleware/auth";
 

@@ -1,6 +1,6 @@
 import { UUID } from "@isis/common/dto/uuid";
 import { ID } from "@isis/common/utils/id";
-import { sqlOne } from "../../db/sql";
+import { sqlOne } from "../db/sql";
 import { JWT } from "./jwt";
 
 class SessionRow {

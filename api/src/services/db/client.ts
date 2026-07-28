@@ -1,7 +1,7 @@
 import { never } from "@isis/common/utils/error";
 import { AsyncLocalStorage } from "node:async_hooks";
 import pg from "pg";
-import { onShutDown } from "../services/runtime/shut-down";
+import { onShutDown } from "../runtime/shut-down";
 
 let globalPool = new pg.Pool({
   connectionString:

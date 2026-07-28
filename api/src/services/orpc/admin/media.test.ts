@@ -1,17 +1,17 @@
 import { MediaInput } from "@isis/common/dto/media/input";
 import { UUID } from "@isis/common/dto/uuid";
-import { upsertMedia } from "../../services/media/upsert";
-import { shutDown } from "../../services/runtime/shut-down";
 import {
   createORPCContext,
   OrpcClient,
   setupOrpcClient,
-} from "../../test-utils/setup-orpc-client";
+} from "../../../test-utils/setup-orpc-client";
 import {
   clearDatabaseTest,
   setupDatabaseTest,
   tearDownDatabaseTest,
-} from "../../test-utils/setup-pg-client";
+} from "../../../test-utils/setup-pg-client";
+import { upsertMedia } from "../../media/upsert";
+import { shutDown } from "../../runtime/shut-down";
 import { adminRouter } from "../admin";
 
 const dbID = UUID.create();

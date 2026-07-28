@@ -1,6 +1,6 @@
 import { SheetMetadata } from "@isis/common/dto/sheet";
 import { ID } from "@isis/common/utils/id";
-import { sql, sqlOne } from "../../../db/sql";
+import { sql, sqlOne } from "../../db/sql";
 
 class SheetRow {
   constructor(
