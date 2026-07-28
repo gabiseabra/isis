@@ -169,18 +169,18 @@ describe("adminRouter.media", () => {
       });
     });
 
-    it("supports query", async () => {
+    it("supports path", async () => {
       await expect(
         client.media.query({
           page: 1,
           limit: 10,
-          query: 'name %= "Plate"',
+          path: "museum_scans/botanical_plates",
+          sort: "name",
         }),
       ).resolves.toMatchObject({
         items: [
-          { id: `id://Media/2`, name: "Botanical Plates" },
-          { id: `id://Media/3`, name: "Plate 0001.png" },
-          { id: `id://Media/4`, name: "Plate 0002.png" },
+          { path: "museum_scans/botanical_plates/plate_0001_png" },
+          { path: "museum_scans/botanical_plates/plate_0002_png" },
         ],
         hasNextPage: false,
       });
@@ -237,6 +237,69 @@ describe("adminRouter.media", () => {
           },
         ],
         hasNextPage: false,
+      });
+    });
+
+    describe("query param", () => {
+      it("supports name", async () => {
+        await expect(
+          client.media.query({
+            page: 1,
+            limit: 10,
+            query: 'name %= "Plate"',
+          }),
+        ).resolves.toMatchObject({
+          items: [
+            { id: `id://Media/2`, name: "Botanical Plates" },
+            { id: `id://Media/3`, name: "Plate 0001.png" },
+            { id: `id://Media/4`, name: "Plate 0002.png" },
+          ],
+          hasNextPage: false,
+        });
+      });
+
+      it("supports parent_path", async () => {
+        await expect(
+          client.media.query({
+            page: 1,
+            limit: 10,
+            query: 'parent_path ^= "museum_scans/botanical_plates"',
+            sort: "name",
+          }),
+        ).resolves.toMatchObject({
+          items: [
+            { path: "museum_scans/botanical_plates/plate_0001_png" },
+            { path: "museum_scans/botanical_plates/plate_0002_png" },
+          ],
+          hasNextPage: false,
+        });
+      });
+
+      it("supports root parent_path", async () => {
+        await expect(
+          client.media.query({
+            page: 1,
+            limit: 10,
+            query: 'parent_path = ""',
+            sort: "name",
+          }),
+        ).resolves.toMatchObject({
+          items: [{ path: "museum_scans" }, { path: "vendor_invoices" }],
+          hasNextPage: false,
+        });
+      });
+
+      it("supports path", async () => {
+        await expect(
+          client.media.query({
+            page: 1,
+            limit: 10,
+            query: 'path = "museum_scans/botanical_plates/plate_0001_png"',
+          }),
+        ).resolves.toMatchObject({
+          items: [{ path: "museum_scans/botanical_plates/plate_0001_png" }],
+          hasNextPage: false,
+        });
       });
     });
   });
