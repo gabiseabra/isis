@@ -65,8 +65,8 @@ export async function getMediaParentIds(id: ID<"Media">) {
 export async function queryMediaEntry(input: {
   rootId?: ID<"Media">;
   path?: Path;
-  limit: number;
-  offset: number;
+  limit?: number;
+  offset?: number;
   query?: string;
   ids?: ID<"Media">[];
   tags?: string[];
@@ -121,8 +121,8 @@ export async function queryMediaEntry(input: {
       case when ${sort} = 'updated_at' and ${order} = 'asc' then media_entries.updated_at end asc,
       case when ${sort} = 'updated_at' and ${order} = 'desc' then media_entries.updated_at end desc,
       media_entries.id asc
-    limit ${input.limit}
-    offset ${input.offset};
+    limit ${input.limit ?? null}
+    offset ${input.offset ?? 0};
   `;
 
   return rows.map(mapMediaEntry);

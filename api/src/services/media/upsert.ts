@@ -15,23 +15,28 @@ import {
   updateMediaEntry,
 } from "./db";
 import { MediaInputUnprocessable, MediaNotFound } from "./errors";
+import { getMedia } from "./get";
+import { publishMedia } from "./publisher";
+import { getAvailableMediaSlug } from "./slug";
 
 export async function upsertMedia({
   id,
   metadata: rawMetadata,
-  ..._input
+  ...input
 }: MediaInput & {
   id?: ID<"Media">;
 }): Promise<Media> {
-  return unit(async () => {
-    const input = {
-      slug: slugify(_input.name),
-      ..._input,
-    };
+  const existingMedia = id ? await getMedia({ id }) : null;
 
+  const media = await unit(async () => {
     const media =
       (await (
-        id ? updateMediaEntry({ id, ...input }) : createMediaEntry(input)
+        id
+          ? updateMediaEntry({ id, ...input })
+          : createMediaEntry({
+              slug: await getAvailableMediaSlug(slugify(input.name)),
+              ...input,
+            })
       ).catch(
         createErrorHandler().catch(DatabaseError, (error) => {
           if (error.constraint === "media_entries_path_unique")
@@ -66,4 +71,8 @@ export async function upsertMedia({
       metadata,
     };
   });
+
+  await publishMedia(existingMedia ?? null, media);
+
+  return media;
 }
