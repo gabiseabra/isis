@@ -1,60 +1,119 @@
 import { JobQueue } from "./job-queue";
 import { shutDown } from "./shut-down";
 
+type BookImport = {
+  title: string;
+  authors: string[];
+  isbn13: string;
+};
+
+type ImportedBook = BookImport & {
+  slug: string;
+  authorLabel: string;
+};
+
 class TestQueue extends JobQueue<{
-  add(left: number, right: number): Promise<number>;
+  importBook(book: BookImport): Promise<ImportedBook>;
 }> {
   constructor() {
     super("TestQueue", {
-      async add(left, right) {
+      async importBook(book) {
         await new Promise((resolve) => setTimeout(resolve, 100));
-        return left + right;
+        return {
+          ...book,
+          slug: book.title
+            .toLowerCase()
+            .replace(/\W+/g, "_")
+            .replace(/^_|_$/g, ""),
+          authorLabel: book.authors.join(", "),
+        };
       },
     });
   }
 }
 
-let testQueue: TestQueue;
-
-beforeEach(async () => {
-  testQueue = new TestQueue();
-});
+const tractatus: BookImport = {
+  title: "Tractatus Logico-Philosophicus",
+  authors: ["Ludwig Wittgenstein"],
+  isbn13: "9780415254083",
+};
 
 afterAll(async () => {
-  shutDown();
+  await shutDown();
 });
 
 describe("JobQueue", () => {
+  describe("close", () => {
+    it("can be called twice safely", async () => {
+      await using queue = new TestQueue();
+
+      await queue.close();
+      await expect(queue.close()).resolves.toBeUndefined();
+    });
+
+    it("can be disposed with await using", async () => {
+      let disposedQueue: TestQueue | undefined;
+
+      {
+        await using queue = new TestQueue();
+        disposedQueue = queue;
+        const job = await queue.push("importBook", tractatus);
+
+        await expect(job.waitUntilFinished()).resolves.toMatchObject({
+          status: "done",
+          success: true,
+          data: {
+            title: tractatus.title,
+            slug: "tractatus_logico_philosophicus",
+            authorLabel: "Ludwig Wittgenstein",
+          },
+        });
+        expect(queue.closed).toBe(false);
+      }
+
+      expect(disposedQueue?.closed).toBe(true);
+    });
+  });
+
   describe("push", () => {
     it("creates a pending job", async () => {
-      const job = await testQueue.push("add", 1, 2);
+      await using queue = new TestQueue();
+      const job = await queue.push("importBook", tractatus);
 
-      expect(job.type).toBe("add");
-      expect(job.getStatus()).resolves.toMatchObject({ status: "pending" });
+      expect(job.type).toBe("importBook");
+      await expect(job.getStatus()).resolves.toMatchObject({
+        status: "pending",
+      });
     });
   });
 
   describe("getJob", () => {
     it("returns a job by id", async () => {
-      const { id } = await testQueue.push("add", 1, 2);
-      const job = await testQueue.getJob(id);
+      await using queue = new TestQueue();
+      const { id } = await queue.push("importBook", tractatus);
+      const job = await queue.getJob(id);
 
       expect(job.id).toBe(id);
-      expect(job.type).toBe("add");
+      expect(job.type).toBe("importBook");
     });
   });
 
   describe("Job", () => {
     describe("waitUntilFinished", () => {
       it("waits until the job is finished processing and returns the result", async () => {
-        const job = await testQueue.push("add", 1, 2);
+        await using queue = new TestQueue();
+        const job = await queue.push("importBook", tractatus);
 
         const result = await job.waitUntilFinished();
 
         expect(result).toMatchObject({
           status: "done",
           success: true,
-          data: 3,
+          data: {
+            title: tractatus.title,
+            slug: "tractatus_logico_philosophicus",
+            authorLabel: "Ludwig Wittgenstein",
+          },
         });
       });
     });

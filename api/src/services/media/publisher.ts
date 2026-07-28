@@ -1,29 +1,26 @@
 import { Media } from "@isis/common/dto/media";
-import { IORedisPublisher } from "@orpc/experimental-publisher/ioredis";
-import { RedisClient } from "../../redis/client";
+import { Publisher } from "../runtime/publisher";
 
-export const MediaPublisher = new IORedisPublisher<{
+export const MediaPublisher = new Publisher<{
   created: Media;
   updated: Media;
   deleted: Media & {
     deletedAt: Date;
   };
-}>({
-  commander: RedisClient.io,
-  listener: RedisClient.io.duplicate(),
-  prefix: "isis:media:events:",
-});
+}>("Media");
 
 export function publishMedia(before: Media | null, after: Media) {
   if (!before) {
     return MediaPublisher.publish("created", after);
-  } else if (before && !before.deletedAt && after.deletedAt) {
+  }
+
+  const deletedAt = after.deletedAt;
+  if (!before.deletedAt && deletedAt) {
     return MediaPublisher.publish("deleted", {
       ...after,
-      // why doesnt ts narrow this ? :/
-      deletedAt: after.deletedAt!,
+      deletedAt,
     });
-  } else {
-    return MediaPublisher.publish("updated", after);
   }
+
+  return MediaPublisher.publish("updated", after);
 }

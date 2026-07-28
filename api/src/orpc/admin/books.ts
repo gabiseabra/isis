@@ -47,20 +47,20 @@ export const books = c.router({
   upsertDraft: c.upsertDraft
     .use(requireAuth)
     .handler(async ({ input, errors }) => {
-      if (input.id)
+      if (input.id) {
         return upsertDraftBook(input.id, input).catch(
           createErrorHandler().catch(BookNotFound, () =>
             never(errors.NOT_FOUND()),
           ),
         );
-
-      return unit(async () => {
+      } else {
         const book = await createBook({
+          ...input,
           status: "unpublished",
-          title: input.title,
         });
+
         return upsertDraftBook(book.id, input);
-      });
+      }
     }),
 
   applyDraft: c.applyDraft
