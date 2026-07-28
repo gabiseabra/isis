@@ -11,7 +11,7 @@ export const MediaPublisher = new IORedisPublisher<{
 }>({
   commander: RedisClient.io,
   listener: RedisClient.io.duplicate(),
-  prefix: "isis:media:jobs:",
+  prefix: "isis:media:events:",
 });
 
 export function publishMedia(before: Media | null, after: Media) {
@@ -27,8 +27,3 @@ export function publishMedia(before: Media | null, after: Media) {
     return MediaPublisher.publish("updated", after);
   }
 }
-
-MediaPublisher.subscribe("created", (media) =>
-  console.log("created", { media }),
-);
-MediaPublisher.subscribe("updated", console.log);

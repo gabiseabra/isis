@@ -16,11 +16,15 @@ const getDB = (id: string) =>
  * then points PgClient at the isolated DB.
  */
 export async function setupDatabaseTest(id: string) {
-  using client = await PgClient.usePool();
   const testUrl = new URL(databaseUrl);
   testUrl.pathname = `/${getDB(id)}`;
 
-  await client.query(`create database ${PgClient.escapeIdentifier(getDB(id))}`);
+  {
+    using client = await PgClient.usePool();
+    await client.query(
+      `create database ${PgClient.escapeIdentifier(getDB(id))}`,
+    );
+  }
 
   await PgClient.withUrl(testUrl.toString(), async () => {
     using client = await PgClient.usePool();
@@ -51,11 +55,11 @@ export async function setupDatabaseTest(id: string) {
  * PgClient database url.
  */
 export async function tearDownDatabaseTest(id: string) {
+  await PgClient.setUrl(databaseUrl.toString());
   using client = await PgClient.usePool();
   await client.query(
     `drop database if exists ${PgClient.escapeIdentifier(getDB(id))} with (force)`,
   );
-  await PgClient.setUrl(databaseUrl.toString());
 }
 
 /**

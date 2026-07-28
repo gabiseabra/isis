@@ -1,16 +1,17 @@
 import { MediaInput } from "@isis/common/dto/media/input";
 import { UUID } from "@isis/common/dto/uuid";
 import { upsertMedia } from "../../services/media/upsert";
-import {
-  clearDatabaseTest,
-  setupDatabaseTest,
-  tearDownDatabaseTest,
-} from "../../test-utils/setup-database";
+import { shutDown } from "../../services/runtime/shut-down";
 import {
   createORPCContext,
   OrpcClient,
   setupOrpcClient,
 } from "../../test-utils/setup-orpc-client";
+import {
+  clearDatabaseTest,
+  setupDatabaseTest,
+  tearDownDatabaseTest,
+} from "../../test-utils/setup-pg-client";
 import { adminRouter } from "../admin";
 
 const dbID = UUID.create();
@@ -27,6 +28,7 @@ beforeAll(async () => {
 
 afterAll(async () => {
   await tearDownDatabaseTest(dbID);
+  await shutDown();
 });
 
 beforeEach(async () => {
@@ -220,11 +222,19 @@ describe("adminRouter.media", () => {
 
     it("supports parentId", async () => {
       await expect(
-        client.media.query({ page: 1, limit: 10 }),
+        client.media.query({ page: 1, limit: 10, parentId: `id://Media/1` }),
       ).resolves.toMatchObject({
         items: [
-          { id: `id://Media/1`, name: "Museum Scans", parentIds: [] },
-          { id: `id://Media/6`, name: "Vendor Invoices", parentIds: [] },
+          {
+            id: `id://Media/2`,
+            name: "Botanical Plates",
+            parentIds: [`id://Media/1`],
+          },
+          {
+            id: `id://Media/5`,
+            name: "Field Guide.pdf",
+            parentIds: [`id://Media/1`],
+          },
         ],
         hasNextPage: false,
       });

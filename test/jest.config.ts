@@ -39,14 +39,46 @@ export default {
       moduleNameMapper: {
         "\\.(css|scss|sass)$": "identity-obj-proxy",
       },
-      setupFiles: [`${projectRoot}/test/jest/setup.ts`],
-      setupFilesAfterEnv: [
-        "@testing-library/jest-dom",
-        `${projectRoot}/test/jest/setup-after-env.ts`,
-      ],
+      setupFiles: setupFiles(ref.path),
+      setupFilesAfterEnv: setupFilesAfterEnv(ref.path),
+      globalTeardown: globalTeardown(ref.path),
     }),
   ),
 };
+
+function setupFiles(workspace: string) {
+  const workspaceFile = path.join(
+    projectRoot,
+    workspace,
+    `/src/test-utils/setup.ts`,
+  );
+  return [
+    `${projectRoot}/test/jest/setup.ts`,
+    ...(fs.existsSync(workspaceFile) ? [workspaceFile] : []),
+  ];
+}
+
+function setupFilesAfterEnv(workspace: string) {
+  const workspaceFile = path.join(
+    projectRoot,
+    workspace,
+    `/src/test-utils/setup-after-env.ts`,
+  );
+  return [
+    "@testing-library/jest-dom",
+    `${projectRoot}/test/jest/setup-after-env.ts`,
+    ...(fs.existsSync(workspaceFile) ? [workspaceFile] : []),
+  ];
+}
+
+function globalTeardown(workspace: string) {
+  const workspaceFile = path.join(
+    projectRoot,
+    workspace,
+    `/src/test-utils/global-teardown.ts`,
+  );
+  return fs.existsSync(workspaceFile) ? workspaceFile : undefined;
+}
 
 function resolveTsconfig(workspace: string) {
   const workspaceRoot = `${projectRoot}/${workspace}`;

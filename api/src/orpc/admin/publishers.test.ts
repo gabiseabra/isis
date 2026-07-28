@@ -1,13 +1,14 @@
 import { UUID } from "@isis/common/dto/uuid";
-import {
-  setupDatabaseTest,
-  tearDownDatabaseTest,
-} from "../../test-utils/setup-database";
+import { shutDown } from "../../services/runtime/shut-down";
 import {
   createORPCContext,
   OrpcClient,
   setupOrpcClient,
 } from "../../test-utils/setup-orpc-client";
+import {
+  setupDatabaseTest,
+  tearDownDatabaseTest,
+} from "../../test-utils/setup-pg-client";
 import { adminRouter } from "../admin";
 
 const dbID = UUID.create();
@@ -24,6 +25,7 @@ beforeAll(async () => {
 
 afterAll(async () => {
   await tearDownDatabaseTest(dbID);
+  await shutDown();
 });
 
 describe("adminRouter.publishers", () => {

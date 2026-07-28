@@ -1,5 +1,3 @@
-import { UUID } from "@isis/common/dto/uuid";
-import { setupRedisTest } from "../../test-utils/setup-redis";
 import { JobQueue } from "./job-queue";
 import { shutDown } from "./shut-down";
 
@@ -16,22 +14,15 @@ class TestQueue extends JobQueue<{
   }
 }
 
-const redisID = UUID.create();
 let testQueue: TestQueue;
-
-beforeAll(async () => {
-  await setupRedisTest(redisID);
-});
-
-afterAll(async () => {
-  await shutDown();
-});
 
 beforeEach(async () => {
   testQueue = new TestQueue();
 });
 
-afterEach(async () => {});
+afterAll(async () => {
+  shutDown();
+});
 
 describe("JobQueue", () => {
   describe("push", () => {
