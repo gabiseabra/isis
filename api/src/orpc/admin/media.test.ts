@@ -217,32 +217,14 @@ describe("adminRouter.media", () => {
         hasNextPage: false,
       });
     });
-  });
 
-  describe("queryChildren", () => {
-    it("returns root entries", async () => {
+    it("supports parentId", async () => {
       await expect(
-        client.media.queryChildren({ page: 1, limit: 10 }),
+        client.media.query({ page: 1, limit: 10 }),
       ).resolves.toMatchObject({
         items: [
           { id: `id://Media/1`, name: "Museum Scans", parentIds: [] },
           { id: `id://Media/6`, name: "Vendor Invoices", parentIds: [] },
-        ],
-        hasNextPage: false,
-      });
-    });
-
-    it("returns immediate children", async () => {
-      await expect(
-        client.media.queryChildren({
-          page: 1,
-          limit: 10,
-          rootId: `id://Media/1`,
-        }),
-      ).resolves.toMatchObject({
-        items: [
-          { id: `id://Media/2`, name: "Botanical Plates" },
-          { id: `id://Media/5`, name: "Field Guide.pdf" },
         ],
         hasNextPage: false,
       });

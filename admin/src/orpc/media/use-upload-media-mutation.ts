@@ -50,7 +50,7 @@ export function useUploadMediaMutation(
 
     onSuccess(entry, ...args) {
       queryClient.refetchQueries({
-        queryKey: orpcQuery.media.queryChildren.key(),
+        queryKey: orpcQuery.media.query.key(),
       });
 
       options?.onSuccess?.(entry, ...args);

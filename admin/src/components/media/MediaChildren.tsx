@@ -7,14 +7,14 @@ import { IconControl } from "@isis/ui/display/IconControl";
 import { Text } from "@isis/ui/display/Text";
 import { EmptySearch, ErrorState } from "@isis/ui/feedback/EmptyState";
 import { Spinner } from "@isis/ui/feedback/Spinner";
-import { Toast, useToast } from "@isis/ui/feedback/Toast";
+import { Toast } from "@isis/ui/feedback/Toast";
 import { Button } from "@isis/ui/form/Button";
 import { FileUploadOverlay } from "@isis/ui/form/FileUpload";
 import { BoxProps } from "@isis/ui/layout/Box";
 import { Col, FlexBox } from "@isis/ui/layout/FlexBox";
 import { useQuery } from "@tanstack/react-query";
 import { MouseEvent, useEffect, useMemo, useState } from "react";
-import { BiFolder, BiImage } from "react-icons/bi";
+import { BiFolder, BiImage, BiRefresh } from "react-icons/bi";
 import { orpcQuery } from "../../orpc/client";
 import { useUploadMediaMutation } from "../../orpc/media/use-upload-media-mutation";
 
@@ -45,11 +45,11 @@ export function MediaChildren({
   >([]);
 
   const childrenQuery = useQuery(
-    orpcQuery.media.queryChildren.queryOptions({
+    orpcQuery.media.query.queryOptions({
       input: {
         page: 1,
         limit: 100,
-        rootId: mediaId,
+        parentId: mediaId ?? null,
       },
     }),
   );
@@ -133,10 +133,7 @@ export function MediaChildren({
             }}
             onSuccess={onCreateMedia}
             onClose={() =>
-              setPendingUploads((uploads) => {
-                console.log(id, uploads);
-                return uploads.filter((u) => u.id !== id);
-              })
+              setPendingUploads((uploads) => uploads.filter((u) => u.id !== id))
             }
           />
         ))}
@@ -216,6 +213,10 @@ function MediaUpload({
         title="Arquivo criado"
       >
         {upload.media.name}
+
+        <Button variant="sheer" color="red" right={<BiRefresh />}>
+          Tentar de novo
+        </Button>
       </Toast>
     );
 

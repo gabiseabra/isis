@@ -29,7 +29,7 @@ export function MediaTree({
   ...props
 }: MediaTreeProps) {
   const childrenQuery = useQuery(
-    orpcQuery.media.queryChildren.queryOptions({
+    orpcQuery.media.query.queryOptions({
       input: {
         page: 1,
         limit: 100,
@@ -88,11 +88,11 @@ export function MediaTreeNode({
 
   const [open, setOpen] = useState(active);
   const childrenQuery = useQuery(
-    orpcQuery.media.queryChildren.queryOptions({
+    orpcQuery.media.query.queryOptions({
       input: {
         page: 1,
         limit: 100,
-        rootId: entry.id,
+        parentId: entry.id,
         query: 'type:eq:"folder"',
         sort: "updated_at",
         order: "desc",

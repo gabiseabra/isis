@@ -5,7 +5,6 @@ import { ID } from "@isis/common/utils/id";
 import { NonEmpty } from "@isis/common/utils/non-empty";
 import { DatabaseError } from "pg";
 import { unit } from "../../db/unit";
-import { slugify } from "../../utils/slugify";
 import {
   addMediaMetadata,
   createMediaEntry,
@@ -34,7 +33,7 @@ export async function upsertMedia({
         id
           ? updateMediaEntry({ id, ...input })
           : createMediaEntry({
-              slug: await getAvailableMediaSlug(slugify(input.name)),
+              slug: await getAvailableMediaSlug(input),
               ...input,
             })
       ).catch(

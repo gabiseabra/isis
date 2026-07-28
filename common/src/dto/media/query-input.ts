@@ -8,6 +8,7 @@ export const QueryMediaInput = z.object({
   query: z.string().optional(),
   path: Path.optional(),
   rootId: zID("Media").optional(),
+  parentId: zID("Media").optional(),
   ids: zID("Media").array().optional(),
   tags: z.string().array().optional(),
   sort: z.enum(["name", "created_at", "updated_at"]).optional(),

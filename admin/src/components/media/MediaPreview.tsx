@@ -2,6 +2,7 @@ import { MediaInput } from "@isis/common/dto/media/input";
 import { extractErrorCode } from "@isis/common/utils/error";
 import { ID } from "@isis/common/utils/id";
 import { entries } from "@isis/common/utils/object";
+import { IconButton } from "@isis/ui/display/IconButton";
 import { ErrorState } from "@isis/ui/feedback/EmptyState";
 import { Spinner } from "@isis/ui/feedback/Spinner";
 import { useToast } from "@isis/ui/feedback/Toast";
@@ -14,6 +15,7 @@ import { Table } from "@isis/ui/layout/Table";
 import { Modal } from "@isis/ui/overlay/Modal";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
+import { BiTrash } from "react-icons/bi";
 import { orpcQuery } from "../../orpc/client";
 import { useUpsertMediaMutation } from "../../orpc/media/use-upsert-media-mutation";
 
@@ -110,20 +112,31 @@ export function MediaPreview({
             ))}
 
           <Col flex={1} height="100%" p={2} style={{ overflow: "auto" }}>
-            <Row alignY="center">
-              <Input placeholder="Nome do arquivo" {...form.register("name")} />
+            <Row wrap alignY="center" gap={1}>
+              <Input
+                placeholder="Nome do arquivo"
+                style={{ flex: "1 1 300px", minWidth: 0 }}
+                {...form.register("name")}
+              />
 
-              <Button
-                disabled={!form.hasUnsavedChanges}
-                loading={upsertMediaQuery.isPending}
-                onClick={() => form.submit()}
-              >
-                Salvar
-              </Button>
+              <Row flex="1 0 300px" style={{ minWidth: 300 }}>
+                <Button
+                  disabled={!form.hasUnsavedChanges}
+                  loading={upsertMediaQuery.isPending}
+                  onClick={() => form.submit()}
+                  right={
+                    <IconButton>
+                      <BiTrash />
+                    </IconButton>
+                  }
+                >
+                  Salvar
+                </Button>
 
-              <Button color="red" onClick={() => setDeleteModalOpen(true)}>
-                Deletar
-              </Button>
+                <Button color="red" onClick={() => setDeleteModalOpen(true)}>
+                  Deletar
+                </Button>
+              </Row>
             </Row>
 
             <Table

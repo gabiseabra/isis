@@ -27,3 +27,8 @@ export function publishMedia(before: Media | null, after: Media) {
     return MediaPublisher.publish("updated", after);
   }
 }
+
+MediaPublisher.subscribe("created", (media) =>
+  console.log("created", { media }),
+);
+MediaPublisher.subscribe("updated", console.log);

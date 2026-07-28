@@ -64,6 +64,7 @@ export async function getMediaParentIds(id: ID<"Media">) {
 
 export async function queryMediaEntry(input: {
   rootId?: ID<"Media">;
+  parentId?: ID<"Media">;
   path?: Path;
   limit?: number;
   offset?: number;
@@ -74,6 +75,8 @@ export async function queryMediaEntry(input: {
   order?: "asc" | "desc";
 }) {
   const rootId = input.rootId ? ID.parse(input.rootId).id : null;
+  const parentId = input.parentId ? ID.parse(input.parentId).id : null;
+  const hasParentId = "parentId" in input;
   const rootPath = input.path ?? null;
   const rootLTree: string | null = rootPath ? Path.toLTree(rootPath) : null;
   const ids = input.ids?.map((id) => ID.parse(id).id) ?? null;
@@ -99,6 +102,7 @@ export async function queryMediaEntry(input: {
           and (${rootId}::bigint is null
             or (media_entries.path <@ root.path and media_entries.id <> root.id)))
       )
+      and (${!hasParentId} or media_entries.parent_id is not distinct from ${parentId}::bigint)
       and media_entries.id = any(coalesce(${ids as number[]}::bigint[], array[media_entries.id]))
       and case
         when ${query}::text is null then true
@@ -123,63 +127,6 @@ export async function queryMediaEntry(input: {
       media_entries.id asc
     limit ${input.limit ?? null}
     offset ${input.offset ?? 0};
-  `;
-
-  return rows.map(mapMediaEntry);
-}
-
-export async function queryMediaEntryChildren(input: {
-  rootId?: ID<"Media">;
-  path?: Path;
-  limit: number;
-  offset: number;
-  query?: string;
-  tags?: string[];
-  sort?: "name" | "created_at" | "updated_at";
-  order?: "asc" | "desc";
-}) {
-  const rootId = input.rootId ? ID.parse(input.rootId).id : null;
-  const rootPath = input.path ?? null;
-  const rootLTree: string | null = rootPath ? Path.toLTree(rootPath) : null;
-  const query = input.query ?? null;
-  const sort = input.sort ?? "name";
-  const order = input.order ?? "asc";
-
-  const rows = await sql<MediaEntryRow>`
-    select media_entries.*
-    from media_entries
-    left join lateral (
-      select jsonb_object_agg(media_metadata.name, media_metadata.value) as metadata
-      from media_metadata
-      where media_metadata.entry_id = media_entries.id
-    ) media_query on true
-    where (
-        (${rootLTree}::ltree is null and media_entries.parent_id is not distinct from ${rootId}::bigint)
-        or (${rootLTree}::ltree is not null and media_entries.path <@ ${rootLTree}::ltree and nlevel(media_entries.path) = nlevel(${rootLTree}::ltree) + 1)
-      )
-      and case
-        when ${query}::text is null then true
-        else jsonb_expression_match(
-          coalesce(media_query.metadata, '{}'::jsonb) || jsonb_build_object(
-            'name', media_entries.name,
-            'slug', media_entries.slug,
-            'path', replace(media_entries.path::text, '.', '/')
-          ),
-          ${query}
-        )
-      end
-      and media_entries.tags @> coalesce(${(input.tags ?? null) as string[]}::text[], array[]::text[])
-      and media_entries.deleted_at is null
-    order by
-      case when ${sort} = 'name' and ${order} = 'asc' then media_entries.name end asc,
-      case when ${sort} = 'name' and ${order} = 'desc' then media_entries.name end desc,
-      case when ${sort} = 'created_at' and ${order} = 'asc' then media_entries.created_at end asc,
-      case when ${sort} = 'created_at' and ${order} = 'desc' then media_entries.created_at end desc,
-      case when ${sort} = 'updated_at' and ${order} = 'asc' then media_entries.updated_at end asc,
-      case when ${sort} = 'updated_at' and ${order} = 'desc' then media_entries.updated_at end desc,
-      media_entries.id asc
-    limit ${input.limit}
-    offset ${input.offset};
   `;
 
   return rows.map(mapMediaEntry);

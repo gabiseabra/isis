@@ -17,19 +17,7 @@ export const media = oc.prefix("/media").router({
 
   query: oc
     .route({
-      description: "Query recursive children of rootId entry.",
-    })
-    .input(QueryMediaInput)
-    .output(
-      z.object({
-        items: Media.array(),
-        hasNextPage: z.boolean(),
-      }),
-    ),
-
-  queryChildren: oc
-    .route({
-      description: "Query immediate children of rootId entry.",
+      description: "Query media entries.",
     })
     .input(QueryMediaInput)
     .output(

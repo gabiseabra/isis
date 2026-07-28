@@ -1,10 +1,18 @@
+import { MediaInput } from "@isis/common/dto/media/input";
 import { escapeLike } from "../../db/escape-like";
+import { slugify } from "../../utils/slugify";
 import { queryMediaEntry } from "./db";
 
-export async function getAvailableMediaSlug(slug: string) {
+export async function getAvailableMediaSlug(
+  input: Pick<MediaInput, "name" | "slug" | "parentId">,
+) {
+  const slug = input.slug ?? slugify(input.name);
+
   const entries = await queryMediaEntry({
     query: `slug:like:${JSON.stringify(`${escapeLike(slug)}%`)}`,
+    parentId: input.parentId,
   });
+
   const numericSuffixes = entries
     .map((entry) => entry.slug.slice(slug.length + 1) || "0")
     .map((suffix) => parseInt(suffix, 10))
