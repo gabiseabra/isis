@@ -6,11 +6,8 @@ export type LTree = string & { __type?: "ltree" };
 export const Path = Object.assign(
   z.string().regex(/^$|^[a-zA-Z0-9_-]+(\/[a-zA-Z0-9_-]+)*$/) as z.ZodType<Path>,
   {
-    toLTree(value: Path): LTree {
-      return value.replace(/^\/|\/$/, "").replace(/\//g, ".");
-    },
     fromLTreeString(value: string): Path {
-      return value.replace(/\./g, "/");
+      return Path.parse(value.replace(/\./g, "/"));
     },
     fromString(value: string): Path {
       return Path.safeParse(value).data ?? "";

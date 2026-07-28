@@ -35,13 +35,17 @@ function mapMediaEntry(row: MediaEntryRow) {
 export async function getMediaEntry(
   input: { id: ID<"Media"> } | { path: Path },
 ) {
-  const id = "id" in input ? ID.parse(input.id).id : null;
-  const path = "path" in input ? Path.toLTree(input.path) : null;
+  const byId = "id" in input;
+  const id = byId ? ID.parse(input.id).id : null;
+  const path = byId ? null : input.path;
 
   const row = await sqlOneMaybe<MediaEntryRow>`
     select *
     from media_entries
-    where (id = ${id} or path = ${path}::ltree)
+    where (
+        (${byId} and id = ${id})
+        or (${!byId} and path = ltree_from_string(${path}))
+      )
       and deleted_at is null;
   `;
 
@@ -77,8 +81,7 @@ export async function queryMediaEntry(input: {
   const rootId = input.rootId ? ID.parse(input.rootId).id : null;
   const parentId = input.parentId ? ID.parse(input.parentId).id : null;
   const hasParentId = "parentId" in input;
-  const rootPath = input.path ?? null;
-  const rootLTree: string | null = rootPath ? Path.toLTree(rootPath) : null;
+  const path = input.path ?? null;
   const ids = input.ids?.map((id) => ID.parse(id).id) ?? null;
   const query = input.query ?? null;
   const sort = input.sort ?? "name";
@@ -87,18 +90,18 @@ export async function queryMediaEntry(input: {
   const rows = await sql<MediaEntryRow>`
     select media_entries.*
     from media_entries
-    left join media_entries root on root.id = ${rootId} or root.path = ${rootLTree}::ltree
+    left join media_entries root on root.id = ${rootId} or root.path = ltree_from_string(${path})
     left join lateral (
       select jsonb_object_agg(media_metadata.name, media_metadata.value) as metadata
       from media_metadata
       where media_metadata.entry_id = media_entries.id
     ) media_query on true
     where (
-        (${rootLTree}::ltree is not null
-          and media_entries.path <@ ${rootLTree}::ltree
-          and media_entries.path <> ${rootLTree}::ltree)
+        (ltree_from_string(${path}) is not null
+          and media_entries.path <@ ltree_from_string(${path})
+          and media_entries.path <> ltree_from_string(${path}))
         or
-        (${rootLTree}::ltree is null
+        (ltree_from_string(${path}) is null
           and (${rootId}::bigint is null
             or (media_entries.path <@ root.path and media_entries.id <> root.id)))
       )

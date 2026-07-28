@@ -329,13 +329,24 @@ $_$;
 
 
 --
+-- Name: ltree_from_string(text); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.ltree_from_string(path text) RETURNS public.ltree
+    LANGUAGE sql IMMUTABLE STRICT PARALLEL SAFE
+    AS $$
+  SELECT nullif(replace(path, '/', '.'), '')::LTREE;
+$$;
+
+
+--
 -- Name: ltree_to_string(public.ltree); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION public.ltree_to_string(path public.ltree) RETURNS text
     LANGUAGE sql IMMUTABLE STRICT PARALLEL SAFE
     AS $$
-  SELECT path::TEXT;
+  SELECT replace(path::TEXT, '.', '/');
 $$;
 
 

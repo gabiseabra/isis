@@ -53,6 +53,8 @@ export function MediaChildren({
         page: 1,
         limit: 100,
         query: `parent_path = "${path ?? ""}"`,
+        sort: "updated_at",
+        order: "desc",
       },
     }),
   );
