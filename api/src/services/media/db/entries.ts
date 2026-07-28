@@ -106,7 +106,7 @@ export async function queryMediaEntry(input: {
       and media_entries.id = any(coalesce(${ids as number[]}::bigint[], array[media_entries.id]))
       and case
         when ${query}::text is null then true
-        else jsonb_expression_match(
+        else jsonb_query_match(
           coalesce(media_query.metadata, '{}'::jsonb) || jsonb_build_object(
             'name', media_entries.name,
             'slug', media_entries.slug,

@@ -33,7 +33,7 @@ export function MediaTree({
       input: {
         page: 1,
         limit: 100,
-        query: `type:eq:"folder" && parent_path:eq:"${path ?? ""}"`,
+        query: `type = "folder" and parent_path = ${JSON.stringify(path ?? "")}`,
         sort: "updated_at",
         order: "desc",
       },
@@ -93,7 +93,7 @@ export function MediaTreeNode({
         page: 1,
         limit: 100,
         parentId: entry.id,
-        query: 'type:eq:"folder"',
+        query: 'type = "folder"',
         sort: "updated_at",
         order: "desc",
       },

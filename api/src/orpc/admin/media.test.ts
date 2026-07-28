@@ -172,7 +172,7 @@ describe("adminRouter.media", () => {
         client.media.query({
           page: 1,
           limit: 10,
-          query: 'name:like:"%Plate%"',
+          query: 'name %= "Plate"',
         }),
       ).resolves.toMatchObject({
         items: [

@@ -12,7 +12,7 @@ import { Button } from "@isis/ui/form/Button";
 import { FileUploadOverlay } from "@isis/ui/form/FileUpload";
 import { BoxProps } from "@isis/ui/layout/Box";
 import { Col, FlexBox } from "@isis/ui/layout/FlexBox";
-import { useQuery } from "@tanstack/react-query";
+import { skipToken, useQuery } from "@tanstack/react-query";
 import { MouseEvent, useEffect, useMemo, useState } from "react";
 import { BiFolder, BiImage, BiRefresh } from "react-icons/bi";
 import { orpcQuery } from "../../orpc/client";
@@ -44,12 +44,15 @@ export function MediaChildren({
     }[]
   >([]);
 
+  const entryQuery = useQuery(
+    orpcQuery.media.get.queryOptions({ input: path ? { path } : skipToken }),
+  );
   const childrenQuery = useQuery(
     orpcQuery.media.query.queryOptions({
       input: {
         page: 1,
         limit: 100,
-        query: `parent_path:eq:"${path ?? ""}"`,
+        query: `parent_path = "${path ?? ""}"`,
       },
     }),
   );
@@ -126,7 +129,7 @@ export function MediaChildren({
             key={id}
             input={{
               file,
-              parentId: mediaId,
+              parentId: entryQuery.data?.id,
               name: file.name,
               tags: [],
               metadata: {},

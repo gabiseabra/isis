@@ -1,5 +1,4 @@
 import { MediaInput } from "@isis/common/dto/media/input";
-import { escapeLike } from "../../db/escape-like";
 import { slugify } from "../../utils/slugify";
 import { queryMediaEntry } from "./db";
 
@@ -9,7 +8,7 @@ export async function getAvailableMediaSlug(
   const slug = input.slug ?? slugify(input.name);
 
   const entries = await queryMediaEntry({
-    query: `slug:like:${JSON.stringify(`${escapeLike(slug)}%`)}`,
+    query: `slug ^= "${slug}"`,
     parentId: input.parentId,
   });
 
