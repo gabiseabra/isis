@@ -120,7 +120,7 @@ export function Component() {
           <>
             <MediaChildren
               p={2}
-              mediaId={entryQuery.data?.id}
+              path={path}
               activePath={activePath}
               onDoubleClick={() => {
                 setSearchParams({});

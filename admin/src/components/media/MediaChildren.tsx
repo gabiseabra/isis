@@ -19,7 +19,7 @@ import { orpcQuery } from "../../orpc/client";
 import { useUploadMediaMutation } from "../../orpc/media/use-upload-media-mutation";
 
 type MediaChildrenProps = Omit<BoxProps, "children"> & {
-  mediaId?: ID<"Media">;
+  path?: Path;
   activePath?: Path;
   loading?: boolean;
   onClickMedia?: (entry: Media, event: MouseEvent) => void;
@@ -28,7 +28,7 @@ type MediaChildrenProps = Omit<BoxProps, "children"> & {
 };
 
 export function MediaChildren({
-  mediaId,
+  path,
   activePath,
   loading,
   onClickMedia,
@@ -49,7 +49,7 @@ export function MediaChildren({
       input: {
         page: 1,
         limit: 100,
-        parentId: mediaId ?? null,
+        query: `parent_path:eq:"${path ?? ""}"`,
       },
     }),
   );

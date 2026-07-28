@@ -227,6 +227,17 @@ COMMENT ON FUNCTION public.jsonb_expression_match(input jsonb, expression text) 
 
 
 --
+-- Name: ltree_to_string(public.ltree); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.ltree_to_string(path public.ltree) RETURNS text
+    LANGUAGE sql IMMUTABLE STRICT PARALLEL SAFE
+    AS $$
+  SELECT path::TEXT;
+$$;
+
+
+--
 -- Name: set_media_entry_path(); Type: FUNCTION; Schema: public; Owner: -
 --
 
@@ -1033,4 +1044,5 @@ INSERT INTO public.schema_migrations (version) VALUES
     ('20260718132348'),
     ('20260719020000'),
     ('20260720041000'),
-    ('20260726064500');
+    ('20260726064500'),
+    ('20260728013000');

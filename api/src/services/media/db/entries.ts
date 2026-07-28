@@ -110,7 +110,8 @@ export async function queryMediaEntry(input: {
           coalesce(media_query.metadata, '{}'::jsonb) || jsonb_build_object(
             'name', media_entries.name,
             'slug', media_entries.slug,
-            'path', replace(media_entries.path::text, '.', '/')
+            'path', ltree_to_string(media_entries.path),
+            'parent_path', ltree_to_string(subpath(media_entries.path, 0, -1))
           ),
           ${query}
         )

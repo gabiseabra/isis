@@ -33,7 +33,7 @@ export function MediaTree({
       input: {
         page: 1,
         limit: 100,
-        query: 'type:eq:"folder"',
+        query: `type:eq:"folder" && parent_path:eq:"${path ?? ""}"`,
         sort: "updated_at",
         order: "desc",
       },
