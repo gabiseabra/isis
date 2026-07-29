@@ -3,13 +3,23 @@ import { never } from "@isis/common/utils/error";
 import * as Bull from "bullmq";
 import { RedisClient } from "../redis/client";
 
-const bullConnection = RedisClient.duplicate(Math.random(), {
-  maxRetriesPerRequest: null,
-});
-
+/**
+ * Typed background-work job queue for one application resource.
+ *
+ * A `JobQueue` is a producer when constructed: it can enqueue named jobs and
+ * return handles for observing their status without doing the work in this
+ * process.
+ *
+ * Call `startWorker()` when this process should also consume jobs from the same
+ * queue. The worker routes each queued job to the handler with the matching
+ * name from the worker map.
+ *
+ * Use this for durable work that should run outside the caller's request flow.
+ * In normal operation a queued job is claimed by one worker at a time, but job
+ * handlers should still be retry-safe because failed or stalled work may be
+ * attempted again.
+ */
 export class JobQueue<T extends AnyJobMap> implements AsyncDisposable {
-  closed = false;
-
   private bullQueue: Bull.Queue<
     JobInputs<T>,
     JobReturns<T>,
@@ -18,19 +28,19 @@ export class JobQueue<T extends AnyJobMap> implements AsyncDisposable {
     JobReturns<T>,
     keyof T & string
   >;
-  private bullWorker: Bull.Worker<
+  private bullWorker?: Bull.Worker<
     JobInputs<T>,
     JobReturns<T>,
     keyof T & string
   >;
   private bullQueueEvents: Bull.QueueEvents;
-  private readonly bullWorkerReady: Promise<unknown>;
   private closePromise?: Promise<void>;
 
   constructor(
     private resourceName: string,
-    private taskMap: T,
+    private workers: T,
   ) {
+    const connection = RedisClient.duplicate();
     const queue = new Bull.Queue<
       JobInputs<T>,
       JobReturns<T>,
@@ -38,7 +48,18 @@ export class JobQueue<T extends AnyJobMap> implements AsyncDisposable {
       JobInputs<T>,
       JobReturns<T>,
       keyof T & string
-    >(this.resourceName, { connection: bullConnection });
+    >(this.resourceName, { connection });
+
+    this.bullQueue = queue;
+    this.bullQueueEvents = new Bull.QueueEvents(this.resourceName, {
+      connection,
+    });
+  }
+
+  async startWorker() {
+    if (this.bullWorker) return;
+
+    const connection = RedisClient.duplicate();
 
     const worker = new Bull.Worker<
       JobInputs<T>,
@@ -47,25 +68,18 @@ export class JobQueue<T extends AnyJobMap> implements AsyncDisposable {
     >(
       this.resourceName,
       async (job) => {
-        return this.taskMap[job.name](...job.data);
+        return this.workers[job.name](...job.data);
       },
-      { connection: bullConnection },
+      { connection },
     );
 
-    this.bullQueue = queue;
     this.bullWorker = worker;
-    this.bullWorkerReady = worker.waitUntilReady().catch(() => undefined);
-    this.bullQueueEvents = new Bull.QueueEvents(this.resourceName, {
-      connection: bullConnection,
-    });
   }
 
   async close() {
-    if (this.closePromise) return this.closePromise;
-    this.closed = true;
-    this.closePromise = (async () => {
-      await this.bullWorkerReady;
-      await this.bullWorker.close();
+    this.closePromise ??= (async () => {
+      await this.bullWorker?.waitUntilReady();
+      await this.bullWorker?.close();
       await this.bullQueueEvents.close();
       await this.bullQueue.close();
     })();
@@ -80,8 +94,6 @@ export class JobQueue<T extends AnyJobMap> implements AsyncDisposable {
     type: K,
     ...args: JobInputs<T, K>
   ): Promise<Job<T, K>> {
-    if (this.closed) never("connection is closed");
-
     const jobId = UUID.create();
     await this.bullQueue.add(type, args, { jobId });
     const job = await this.getJob(jobId);
@@ -90,8 +102,6 @@ export class JobQueue<T extends AnyJobMap> implements AsyncDisposable {
   }
 
   async getJob(id: UUID): Promise<Job<T>> {
-    if (this.closed) never("connection is closed");
-
     const job = (await this.bullQueue.getJob(id)) ?? never("eyy");
     return {
       id,

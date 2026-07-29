@@ -16,20 +16,13 @@ export const RedisClient = {
     return connection;
   },
 
-  duplicate(instance: number, options?: Partial<RedisOptions>) {
-    const io = connections.get(instance) ?? RedisClient.io.duplicate(options);
-    connections.set(instance, io);
+  duplicate(options?: Partial<RedisOptions>) {
+    const io = RedisClient.io.duplicate(options);
+    connections.set(Math.random(), io);
     return io;
   },
 
-  async close(instance?: number) {
-    if (instance) {
-      const io = connections.get(instance);
-      if (io) await closeRedisConnection(io);
-      connections.delete(instance);
-      return;
-    }
-
+  async close() {
     for (const io of connections.values()) {
       await closeRedisConnection(io);
     }

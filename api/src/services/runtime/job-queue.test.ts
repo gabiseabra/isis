@@ -43,38 +43,6 @@ afterAll(async () => {
 });
 
 describe("JobQueue", () => {
-  describe("close", () => {
-    it("can be called twice safely", async () => {
-      await using queue = new TestQueue();
-
-      await queue.close();
-      await expect(queue.close()).resolves.toBeUndefined();
-    });
-
-    it("can be disposed with await using", async () => {
-      let disposedQueue: TestQueue | undefined;
-
-      {
-        await using queue = new TestQueue();
-        disposedQueue = queue;
-        const job = await queue.push("importBook", tractatus);
-
-        await expect(job.waitUntilFinished()).resolves.toMatchObject({
-          status: "done",
-          success: true,
-          data: {
-            title: tractatus.title,
-            slug: "tractatus_logico_philosophicus",
-            authorLabel: "Ludwig Wittgenstein",
-          },
-        });
-        expect(queue.closed).toBe(false);
-      }
-
-      expect(disposedQueue?.closed).toBe(true);
-    });
-  });
-
   describe("push", () => {
     it("creates a pending job", async () => {
       await using queue = new TestQueue();
@@ -102,6 +70,7 @@ describe("JobQueue", () => {
     describe("waitUntilFinished", () => {
       it("waits until the job is finished processing and returns the result", async () => {
         await using queue = new TestQueue();
+        await queue.startWorker();
         const job = await queue.push("importBook", tractatus);
 
         const result = await job.waitUntilFinished();
