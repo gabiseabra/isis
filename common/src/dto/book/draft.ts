@@ -5,11 +5,9 @@ import { zID } from "../primitives";
 import { BookInput } from "./input";
 
 export const DraftBookMetadata = z.object({
-  sheetId: zID("Sheet"),
-  bookId: zID("Book"),
-  rowId: z.number(),
-  deletedAt: z.date().nullable(),
-  appliedAt: z.date().nullable(),
+  bookId: zID("Book").optional(),
+  deletedAt: z.date().optional(),
+  appliedAt: z.date().optional(),
   createdAt: z.date(),
   updatedAt: z.date(),
 });

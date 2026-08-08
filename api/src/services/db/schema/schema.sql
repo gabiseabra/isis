@@ -53,31 +53,6 @@ CREATE TYPE public.book_status AS ENUM (
 
 
 --
--- Name: column_type; Type: TYPE; Schema: public; Owner: -
---
-
-CREATE TYPE public.column_type AS ENUM (
-    'string',
-    'number',
-    'date'
-);
-
-
---
--- Name: duplicate_row_structure(anyelement, integer); Type: FUNCTION; Schema: public; Owner: -
---
-
-CREATE FUNCTION public.duplicate_row_structure(signature_match anyelement, multiplier integer) RETURNS SETOF anyelement
-    LANGUAGE plpgsql
-    AS $$
-BEGIN
-    RETURN QUERY
-    SELECT (signature_match).* FROM generate_series(1, multiplier);
-END;
-$$;
-
-
---
 -- Name: jsonb_expression_match(jsonb, text); Type: FUNCTION; Schema: public; Owner: -
 --
 

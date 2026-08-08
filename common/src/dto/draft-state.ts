@@ -1,10 +1,13 @@
 import z from "zod";
 import { createRecord } from "../utils/object";
 import { ParseError } from "../utils/parse-zod-object";
+import { zID } from "./primitives";
 import { SheetColumn, SheetRow } from "./sheet";
 
 const zDraftState = <K extends string>(columns: K[]) => {
   return z.object({
+    sheetId: zID("Sheet"),
+    rowId: z.number(),
     row: SheetRow,
     columns: z.object(createRecord(columns, () => SheetColumn)),
     errors: z

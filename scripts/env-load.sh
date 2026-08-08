@@ -1,4 +1,4 @@
-_root=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
+_root=$(CDPATH= cd -- "$(dirname -- "$0")/.." >/dev/null && pwd)
 _env=${ENV:-${APP_ENV:-${NODE_ENV:-}}}
 
 set -a
