@@ -2,7 +2,6 @@ import { Media } from "@isis/common/dto/media";
 import { MediaInput } from "@isis/common/dto/media/input";
 import { Path } from "@isis/common/dto/path";
 import { extractErrorMessage } from "@isis/common/utils/error";
-import { ID } from "@isis/common/utils/id";
 import { IconControl } from "@isis/ui/display/IconControl";
 import { Text } from "@isis/ui/display/Text";
 import { EmptySearch, ErrorState } from "@isis/ui/feedback/EmptyState";

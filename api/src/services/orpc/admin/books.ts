@@ -1,12 +1,10 @@
 import { adminApi } from "@isis/common/orpc/admin";
 import { createErrorHandler, never } from "@isis/common/utils/error";
 import { implement } from "@orpc/server";
-import { createBook, getBook, queryBooks } from "../../books/db";
-import { getActiveDraftBook } from "../../books/draft/get";
-import { applyDraftBook, discardDraftBook } from "../../books/draft/status";
-import { upsertDraftBook } from "../../books/draft/upsert";
-import { BookNotFound } from "../../books/errors";
-import { unit } from "../../db/unit";
+import { applyDraftBook } from "../../books/apply";
+import { DraftBookNotFound } from "../../books/errors";
+import { getBook, queryBooks } from "../../books/repo/books";
+import { getActiveDraftBook, upsertDraftBook } from "../../books/repo/drafts";
 import { ORPCContext } from "../context";
 import { requireAuth } from "../middleware/auth";
 
@@ -36,48 +34,36 @@ export const books = c.router({
   }),
 
   getDraft: c.getDraft.use(requireAuth).handler(async ({ input, errors }) => {
-    return getActiveDraftBook(input.id).catch(
-      createErrorHandler().catch(BookNotFound, () => never(errors.NOT_FOUND())),
-    );
+    if (!(await getBook(input.id))) never(errors.NOT_FOUND());
+
+    return getActiveDraftBook(input.id);
   }),
 
   upsertDraft: c.upsertDraft
     .use(requireAuth)
-    .handler(async ({ input, errors }) => {
-      if (input.id) {
-        return upsertDraftBook(input.id, input).catch(
-          createErrorHandler().catch(BookNotFound, () =>
-            never(errors.NOT_FOUND()),
-          ),
-        );
-      } else {
-        const book = await createBook({
-          ...input,
-          status: "unpublished",
-        });
+    .handler(async ({ input: { id: bookId, ...input }, errors }) => {
+      if (bookId && !(await getBook(bookId))) never(errors.NOT_FOUND());
 
-        return upsertDraftBook(book.id, input);
-      }
+      return upsertDraftBook({ bookId, ...input });
     }),
 
   applyDraft: c.applyDraft
     .use(requireAuth)
     .handler(async ({ input, errors }) => {
-      await applyDraftBook(input.id).catch(
-        createErrorHandler().catch(BookNotFound, () =>
+      return applyDraftBook(input.uuid).catch(
+        createErrorHandler().catch(DraftBookNotFound, () =>
           never(errors.NOT_FOUND()),
         ),
       );
-      return (await getBook(input.id)) ?? never(errors.NOT_FOUND());
     }),
 
   discardDraft: c.discardDraft
     .use(requireAuth)
     .handler(async ({ input, errors }) => {
-      await discardDraftBook(input.id).catch(
-        createErrorHandler().catch(BookNotFound, () =>
-          never(errors.NOT_FOUND()),
-        ),
-      );
+      await upsertDraftBook({
+        ...((await getActiveDraftBook(input.id))?.data ??
+          never(errors.NOT_FOUND())),
+        deletedAt: new Date(),
+      });
     }),
 });

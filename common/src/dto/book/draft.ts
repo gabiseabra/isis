@@ -1,19 +1,26 @@
 import z from "zod";
-import { keys } from "../../utils/object";
-import { DraftState } from "../draft-state";
+import { ParseResult } from "../parse-result";
 import { zID } from "../primitives";
+import { UUID } from "../uuid";
 import { BookInput } from "./input";
 
-export const DraftBookMetadata = z.object({
+export const DraftBook = BookInput.omit({
+  id: true,
+}).extend({
+  uuid: UUID,
   bookId: zID("Book").optional(),
-  deletedAt: z.date().optional(),
   appliedAt: z.date().optional(),
+  deletedAt: z.date().optional(),
   createdAt: z.date(),
   updatedAt: z.date(),
 });
-export type DraftBookMetadata = z.infer<typeof DraftBookMetadata>;
 
-export const DraftBook = DraftState(keys(BookInput.shape)).extend(
-  DraftBookMetadata.shape,
-);
 export type DraftBook = z.infer<typeof DraftBook>;
+
+export const DraftBookResult = ParseResult.and(
+  z.object({
+    data: DraftBook,
+  }),
+);
+
+export type DraftBookResult = z.infer<typeof DraftBookResult>;

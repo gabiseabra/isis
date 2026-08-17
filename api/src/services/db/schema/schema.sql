@@ -53,155 +53,6 @@ CREATE TYPE public.book_status AS ENUM (
 
 
 --
--- Name: jsonb_expression_match(jsonb, text); Type: FUNCTION; Schema: public; Owner: -
---
-
-CREATE FUNCTION public.jsonb_expression_match(input jsonb, expression text) RETURNS boolean
-    LANGUAGE plpgsql IMMUTABLE STRICT
-    AS $_$
-DECLARE
-  expr TEXT := btrim(expression);
-  len INT;
-  i INT;
-  ch TEXT;
-  op TEXT;
-  paren_depth INT;
-  brace_depth INT;
-  in_string BOOLEAN;
-  escaped BOOLEAN;
-  match TEXT[];
-  path TEXT[];
-  json_value JSONB;
-  raw TEXT;
-BEGIN
-  -- Remove outer parentheses that wrap the entire expression.
-  LOOP
-    len := length(expr);
-    EXIT WHEN len < 2 OR left(expr, 1) <> '(' OR right(expr, 1) <> ')';
-
-    paren_depth := 0;
-    brace_depth := 0;
-    in_string := false;
-    escaped := false;
-
-    FOR i IN 1..len LOOP
-      ch := substr(expr, i, 1);
-
-      IF in_string THEN
-        IF escaped THEN
-          escaped := false;
-        ELSIF ch = '\\' THEN
-          escaped := true;
-        ELSIF ch = '"' THEN
-          in_string := false;
-        END IF;
-      ELSE
-        IF ch = '"' THEN
-          in_string := true;
-        ELSIF ch = '{' THEN
-          brace_depth := brace_depth + 1;
-        ELSIF ch = '}' THEN
-          brace_depth := brace_depth - 1;
-        ELSIF brace_depth = 0 AND ch = '(' THEN
-          paren_depth := paren_depth + 1;
-        ELSIF brace_depth = 0 AND ch = ')' THEN
-          paren_depth := paren_depth - 1;
-
-          IF paren_depth = 0 AND i < len THEN
-            EXIT;
-          END IF;
-        END IF;
-      END IF;
-    END LOOP;
-
-    EXIT WHEN paren_depth <> 0 OR i < len;
-    expr := btrim(substr(expr, 2, len - 2));
-  END LOOP;
-
-  -- Split boolean operators at top level. OR is lower precedence than AND.
-  FOREACH op IN ARRAY ARRAY['||', '&&'] LOOP
-    len := length(expr);
-    paren_depth := 0;
-    brace_depth := 0;
-    in_string := false;
-    escaped := false;
-
-    FOR i IN 1..greatest(len - 1, 0) LOOP
-      ch := substr(expr, i, 1);
-
-      IF in_string THEN
-        IF escaped THEN
-          escaped := false;
-        ELSIF ch = '\\' THEN
-          escaped := true;
-        ELSIF ch = '"' THEN
-          in_string := false;
-        END IF;
-      ELSE
-        IF paren_depth = 0 AND brace_depth = 0 AND substr(expr, i, 2) = op THEN
-          IF op = '||' THEN
-            RETURN jsonb_expression_match(input, substr(expr, 1, i - 1))
-                OR jsonb_expression_match(input, substr(expr, i + 2));
-          ELSE
-            RETURN jsonb_expression_match(input, substr(expr, 1, i - 1))
-               AND jsonb_expression_match(input, substr(expr, i + 2));
-          END IF;
-        END IF;
-
-        IF ch = '"' THEN
-          in_string := true;
-        ELSIF ch = '{' THEN
-          brace_depth := brace_depth + 1;
-        ELSIF ch = '}' THEN
-          brace_depth := brace_depth - 1;
-        ELSIF brace_depth = 0 AND ch = '(' THEN
-          paren_depth := paren_depth + 1;
-        ELSIF brace_depth = 0 AND ch = ')' THEN
-          paren_depth := paren_depth - 1;
-        END IF;
-      END IF;
-    END LOOP;
-  END LOOP;
-
-  -- Parse and evaluate leaf expression: path:op:literal.
-  match := regexp_match(expr, '^([^:\[\]\s()]+):(eq|like|neq|num|lte|json):(.+)$');
-
-  IF match IS NULL THEN
-    RAISE EXCEPTION 'Invalid jsonb expression: %', expression;
-  END IF;
-
-  path := string_to_array(match[1], '.');
-  json_value := input #> path;
-  op := match[2];
-  raw := match[3];
-
-  IF op = 'eq' THEN
-    RETURN coalesce(jsonb_typeof(json_value) = 'string' AND json_value = raw::jsonb, false);
-  ELSIF op = 'like' THEN
-    RETURN coalesce(jsonb_typeof(json_value) = 'string' AND (json_value #>> '{}') LIKE (raw::jsonb #>> '{}'), false);
-  ELSIF op = 'neq' THEN
-    RETURN coalesce(jsonb_typeof(json_value) = 'string' AND json_value <> raw::jsonb, false);
-  ELSIF op = 'num' THEN
-    RETURN coalesce(jsonb_typeof(json_value) = 'number' AND (json_value #>> '{}')::numeric = raw::numeric, false);
-  ELSIF op = 'lte' THEN
-    RETURN coalesce(jsonb_typeof(json_value) = 'number' AND (json_value #>> '{}')::numeric <= raw::numeric, false);
-  ELSIF op = 'json' THEN
-    RETURN coalesce(json_value = raw::jsonb, false);
-  END IF;
-
-  RAISE EXCEPTION 'Unsupported jsonb expression operator: %', op;
-END;
-$_$;
-
-
---
--- Name: FUNCTION jsonb_expression_match(input jsonb, expression text); Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON FUNCTION public.jsonb_expression_match(input jsonb, expression text) IS 'Evaluates a small boolean expression language against a JSONB document. Supports &&, ||, parentheses, dot paths, and type-strict leaf operators eq, like, neq, num, lte, and json. String operators require JSON string values; number operators require JSON number values; json compares raw JSONB equality.';
-
-
---
 -- Name: jsonb_query_match(jsonb, text); Type: FUNCTION; Schema: public; Owner: -
 --
 
@@ -403,29 +254,15 @@ CREATE TABLE public.book_authors (
 
 
 --
--- Name: book_drafts; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.book_drafts (
-    book_id bigint NOT NULL,
-    sheet_id bigint NOT NULL,
-    row_id bigint NOT NULL,
-    deleted_at timestamp with time zone,
-    applied_at timestamp with time zone,
-    created_at timestamp with time zone DEFAULT now() NOT NULL,
-    updated_at timestamp with time zone DEFAULT now() NOT NULL,
-    CONSTRAINT book_drafts_not_applied_and_deleted_check CHECK ((NOT ((applied_at IS NOT NULL) AND (deleted_at IS NOT NULL))))
-);
-
-
---
 -- Name: book_genres; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.book_genres (
     book_id bigint NOT NULL,
     genre_id bigint NOT NULL,
-    created_at timestamp with time zone DEFAULT now() NOT NULL
+    featured_index integer,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    updated_at timestamp with time zone DEFAULT now() NOT NULL
 );
 
 
@@ -447,16 +284,16 @@ CREATE TABLE public.book_languages (
 CREATE TABLE public.books (
     id bigint NOT NULL,
     title text NOT NULL,
+    status public.book_status DEFAULT 'unpublished'::public.book_status NOT NULL,
     slug character varying(255),
+    tags text[] DEFAULT ARRAY[]::text[] NOT NULL,
     isbn13 character(13),
     isbn10 character(10),
     image_url text,
     publish_year smallint,
     publisher_id bigint,
     created_at timestamp with time zone DEFAULT now() NOT NULL,
-    updated_at timestamp with time zone DEFAULT now() NOT NULL,
-    status public.book_status DEFAULT 'unpublished'::public.book_status NOT NULL,
-    tags text[] DEFAULT ARRAY[]::text[] NOT NULL
+    updated_at timestamp with time zone DEFAULT now() NOT NULL
 );
 
 
@@ -482,6 +319,30 @@ CREATE TABLE public.countries (
     code character(2) NOT NULL,
     name text NOT NULL,
     created_at timestamp with time zone DEFAULT now() NOT NULL
+);
+
+
+--
+-- Name: draft_books; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.draft_books (
+    uuid uuid DEFAULT public.uuid_generate_v4() NOT NULL,
+    book_id bigint,
+    title text NOT NULL,
+    slug character varying(255),
+    tags text[] DEFAULT ARRAY[]::text[] NOT NULL,
+    isbn13 character(13),
+    isbn10 character(10),
+    image_url text,
+    publish_year smallint,
+    publisher jsonb NOT NULL,
+    authors jsonb NOT NULL,
+    languages text[] DEFAULT ARRAY[]::text[] NOT NULL,
+    applied_at timestamp with time zone,
+    deleted_at timestamp with time zone,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    updated_at timestamp with time zone DEFAULT now() NOT NULL
 );
 
 
@@ -561,7 +422,7 @@ ALTER TABLE public.media_entries ALTER COLUMN id ADD GENERATED ALWAYS AS IDENTIT
 CREATE TABLE public.media_metadata (
     entry_id bigint NOT NULL,
     name character varying(255) NOT NULL,
-    value jsonb NOT NULL
+    value jsonb DEFAULT 'null'::jsonb NOT NULL
 );
 
 
@@ -615,102 +476,6 @@ CREATE TABLE public.sessions (
 
 
 --
--- Name: sheet_cells; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.sheet_cells (
-    sheet_id bigint NOT NULL,
-    column_id bigint NOT NULL,
-    row_id bigint NOT NULL,
-    value json NOT NULL,
-    created_at timestamp with time zone DEFAULT now() NOT NULL,
-    updated_at timestamp with time zone DEFAULT now() NOT NULL
-);
-
-
---
--- Name: sheet_columns; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.sheet_columns (
-    id bigint NOT NULL,
-    sheet_id bigint NOT NULL,
-    name text NOT NULL,
-    tags text[] DEFAULT ARRAY[]::text[] NOT NULL,
-    created_at timestamp with time zone DEFAULT now() NOT NULL,
-    updated_at timestamp with time zone DEFAULT now() NOT NULL,
-    target text
-);
-
-
---
--- Name: sheet_columns_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-ALTER TABLE public.sheet_columns ALTER COLUMN id ADD GENERATED ALWAYS AS IDENTITY (
-    SEQUENCE NAME public.sheet_columns_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1
-);
-
-
---
--- Name: sheet_rows; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.sheet_rows (
-    id bigint NOT NULL,
-    sheet_id bigint NOT NULL,
-    created_at timestamp with time zone DEFAULT now() NOT NULL,
-    updated_at timestamp with time zone DEFAULT now() NOT NULL
-);
-
-
---
--- Name: sheet_rows_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-ALTER TABLE public.sheet_rows ALTER COLUMN id ADD GENERATED ALWAYS AS IDENTITY (
-    SEQUENCE NAME public.sheet_rows_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1
-);
-
-
---
--- Name: sheets; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.sheets (
-    id bigint NOT NULL,
-    file_name text NOT NULL,
-    file_hash character(32) NOT NULL,
-    created_at timestamp with time zone DEFAULT now() NOT NULL,
-    updated_at timestamp with time zone DEFAULT now() NOT NULL
-);
-
-
---
--- Name: sheets_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-ALTER TABLE public.sheets ALTER COLUMN id ADD GENERATED ALWAYS AS IDENTITY (
-    SEQUENCE NAME public.sheets_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1
-);
-
-
---
 -- Name: users; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -755,14 +520,6 @@ ALTER TABLE ONLY public.book_authors
 
 
 --
--- Name: book_drafts book_drafts_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.book_drafts
-    ADD CONSTRAINT book_drafts_pkey PRIMARY KEY (book_id, row_id);
-
-
---
 -- Name: book_genres book_genres_book_id_genre_id_key; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -800,6 +557,14 @@ ALTER TABLE ONLY public.books
 
 ALTER TABLE ONLY public.countries
     ADD CONSTRAINT countries_pkey PRIMARY KEY (code);
+
+
+--
+-- Name: draft_books draft_books_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.draft_books
+    ADD CONSTRAINT draft_books_pkey PRIMARY KEY (uuid);
 
 
 --
@@ -867,38 +632,6 @@ ALTER TABLE ONLY public.sessions
 
 
 --
--- Name: sheet_cells sheet_cells_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.sheet_cells
-    ADD CONSTRAINT sheet_cells_pkey PRIMARY KEY (column_id, row_id);
-
-
---
--- Name: sheet_columns sheet_columns_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.sheet_columns
-    ADD CONSTRAINT sheet_columns_pkey PRIMARY KEY (id);
-
-
---
--- Name: sheet_rows sheet_rows_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.sheet_rows
-    ADD CONSTRAINT sheet_rows_pkey PRIMARY KEY (id);
-
-
---
--- Name: sheets sheets_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.sheets
-    ADD CONSTRAINT sheets_pkey PRIMARY KEY (id);
-
-
---
 -- Name: users users_email_key; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -915,24 +648,10 @@ ALTER TABLE ONLY public.users
 
 
 --
--- Name: book_drafts_one_active_per_book_idx; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE UNIQUE INDEX book_drafts_one_active_per_book_idx ON public.book_drafts USING btree (book_id) WHERE ((applied_at IS NULL) AND (deleted_at IS NULL));
-
-
---
 -- Name: media_entries_path_unique; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE UNIQUE INDEX media_entries_path_unique ON public.media_entries USING btree (path) WHERE (deleted_at IS NULL);
-
-
---
--- Name: sheet_columns_sheet_id_target_idx; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE UNIQUE INDEX sheet_columns_sheet_id_target_idx ON public.sheet_columns USING btree (sheet_id, target) WHERE (target IS NOT NULL);
 
 
 --
@@ -964,30 +683,6 @@ ALTER TABLE ONLY public.book_authors
 
 ALTER TABLE ONLY public.book_authors
     ADD CONSTRAINT book_authors_book_id_fkey FOREIGN KEY (book_id) REFERENCES public.books(id) ON DELETE CASCADE;
-
-
---
--- Name: book_drafts book_drafts_book_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.book_drafts
-    ADD CONSTRAINT book_drafts_book_id_fkey FOREIGN KEY (book_id) REFERENCES public.books(id) ON DELETE CASCADE;
-
-
---
--- Name: book_drafts book_drafts_row_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.book_drafts
-    ADD CONSTRAINT book_drafts_row_id_fkey FOREIGN KEY (row_id) REFERENCES public.sheet_rows(id) ON DELETE CASCADE;
-
-
---
--- Name: book_drafts book_drafts_sheet_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.book_drafts
-    ADD CONSTRAINT book_drafts_sheet_id_fkey FOREIGN KEY (sheet_id) REFERENCES public.sheets(id) ON DELETE CASCADE;
 
 
 --
@@ -1031,6 +726,14 @@ ALTER TABLE ONLY public.books
 
 
 --
+-- Name: draft_books draft_books_book_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.draft_books
+    ADD CONSTRAINT draft_books_book_id_fkey FOREIGN KEY (book_id) REFERENCES public.books(id);
+
+
+--
 -- Name: media_entries media_entries_parent_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -1063,46 +766,6 @@ ALTER TABLE ONLY public.sessions
 
 
 --
--- Name: sheet_cells sheet_cells_column_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.sheet_cells
-    ADD CONSTRAINT sheet_cells_column_id_fkey FOREIGN KEY (column_id) REFERENCES public.sheet_columns(id) ON DELETE CASCADE;
-
-
---
--- Name: sheet_cells sheet_cells_row_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.sheet_cells
-    ADD CONSTRAINT sheet_cells_row_id_fkey FOREIGN KEY (row_id) REFERENCES public.sheet_rows(id) ON DELETE CASCADE;
-
-
---
--- Name: sheet_cells sheet_cells_sheet_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.sheet_cells
-    ADD CONSTRAINT sheet_cells_sheet_id_fkey FOREIGN KEY (sheet_id) REFERENCES public.sheets(id) ON DELETE CASCADE;
-
-
---
--- Name: sheet_columns sheet_columns_sheet_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.sheet_columns
-    ADD CONSTRAINT sheet_columns_sheet_id_fkey FOREIGN KEY (sheet_id) REFERENCES public.sheets(id) ON DELETE CASCADE;
-
-
---
--- Name: sheet_rows sheet_rows_sheet_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.sheet_rows
-    ADD CONSTRAINT sheet_rows_sheet_id_fkey FOREIGN KEY (sheet_id) REFERENCES public.sheets(id) ON DELETE CASCADE;
-
-
---
 -- PostgreSQL database dump complete
 --
 
@@ -1116,22 +779,12 @@ INSERT INTO public.schema_migrations (version) VALUES
     ('20260622073950'),
     ('20260622074501'),
     ('20260628100600'),
+    ('20260628100606'),
     ('20260628100706'),
     ('20260628180019'),
     ('20260628180100'),
     ('20260628190608'),
-    ('20260628191756'),
-    ('20260708144320'),
-    ('20260708144557'),
-    ('20260708144907'),
-    ('20260708151535'),
-    ('20260709163615'),
-    ('20260718015129'),
-    ('20260718121458'),
-    ('20260718130028'),
-    ('20260718132348'),
     ('20260719020000'),
-    ('20260720041000'),
-    ('20260726064500'),
     ('20260728013000'),
-    ('20260728020500');
+    ('20260728020500'),
+    ('20260808033538');

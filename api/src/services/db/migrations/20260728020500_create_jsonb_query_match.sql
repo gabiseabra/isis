@@ -1,5 +1,5 @@
 -- migrate:up
-CREATE OR REPLACE FUNCTION jsonb_query_match(input JSONB, expression TEXT)
+CREATE FUNCTION jsonb_query_match(input JSONB, expression TEXT)
 RETURNS BOOLEAN
 LANGUAGE plpgsql
 IMMUTABLE

@@ -11,7 +11,9 @@ CREATE TABLE genres (
 CREATE TABLE book_genres (
   book_id BIGINT NOT NULL REFERENCES books (id) ON DELETE CASCADE,
   genre_id BIGINT NOT NULL REFERENCES genres (id) ON DELETE CASCADE,
+  featured_index INT,
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   UNIQUE (book_id, genre_id)
 );
 

@@ -7,7 +7,7 @@ import {
   getPublisher,
   queryPublishers,
   updatePublisher,
-} from "../../publishers/db";
+} from "../../publishers/repo";
 import { ORPCContext } from "../context";
 import { requireAuth } from "../middleware/auth";
 

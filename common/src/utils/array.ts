@@ -27,6 +27,21 @@ export function groupBy<K, T>(items: T[], key: (item: T) => K): [K, T[]][] {
   ).map(([, value]) => value);
 }
 
+export function partition<A, B extends A>(
+  as: readonly A[],
+  f: (a: A, index: number, as: readonly A[]) => a is B,
+): [Extract<A, Required<B>>[], Exclude<A, Required<B>>[]] {
+  const included: Extract<A, Required<B>>[] = [];
+  const excluded: Exclude<A, Required<B>>[] = [];
+
+  for (const [index, a] of as.entries()) {
+    if (f(a, index, as)) included.push(a as Extract<A, Required<B>>);
+    else excluded.push(a as Exclude<A, Required<B>>);
+  }
+
+  return [included, excluded];
+}
+
 export function combinations<A, B, T>(
   a: A[],
   b: B[],

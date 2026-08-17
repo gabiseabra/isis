@@ -1,6 +1,6 @@
 import { MediaInput } from "@isis/common/dto/media/input";
 import { slugify } from "../../utils/slugify";
-import { queryMediaEntry } from "./db";
+import { queryMediaEntry } from "./repo";
 
 export async function getAvailableMediaSlug(
   input: Pick<MediaInput, "name" | "slug" | "parentId">,

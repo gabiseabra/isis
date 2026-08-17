@@ -1,6 +1,6 @@
 import { Media } from "@isis/common/dto/media";
 import { ID } from "@isis/common/utils/id";
-import { getMediaEntry, getMediaMetadata, getMediaParentIds } from "./db";
+import { getMediaEntry, getMediaMetadata, getMediaParentIds } from "./repo";
 
 export async function getMedia(
   input: { id: ID<"Media"> } | { path: string },

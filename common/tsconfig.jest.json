@@ -10,12 +10,7 @@
   "include": [
     "src/**/*.ts",
     "src/**/*.test.ts",
-    "src/test-utils/**/*"
+    "src/test-utils/**/*",
   ],
   "exclude": [],
-  "references": [
-    {
-      "path": "../common"
-    },
-  ],
 }

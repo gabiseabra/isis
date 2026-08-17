@@ -1,11 +1,13 @@
 import { never } from "@isis/common/utils/error";
 import { ID } from "@isis/common/utils/id";
-import { getBook, updateBook } from "./db";
-import { applyDraftBook } from "./draft/status";
+import { applyDraftBook } from "./apply";
 import { BookNotFound } from "./errors";
+import { getBook, updateBook } from "./repo/books";
 
 export async function publishBook(bookId: ID<"Book">) {
-  await applyDraftBook(bookId, {
+  await applyDraftBook(bookId);
+  await updateBook({
+    ...((await getBook(bookId)) ?? never(new BookNotFound())),
     status: "published",
   });
 }

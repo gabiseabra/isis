@@ -1,6 +1,6 @@
 import { CreateUserInput } from "@isis/common/dto/user/create-input";
 import argon2 from "argon2";
-import * as db from "./db";
+import * as db from "./repo";
 
 export async function createUser(input: CreateUserInput) {
   return await db.createUser({

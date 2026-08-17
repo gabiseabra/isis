@@ -1,10 +1,12 @@
 -- migrate:up
-CREATE TABLE sheet_rows (
+CREATE TABLE publishers (
   id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-  sheet_id BIGINT NOT NULL REFERENCES sheets (id) ON DELETE CASCADE,
+  "name" TEXT NOT NULL,
+  country_code CHAR(2) REFERENCES countries (code) ON DELETE SET NULL,
+  image_url TEXT,
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
 -- migrate:down
-DROP TABLE sheet_rows;
+DROP TABLE pulishers;

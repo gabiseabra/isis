@@ -1,10 +1,11 @@
 import z from "zod";
-import { Publisher } from "../publisher";
+import { zID } from "../primitives";
 
-export const PublisherInput = Publisher.omit({
-  id: true,
-  createdAt: true,
-  updatedAt: true,
+export const PublisherInput = z.object({
+  id: zID("Publisher").optional(),
+  name: z.string(),
+  imageUrl: z.string().optional(),
+  countryCode: z.string().length(2).optional(),
 });
 
 export type PublisherInput = z.infer<typeof PublisherInput>;

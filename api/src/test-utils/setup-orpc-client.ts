@@ -8,8 +8,8 @@ import {
   RouterClient,
 } from "@orpc/server";
 import { ORPCContext } from "../services/orpc/context";
-import { createSessionRow } from "../services/sessions/db";
 import { JWT } from "../services/sessions/jwt";
+import { createSessionRow } from "../services/sessions/repo";
 import { createUser } from "../services/users/create";
 
 export type OrpcClient<R extends Router<AnyContractRouter, ORPCContext>> =

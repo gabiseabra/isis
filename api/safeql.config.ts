@@ -2,11 +2,12 @@
 import { defineConfig } from "@ts-safeql/eslint-plugin";
 import dotenv from "dotenv";
 
-dotenv.config({ path: ".env" });
-dotenv.config({ path: ".env.local", override: true });
+dotenv.config({ path: ".env", quiet: true });
+dotenv.config({ path: ".env.local", override: true, quiet: true });
 dotenv.config({
   path: `.env.${process.env.NODE_ENV ?? "development"}`,
   override: true,
+  quiet: true,
 });
 
 const connectionConfig = process.env.DATABASE_URL

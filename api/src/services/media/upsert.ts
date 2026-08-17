@@ -5,6 +5,9 @@ import { ID } from "@isis/common/utils/id";
 import { NonEmpty } from "@isis/common/utils/non-empty";
 import { DatabaseError } from "pg";
 import { unit } from "../db/unit";
+import { MediaInputUnprocessable, MediaNotFound } from "./errors";
+import { getMedia } from "./get";
+import { publishMedia } from "./publisher";
 import {
   addMediaMetadata,
   createMediaEntry,
@@ -12,10 +15,7 @@ import {
   getMediaParentIds,
   removeMediaMetadata,
   updateMediaEntry,
-} from "./db";
-import { MediaInputUnprocessable, MediaNotFound } from "./errors";
-import { getMedia } from "./get";
-import { publishMedia } from "./publisher";
+} from "./repo";
 import { getAvailableMediaSlug } from "./slug";
 
 export async function upsertMedia({

@@ -1,6 +1,6 @@
 import { adminApi } from "@isis/common/orpc/admin";
 import { implement } from "@orpc/server";
-import { queryCountries } from "../../countries/db";
+import { queryCountries } from "../../countries/repo";
 import { ORPCContext } from "../context";
 import { requireAuth } from "../middleware/auth";
 

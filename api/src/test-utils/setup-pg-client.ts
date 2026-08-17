@@ -76,6 +76,6 @@ export async function clearDatabaseTest(id: string) {
   }
 
   await sql`
-  truncate table books, authors, publishers, sheets, genres, media_entries restart identity cascade;
+  truncate table draft_books, books, authors, publishers, genres, media_entries restart identity cascade;
   `;
 }

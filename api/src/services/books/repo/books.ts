@@ -2,13 +2,13 @@ import { Book } from "@isis/common/dto/book";
 import { BookStatus } from "@isis/common/dto/book/status";
 import { WithRequired } from "@isis/common/types/object";
 import { ID } from "@isis/common/utils/id";
-import { sql, sqlOne, sqlOneMaybe } from "../db/sql";
+import { sql, sqlOne, sqlOneMaybe } from "../../db/sql";
 
 class BookRow {
   constructor(
     public id: number,
-    public status: BookStatus,
     public title: string,
+    public status: BookStatus,
     public slug: string | null,
     public isbn13: string | null,
     public isbn10: string | null,

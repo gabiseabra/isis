@@ -1,6 +1,6 @@
 import { User } from "@isis/common/dto/user";
 import argon2 from "argon2";
-import { getUserPasswordHash, updateUserPasswordHash } from "./db";
+import { getUserPasswordHash, updateUserPasswordHash } from "./repo";
 
 export async function updatePassword(
   user: User,

@@ -1,5 +1,7 @@
 import { Author } from "@isis/common/dto/author";
 import { ID } from "@isis/common/utils/id";
+import { NonEmpty } from "@isis/common/utils/non-empty";
+import { nest } from "../db/nest";
 import { sql, sqlOne, sqlOneMaybe } from "../db/sql";
 
 class AuthorRow {
@@ -42,6 +44,33 @@ export async function createAuthor(input: {
     `;
 
   return mapAuthor(row);
+}
+
+export async function bulkCreateAuthors(
+  inputs: NonEmpty<{
+    name: string;
+    imageUrl: string | null;
+    countryCode: string | null;
+    birthYear: number | null;
+    deathYear: number | null;
+  }>,
+) {
+  const { name, imageUrl, countryCode, birthYear, deathYear } = nest(inputs);
+
+  const rows = await sql<AuthorRow>`
+    insert into authors (name, image_url, country_code, birth_year, death_year)
+    select *
+    from UNNEST(
+      ${name}::text[],
+      ${imageUrl}::text[],
+      ${countryCode}::char(2)[],
+      ${birthYear}::smallint[],
+      ${deathYear}::smallint[]
+    )
+    returning *;
+    `;
+
+  return rows.map(mapAuthor);
 }
 
 export async function updateAuthor(input: {

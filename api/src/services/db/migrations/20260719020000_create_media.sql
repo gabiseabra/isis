@@ -54,7 +54,7 @@ EXECUTE FUNCTION set_media_entry_path();
 CREATE TABLE media_metadata (
   entry_id BIGINT NOT NULL REFERENCES media_entries (id),
   "name" varchar(255) NOT NULL,
-  "value" JSONB,
+  "value" JSONB NOT NULL DEFAULT 'null',
   PRIMARY KEY (entry_id, "name")
 );
 

@@ -43,7 +43,7 @@ describe("jsonb_query_match", () => {
         false,
       ],
     ])("%s", async (_name, expression, expected) => {
-      const row = await sqlOne<{ matched: boolean }>`
+      const row = await sqlOne<{ matched: boolean | null }>`
         select jsonb_query_match(
           '{
             "name": "Ada Lovelace",
@@ -55,7 +55,7 @@ describe("jsonb_query_match", () => {
             "tags": ["math", "code"]
           }'::jsonb,
           ${expression}::text
-        ) matched
+        )::boolean matched
       `;
 
       expect(row.matched).toBe(expected);
@@ -71,7 +71,7 @@ describe("jsonb_query_match", () => {
       ["matches contains", 'name %= "Love"', true],
       ["returns false when substring is missing", 'name %= "Byron"', false],
     ])("%s", async (_name, expression, expected) => {
-      const row = await sqlOne<{ matched: boolean }>`
+      const row = await sqlOne<{ matched: boolean | null }>`
         select jsonb_query_match(
           '{
             "name": "Ada Lovelace",
@@ -83,7 +83,7 @@ describe("jsonb_query_match", () => {
             "tags": ["math", "code"]
           }'::jsonb,
           ${expression}::text
-        ) matched
+        )::boolean matched
       `;
 
       expect(row.matched).toBe(expected);
@@ -103,7 +103,7 @@ describe("jsonb_query_match", () => {
         false,
       ],
     ])("%s", async (_name, expression, expected) => {
-      const row = await sqlOne<{ matched: boolean }>`
+      const row = await sqlOne<{ matched: boolean | null }>`
         select jsonb_query_match(
           '{
             "name": "Ada Lovelace",
@@ -115,7 +115,7 @@ describe("jsonb_query_match", () => {
             "tags": ["math", "code"]
           }'::jsonb,
           ${expression}::text
-        ) matched
+        )::boolean matched
       `;
 
       expect(row.matched).toBe(expected);
@@ -143,7 +143,7 @@ describe("jsonb_query_match", () => {
         false,
       ],
     ])("%s", async (_name, expression, expected) => {
-      const row = await sqlOne<{ matched: boolean }>`
+      const row = await sqlOne<{ matched: boolean | null }>`
         select jsonb_query_match(
           '{
             "name": "Ada Lovelace",
@@ -155,7 +155,7 @@ describe("jsonb_query_match", () => {
             "tags": ["math", "code"]
           }'::jsonb,
           ${expression}::text
-        ) matched
+        )::boolean matched
       `;
 
       expect(row.matched).toBe(expected);
@@ -190,7 +190,7 @@ describe("jsonb_query_match", () => {
         false,
       ],
     ])("%s", async (_name, expression, expected) => {
-      const row = await sqlOne<{ matched: boolean }>`
+      const row = await sqlOne<{ matched: boolean | null }>`
         select jsonb_query_match(
           '{
             "name": "Ada Lovelace",
@@ -202,7 +202,7 @@ describe("jsonb_query_match", () => {
             "tags": ["math", "code"]
           }'::jsonb,
           ${expression}::text
-        ) matched
+        )::boolean matched
       `;
 
       expect(row.matched).toBe(expected);
@@ -222,7 +222,7 @@ describe("jsonb_query_match", () => {
         false,
       ],
     ])("%s", async (_name, expression, expected) => {
-      const row = await sqlOne<{ matched: boolean }>`
+      const row = await sqlOne<{ matched: boolean | null }>`
         select jsonb_query_match(
           '{
             "name": "Ada Lovelace",
@@ -234,7 +234,7 @@ describe("jsonb_query_match", () => {
             "tags": ["math", "code"]
           }'::jsonb,
           ${expression}::text
-        ) matched
+        )::boolean matched
       `;
 
       expect(row.matched).toBe(expected);
@@ -243,7 +243,7 @@ describe("jsonb_query_match", () => {
 
   describe("malformed expression", () => {
     it("rejects malformed expressions", async () => {
-      await expect(sqlOne<{ matched: boolean }>`
+      await expect(sqlOne<{ matched: boolean | null }>`
         select jsonb_query_match(
           '{
             "name": "Ada Lovelace",
@@ -255,7 +255,7 @@ describe("jsonb_query_match", () => {
             "tags": ["math", "code"]
           }'::jsonb,
           ${'name ~~ "Ada"'}::text
-        ) matched
+        )::boolean matched
       `).rejects.toThrow(/Invalid jsonb query expression/);
     });
   });

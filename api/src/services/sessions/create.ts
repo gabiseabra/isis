@@ -1,7 +1,7 @@
 import argon2 from "argon2";
-import { getUser, getUserPasswordHash } from "../users/db";
-import { createSessionRow } from "./db";
+import { getUser, getUserPasswordHash } from "../users/repo";
 import { JWT } from "./jwt";
+import { createSessionRow } from "./repo";
 
 export async function createSession(input: {
   email: string;

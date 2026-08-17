@@ -1,8 +1,8 @@
 import { createErrorHandler } from "@isis/common/utils/error";
 import { ID } from "@isis/common/utils/id";
-import { getUser } from "../users/db";
-import { getSession } from "./db";
+import { getUser } from "../users/repo";
 import { JWT } from "./jwt";
+import { getSession } from "./repo";
 
 export async function verifySession(token: string) {
   const payload = await JWT.parseToken(token).catch(

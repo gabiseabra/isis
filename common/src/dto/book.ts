@@ -1,9 +1,9 @@
 import z from "zod";
-import { ID } from "../utils/id";
 import { BookStatus } from "./book/status";
+import { zID } from "./primitives";
 
 export const Book = z.object({
-  id: z.string().refine(ID.guard("Book")),
+  id: zID("Book"),
   status: BookStatus,
   title: z.string(),
   slug: z.string().optional(),
@@ -11,11 +11,10 @@ export const Book = z.object({
   isbn10: z.string().optional(),
   imageUrl: z.string().optional(),
   publishYear: z.number().optional(),
-  publisherId: z.string().refine(ID.guard("Publisher")).optional(),
-  authorIds: z.string().refine(ID.guard("Author")).array(),
+  publisherId: zID("Publisher").optional(),
+  authorIds: zID("Author").array(),
   languages: z.string().length(2).array(),
   tags: z.string().array(),
-  createdById: z.string().refine(ID.guard("User")).optional(),
   createdAt: z.date(),
   updatedAt: z.date(),
 });

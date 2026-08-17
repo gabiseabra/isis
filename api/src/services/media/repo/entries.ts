@@ -81,7 +81,7 @@ export async function queryMediaEntry(input: {
   const rootId = input.rootId ? ID.parse(input.rootId).id : null;
   const parentId = input.parentId ? ID.parse(input.parentId).id : null;
   const hasParentId = "parentId" in input;
-  const path = input.path ?? null;
+  const path: string | null = input.path ?? null;
   const ids = input.ids?.map((id) => ID.parse(id).id) ?? null;
   const query = input.query ?? null;
   const sort = input.sort ?? "name";
@@ -147,6 +147,10 @@ type MediaRowInput = {
 };
 
 export async function createMediaEntry(input: MediaRowInput) {
+  const parentId: number | null = input.parentId
+    ? ID.parse(input.parentId).id
+    : null;
+
   const row = await sqlOne<MediaEntryRow>`
     insert into media_entries (
       parent_id,
@@ -156,7 +160,7 @@ export async function createMediaEntry(input: MediaRowInput) {
       deleted_at
     )
     values (
-      ${input.parentId ? ID.parse(input.parentId).id : null},
+      ${parentId},
       ${input.name},
       ${input.slug},
       ${input.tags},
