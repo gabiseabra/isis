@@ -60,7 +60,7 @@ export async function bulkCreateAuthors(
   const rows = await sql<AuthorRow>`
     insert into authors (name, image_url, country_code, birth_year, death_year)
     select *
-    from UNNEST(
+    from unnest(
       ${name}::text[],
       ${imageUrl}::text[],
       ${countryCode}::char(2)[],

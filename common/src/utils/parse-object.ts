@@ -1,14 +1,12 @@
 import z from "zod";
-import { ParseError, ParseResult } from "../dto/parse-result";
+import { ParseError, Result } from "../dto/result";
 import { createRecord, keys } from "./object";
 
 export function parseObject<S extends { [k: string]: z.ZodType }>(
   schema: z.ZodObject<S>,
   initialData: z.infer<z.ZodObject<S>> & { [k in keyof S]?: z.infer<S[k]> },
   input: Partial<Record<keyof S, unknown>>,
-): {
-  data: z.infer<z.ZodObject<S>>;
-} & ParseResult {
+): Result<z.infer<z.ZodObject<S>>, ParseError> {
   const errors: ParseError[] = [];
   const result = schema.safeParse(
     createRecord(keys(schema.shape), (key) => {
@@ -36,7 +34,14 @@ export function parseObject<S extends { [k: string]: z.ZodType }>(
 
   return {
     data,
-    success: !errors.length,
-    errors,
+    ...(errors.length
+      ? {
+          success: false,
+          errors,
+        }
+      : {
+          success: true,
+          errors: undefined,
+        }),
   };
 }

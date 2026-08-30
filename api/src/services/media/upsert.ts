@@ -10,10 +10,10 @@ import { getMedia } from "./get";
 import { publishMedia } from "./publisher";
 import {
   addMediaMetadata,
+  clearMediaMetadata,
   createMediaEntry,
   getMediaMetadata,
   getMediaParentIds,
-  removeMediaMetadata,
   updateMediaEntry,
 } from "./repo";
 import { getAvailableMediaSlug } from "./slug";
@@ -33,8 +33,10 @@ export async function upsertMedia({
         id
           ? updateMediaEntry({ id, ...input })
           : createMediaEntry({
+              parentId: input.parentId,
+              name: input.name,
               slug: await getAvailableMediaSlug(input),
-              ...input,
+              tags: input.tags,
             })
       ).catch(
         createErrorHandler().catch(DatabaseError, (error) => {
@@ -48,7 +50,7 @@ export async function upsertMedia({
         }),
       )) ?? never(new MediaNotFound());
 
-    await removeMediaMetadata(media.id);
+    await clearMediaMetadata(media.id);
     const metadataEntries = Object.entries(rawMetadata).map(([key, value]) => ({
       key,
       value,

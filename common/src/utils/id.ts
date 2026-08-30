@@ -19,6 +19,9 @@ export const ID = {
       id: numericId,
     };
   },
+  toNumber(id: ID) {
+    return ID.parse(id).id;
+  },
   is<T extends string>(id: string, type: T): id is ID<T> {
     return id.startsWith(`id://${type}/`);
   },

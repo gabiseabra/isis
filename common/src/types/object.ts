@@ -16,6 +16,10 @@ export type WithRequired<T, K extends keyof T> = [K] extends [keyof T]
   ? Required<Pick<T, K>> & Omit<T, K>
   : never;
 
+export type WithNonNullable<T, K extends keyof T> = [K] extends [keyof T]
+  ? Required<{ [k in K]: NonNullable<T[k]> }> & Omit<T, K>
+  : never;
+
 // export type WithOptional<T, K extends keyof T> = K extends keyof T
 //   ? Omit<T, K> & Partial<Pick<T, K>>
 //   : never;

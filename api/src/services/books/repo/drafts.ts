@@ -1,8 +1,14 @@
-import { DraftBook, DraftBookResult } from "@isis/common/dto/book/draft";
+import { DraftBook } from "@isis/common/dto/book/draft";
 import { UUID } from "@isis/common/dto/uuid";
+import { liftMaybe } from "@isis/common/utils/fp";
 import { ID } from "@isis/common/utils/id";
 import { parseObject } from "@isis/common/utils/parse-object";
-import { sqlOne, sqlOneMaybe } from "../../db/sql";
+import {
+  MAX_BATCH_SIZE,
+  createBatchedFunction,
+} from "../../../utils/create-batched-function";
+import { nest } from "../../db/nest";
+import { sql } from "../../db/sql";
 
 class DraftBookRow {
   constructor(
@@ -18,14 +24,13 @@ class DraftBookRow {
     public publisher: unknown,
     public authors: unknown,
     public languages: string[],
-    public deleted_at: Date | null,
     public applied_at: Date | null,
     public created_at: Date,
     public updated_at: Date,
   ) {}
 }
 
-function mapDraftBook(row: DraftBookRow): DraftBookResult {
+function mapDraftBook(row: DraftBookRow): DraftBook {
   return parseObject(
     DraftBook,
     {
@@ -41,62 +46,85 @@ function mapDraftBook(row: DraftBookRow): DraftBookResult {
       publishYear: row.publish_year ?? undefined,
       publisher: undefined,
       authors: [],
-      deletedAt: row.deleted_at ?? undefined,
       appliedAt: row.applied_at ?? undefined,
       createdAt: row.created_at,
       updatedAt: row.updated_at,
     },
     {
       publisher: row.publisher ?? undefined,
-      authors: row.authors,
+      authors: row.authors ?? undefined,
     },
-  );
+  ).data;
 }
 
-export async function getActiveDraftBook(bookId: ID<"Book">) {
-  const row = await sqlOneMaybe<DraftBookRow>`
-  select *
-  from draft_books
-  where book_id = ${ID.parse(bookId).id}
-    and deleted_at is null
-    and applied_at is null
-  `;
-  return row ? mapDraftBook(row) : null;
-}
+export const getActiveDraftBook = createBatchedFunction(
+  async (bookIds: ID<"Book">[]) => {
+    const _bookIds = bookIds.map((bookId) => ID.parse(bookId).id);
 
-export async function getDraftBook(uuid: UUID) {
-  const row = await sqlOneMaybe<DraftBookRow>`
-  select *
-  from draft_books
-  where uuid = ${uuid}
-  `;
-  return row ? mapDraftBook(row) : null;
-}
+    const rows = await sql<DraftBookRow>`
+      select *
+      from draft_books
+      where book_id = any(${_bookIds}::bigint[])
+        and applied_at is null;
+    `;
 
-export async function upsertDraftBook(input: {
-  uuid?: UUID;
-  bookId?: ID<"Book">;
-  title?: string;
-  slug?: string;
-  tags?: string[];
-  isbn13?: string;
-  isbn10?: string;
-  imageUrl?: string;
-  publishYear?: number;
-  publisher?: DraftBook["publisher"];
-  authors?: DraftBook["authors"];
-  languages?: string[];
-  appliedAt?: Date;
-  deletedAt?: Date;
-}) {
-  const uuid: string | null = input.uuid ?? null;
-  const bookId = input.bookId ? ID.parse(input.bookId).id : null;
-  const appliedAt = input.appliedAt?.toISOString() ?? null;
-  const deletedAt = input.deletedAt?.toISOString() ?? null;
-  const publisher: unknown = JSON.stringify(input.publisher ?? null);
-  const authors: unknown = JSON.stringify(input.authors ?? null);
+    return _bookIds
+      .map((id) => rows.find((row) => row.book_id === id) ?? null)
+      .map(liftMaybe(mapDraftBook));
+  },
+  { maxBatchSize: MAX_BATCH_SIZE.DB_QUERY },
+);
 
-  const row = await sqlOne<DraftBookRow>`
+export const getDraftBook = createBatchedFunction(
+  async (uuids: UUID[]) => {
+    const rows = await sql<DraftBookRow>`
+      select *
+      from draft_books
+      where uuid = any(${uuids}::uuid[]);
+    `;
+
+    return uuids
+      .map((uuid) => rows.find((row) => row.uuid === uuid) ?? null)
+      .map(liftMaybe(mapDraftBook));
+  },
+  { maxBatchSize: MAX_BATCH_SIZE.DB_QUERY },
+);
+
+export const upsertDraftBook = createBatchedFunction(
+  async (
+    inputs: {
+      uuid: UUID | null;
+      bookId: ID<"Book"> | null;
+      title: string | null;
+      slug: string | null;
+      tags: string[] | null;
+      isbn13: string | null;
+      isbn10: string | null;
+      imageUrl: string | null;
+      publishYear: number | null;
+      publisher: Exclude<DraftBook["publisher"], undefined> | null;
+      authors: Exclude<DraftBook["authors"], undefined>;
+      languages: string[] | null;
+      appliedAt: Date | null;
+    }[],
+  ) => {
+    const {
+      uuid,
+      bookId,
+      title,
+      slug,
+      tags,
+      isbn13,
+      isbn10,
+      imageUrl,
+      publishYear,
+      publisher,
+      authors,
+      languages,
+      appliedAt,
+    } = nest(inputs);
+
+    const rows = await sql<DraftBookRow>`
   insert into draft_books (
     uuid,
     book_id,
@@ -110,53 +138,90 @@ export async function upsertDraftBook(input: {
     publisher,
     authors,
     languages,
-    applied_at,
-    deleted_at
+    applied_at
   )
-  values (
-    coalesce(
-      ${uuid}::uuid,
-      (
-        select uuid
-        from draft_books
-        where book_id is not distinct from ${bookId}
-          and applied_at is null
-          and deleted_at is null
-        order by updated_at desc
-        limit 1
-      ),
-      uuid_generate_v4()
-    ),
-    ${bookId},
-    ${input.title ?? null},
-    ${input.slug ?? null},
-    ${input.tags ?? []},
-    ${input.isbn13 ?? null},
-    ${input.isbn10 ?? null},
-    ${input.imageUrl ?? null},
-    ${input.publishYear ?? null},
-    ${publisher}::jsonb,
-    ${authors}::jsonb,
-    ${input.languages ?? []},
-    ${appliedAt}::timestamptz,
-    ${deletedAt}::timestamptz
+  select
+    coalesce(input.uuid, active_draft.uuid, uuid_generate_v4()),
+    input.book_id,
+    input.title,
+    input.slug,
+    array(select jsonb_array_elements_text(input.tags::jsonb)),
+    input.isbn13,
+    input.isbn10,
+    input.image_url,
+    input.publish_year,
+    input.publisher,
+    input.authors,
+    array(select jsonb_array_elements_text(input.languages::jsonb)),
+    input.applied_at
+  from unnest(
+    ${uuid}::uuid[],
+    ${bookId.map(liftMaybe(ID.toNumber))}::bigint[],
+    ${title}::text[],
+    ${slug}::varchar[],
+    ${tags.map((tags) => JSON.stringify(tags))}::text[],
+    ${isbn13}::char(13)[],
+    ${isbn10}::char(10)[],
+    ${imageUrl}::text[],
+    ${publishYear}::smallint[],
+    ${publisher.map((p) => JSON.stringify(p))}::jsonb[],
+    ${authors.map((a) => JSON.stringify(a))}::jsonb[],
+    ${languages.map((tags) => JSON.stringify(tags))}::text[],
+    ${appliedAt as Date[]}::timestamptz[]
+  ) as input(
+    uuid,
+    book_id,
+    title,
+    slug,
+    tags,
+    isbn13,
+    isbn10,
+    image_url,
+    publish_year,
+    publisher,
+    authors,
+    languages,
+    applied_at
   )
+  left join lateral (
+    select uuid
+    from draft_books
+    where book_id is not distinct from input.book_id
+      and applied_at is null
+    order by updated_at desc
+    limit 1
+  ) active_draft on true
   on conflict (uuid) do update
-  set book_id = case when ${!("bookId" in input)} then draft_books.book_id else excluded.book_id end,
-    title = case when ${!("title" in input)} then draft_books.title else excluded.title end,
-    slug = case when ${!("slug" in input)} then draft_books.slug else excluded.slug end,
-    tags = case when ${!("tags" in input)} then draft_books.tags else excluded.tags end,
-    isbn13 = case when ${!("isbn13" in input)} then draft_books.isbn13 else excluded.isbn13 end,
-    isbn10 = case when ${!("isbn10" in input)} then draft_books.isbn10 else excluded.isbn10 end,
-    image_url = case when ${!("imageUrl" in input)} then draft_books.image_url else excluded.image_url end,
-    publish_year = case when ${!("publishYear" in input)} then draft_books.publish_year else excluded.publish_year end,
-    publisher = case when ${!("publisher" in input)} then draft_books.publisher else excluded.publisher end,
-    authors = case when ${!("authors" in input)} then draft_books.authors else excluded.authors end,
-    languages = case when ${!("languages" in input)} then draft_books.languages else excluded.languages end,
-    applied_at = case when ${!("appliedAt" in input)} then draft_books.applied_at else excluded.applied_at end,
-    deleted_at = case when ${!("deletedAt" in input)} then draft_books.deleted_at else excluded.deleted_at end,
+  set book_id = coalesce(excluded.book_id, draft_books.book_id),
+    title = coalesce(excluded.title, draft_books.title),
+    slug = coalesce(excluded.slug, draft_books.slug),
+    tags = coalesce(excluded.tags, draft_books.tags),
+    isbn13 = coalesce(excluded.isbn13, draft_books.isbn13),
+    isbn10 = coalesce(excluded.isbn10, draft_books.isbn10),
+    image_url = coalesce(excluded.image_url, draft_books.image_url),
+    publish_year = coalesce(excluded.publish_year, draft_books.publish_year),
+    publisher = coalesce(excluded.publisher, draft_books.publisher),
+    authors = coalesce(excluded.authors, draft_books.authors),
+    languages = coalesce(excluded.languages, draft_books.languages),
+    applied_at = coalesce(excluded.applied_at, draft_books.applied_at),
     updated_at = now()
   returning *
   `;
-  return mapDraftBook(row);
-}
+
+    return rows.map(mapDraftBook);
+  },
+  { maxBatchSize: MAX_BATCH_SIZE.DB_MUTATION },
+);
+
+export const deleteDraftBook = createBatchedFunction(
+  async ([...uuids]: UUID[]) => {
+    await sql<DraftBookRow>`
+    delete from draft_books
+    where uuid = any(${uuids}::uuid[])
+    returning *
+    `;
+
+    return uuids.map(() => void {});
+  },
+  { maxBatchSize: MAX_BATCH_SIZE.DB_MUTATION },
+);

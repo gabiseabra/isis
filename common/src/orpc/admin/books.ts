@@ -1,11 +1,14 @@
 import { oc } from "@orpc/contract";
 import z from "zod";
 import { Book } from "../../dto/book";
-import { DraftBook, DraftBookResult } from "../../dto/book/draft";
-import { BookInput } from "../../dto/book/input";
 import { QueryBooksInput } from "../../dto/book/query-input";
+import { bookDrafts } from "./books/drafts";
+import { bookPages } from "./books/pages";
 
 export const books = oc.prefix("/books").router({
+  drafts: bookDrafts,
+  pages: bookPages,
+
   get: oc
     .route({
       description: "Get book.",
@@ -27,44 +30,4 @@ export const books = oc.prefix("/books").router({
         hasNextPage: z.boolean(),
       }),
     ),
-
-  getDraft: oc
-    .route({
-      description: "Get active book draft data.",
-    })
-    .errors({
-      NOT_FOUND: {},
-    })
-    .input(Book.pick({ id: true }))
-    .output(DraftBookResult.nullable()),
-
-  upsertDraft: oc
-    .route({
-      description: "Save draft book data or create new draft.",
-    })
-    .errors({
-      NOT_FOUND: {},
-    })
-    .input(BookInput)
-    .output(DraftBookResult),
-
-  applyDraft: oc
-    .route({
-      description: ".",
-    })
-    .errors({
-      NOT_FOUND: {},
-    })
-    .input(DraftBook.pick({ uuid: true }))
-    .output(Book),
-
-  discardDraft: oc
-    .route({
-      description: ".",
-    })
-    .errors({
-      NOT_FOUND: {},
-    })
-    .input(Book.pick({ id: true }))
-    .output(z.void()),
 });

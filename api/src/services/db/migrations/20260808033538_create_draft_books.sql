@@ -13,7 +13,6 @@ CREATE TABLE draft_books (
   authors JSONB NOT NULL,
   languages TEXT[] NOT NULL DEFAULT ARRAY[]::TEXT[],
   applied_at TIMESTAMPTZ,
-  deleted_at TIMESTAMPTZ,
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 )

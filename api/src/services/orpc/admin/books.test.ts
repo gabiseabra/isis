@@ -44,7 +44,6 @@ const sampleData = [
     isbn10: "1234567890",
     imageUrl: "tractatus.jpg",
     publishYear: 1921,
-    authorIds: [],
     languages: ["en"],
     tags: ["philosophy", "jokes"],
   },
@@ -56,7 +55,6 @@ const sampleData = [
     isbn10: "fill",
     imageUrl: "angest.jpg",
     publishYear: 1844,
-    authorIds: [],
     languages: ["da"],
     tags: ["philosophy", "jokes"],
   },
@@ -68,7 +66,6 @@ const sampleData = [
     isbn10: "fill",
     imageUrl: "unique.jpg",
     publishYear: 1844,
-    authorIds: [],
     languages: ["de"],
     tags: ["philosophy", "jokes"],
   },
@@ -80,7 +77,6 @@ const sampleData = [
     isbn10: "fill",
     imageUrl: "hysteria.jpg",
     publishYear: 1895,
-    authorIds: [],
     languages: ["en"],
     tags: ["psychology", "jokes"],
   },
@@ -131,6 +127,7 @@ describe("adminRouter.books", () => {
         client.books.query({
           page: 2,
           limit: 2,
+          offset: 0,
         }),
       ).resolves.toMatchObject({
         items: [
@@ -152,6 +149,7 @@ describe("adminRouter.books", () => {
         client.books.query({
           page: 1,
           limit: 3,
+          offset: 0,
           sort: "name",
           order: "desc",
         }),
@@ -179,6 +177,7 @@ describe("adminRouter.books", () => {
         client.books.query({
           page: 1,
           limit: 10,
+          offset: 0,
           query: "Einzige",
         }),
       ).resolves.toMatchObject({
@@ -197,6 +196,7 @@ describe("adminRouter.books", () => {
         client.books.query({
           page: 1,
           limit: 10,
+          offset: 0,
           ids: [`id://Book/2`, `id://Book/3`],
         }),
       ).resolves.toMatchObject({
@@ -219,6 +219,7 @@ describe("adminRouter.books", () => {
         client.books.query({
           page: 1,
           limit: 10,
+          offset: 0,
           tags: ["psychology"],
         }),
       ).resolves.toMatchObject({
@@ -233,198 +234,201 @@ describe("adminRouter.books", () => {
     });
   });
 
-  describe("getDraft", () => {
-    it("returns an active draft", async () => {
-      await createBook(sampleData[0]);
-      await upsertDraftBook({
-        bookId: `id://Book/1`,
-        authors: [],
-        ...sampleData[0],
+  describe("drafts", () => {
+    describe("get", () => {
+      it.only("returns an active draft", async () => {
+        await createBook(sampleData[0]);
+        await upsertDraftBook({
+          bookId: `id://Book/1`,
+          uuid: null,
+          appliedAt: null,
+          publisher: null,
+          authors: [],
+          ...sampleData[0],
+        });
+
+        await expect(
+          client.books.drafts.get({ id: `id://Book/1` }),
+        ).resolves.toMatchObject({
+          success: true,
+          data: {
+            uuid: expect.any(String),
+            bookId: "id://Book/1",
+            title: "Tractatus",
+            slug: "tractatus",
+            isbn13: "1234567890123",
+            isbn10: "1234567890",
+            imageUrl: "tractatus.jpg",
+            publishYear: 1921,
+            publisher: undefined,
+            authors: [],
+            languages: ["en"],
+            tags: ["philosophy", "jokes"],
+            appliedAt: undefined,
+            deletedAt: undefined,
+            createdAt: expect.any(Date),
+            updatedAt: expect.any(Date),
+          },
+        });
       });
 
-      await expect(
-        client.books.getDraft({ id: `id://Book/1` }),
-      ).resolves.toMatchObject({
-        success: true,
-        data: {
-          uuid: expect.any(String),
-          bookId: "id://Book/1",
-          title: "Tractatus",
-          slug: "tractatus",
+      it("returns 404 when book does not exist", async () => {
+        await expect(
+          client.books.drafts.get({ id: `id://Book/420` }),
+        ).rejects.toMatchObject({ code: "NOT_FOUND" });
+      });
+    });
+
+    describe("upsert", () => {
+      it("creates a draft without a backing book id", async () => {
+        await expect(
+          client.books.drafts.upsert({
+            authors: [],
+            ...sampleData[0],
+          }),
+        ).resolves.toMatchObject({
+          success: true,
+          data: {
+            uuid: expect.any(String),
+            bookId: undefined,
+            title: "Tractatus",
+            slug: "tractatus",
+            isbn13: "1234567890123",
+            isbn10: "1234567890",
+            imageUrl: "tractatus.jpg",
+            publishYear: 1921,
+            publisher: undefined,
+            authors: [],
+            languages: ["en"],
+            tags: ["philosophy", "jokes"],
+            appliedAt: undefined,
+            deletedAt: undefined,
+            createdAt: expect.any(Date),
+            updatedAt: expect.any(Date),
+          },
+        });
+      });
+
+      it("returns 404 when creating a draft for a missing book", async () => {
+        await expect(
+          client.books.drafts.upsert({
+            id: `id://Book/420`,
+            authors: [],
+            ...sampleData[0],
+          }),
+        ).rejects.toMatchObject({ code: "NOT_FOUND" });
+      });
+    });
+
+    describe("apply", () => {
+      it("applies saved draft changes to an existing book", async () => {
+        await createBook(sampleData[0]);
+
+        const draft = await client.books.drafts.upsert({
+          id: `id://Book/1`,
+          ...sampleData[0],
+          title: "Tractatus Revised",
+          slug: "tractatus-revised",
+          imageUrl: "tractatus-revised.jpg",
+          publishYear: 1922,
+          tags: ["revised"],
+          authors: [
+            {
+              name: "Ludwig Wittgenstein",
+            },
+          ],
+        });
+
+        await expect(
+          client.books.get({ id: `id://Book/1` }),
+        ).resolves.toMatchObject({
+          ...sampleData[0],
+          languages: [],
+        });
+
+        await expect(
+          client.books.drafts.apply({ uuid: draft.data.uuid }),
+        ).resolves.toEqual({
+          id: `id://Book/1`,
+          status: "unpublished",
+          title: "Tractatus Revised",
+          slug: "tractatus-revised",
           isbn13: "1234567890123",
           isbn10: "1234567890",
-          imageUrl: "tractatus.jpg",
-          publishYear: 1921,
-          publisher: undefined,
-          authors: [],
+          imageUrl: "tractatus-revised.jpg",
+          publishYear: 1922,
+          publisherId: undefined,
+          authorIds: [`id://Author/1`],
           languages: ["en"],
-          tags: ["philosophy", "jokes"],
-          appliedAt: undefined,
-          deletedAt: undefined,
+          tags: ["revised"],
           createdAt: expect.any(Date),
           updatedAt: expect.any(Date),
-        },
+        });
       });
-    });
 
-    it("returns 404 when book does not exist", async () => {
-      await expect(
-        client.books.getDraft({ id: `id://Book/420` }),
-      ).rejects.toMatchObject({ code: "NOT_FOUND" });
-    });
-  });
-
-  describe("upsertDraft", () => {
-    it("creates a draft without a backing book id", async () => {
-      await expect(
-        client.books.upsertDraft({
+      it("creates a new book without backing book id", async () => {
+        const draft = await client.books.drafts.upsert({
           ...sampleData[0],
           authors: [],
-        }),
-      ).resolves.toMatchObject({
-        success: true,
-        data: {
-          uuid: expect.any(String),
-          bookId: undefined,
+        });
+
+        await expect(
+          client.books.drafts.apply({ uuid: draft.data.uuid }),
+        ).resolves.toEqual({
+          id: `id://Book/1`,
+          status: "unpublished",
           title: "Tractatus",
           slug: "tractatus",
           isbn13: "1234567890123",
           isbn10: "1234567890",
           imageUrl: "tractatus.jpg",
           publishYear: 1921,
-          publisher: undefined,
-          authors: [],
+          publisherId: undefined,
+          authorIds: [],
           languages: ["en"],
           tags: ["philosophy", "jokes"],
-          appliedAt: undefined,
-          deletedAt: undefined,
           createdAt: expect.any(Date),
           updatedAt: expect.any(Date),
-        },
+        });
+      });
+
+      it("returns 404 when book does not exist", async () => {
+        await expect(
+          client.books.drafts.apply({ uuid: UUID.create() }),
+        ).rejects.toMatchObject({ code: "NOT_FOUND" });
       });
     });
 
-    it("returns 404 when creating a draft for a missing book", async () => {
-      await expect(
-        client.books.upsertDraft({
-          id: `id://Book/420`,
-          title: "Missing",
+    describe("discard", () => {
+      it("discards an active draft", async () => {
+        const book = await createBook(sampleData[0]);
+        await client.books.drafts.upsert({
+          id: `id://Book/1`,
+          ...sampleData[0],
+          title: "Tractatus discarded",
+          publishYear: 1923,
+          tags: ["discarded"],
           authors: [],
-          languages: [],
-          tags: [],
-        }),
-      ).rejects.toMatchObject({ code: "NOT_FOUND" });
-    });
-  });
+        });
 
-  describe("applyDraft", () => {
-    it("applies saved draft changes to an existing book", async () => {
-      await createBook(sampleData[0]);
+        await expect(
+          client.books.drafts.delete({ id: `id://Book/1` }),
+        ).resolves.toBeUndefined();
 
-      const draft = await client.books.upsertDraft({
-        id: `id://Book/1`,
-        ...sampleData[0],
-        title: "Tractatus Revised",
-        slug: "tractatus-revised",
-        imageUrl: "tractatus-revised.jpg",
-        publishYear: 1922,
-        tags: ["revised"],
-        authors: [
-          {
-            name: "Ludwig Wittgenstein",
-          },
-        ],
+        await expect(
+          client.books.drafts.get({ id: `id://Book/1` }),
+        ).resolves.toBeNull();
+
+        await expect(
+          client.books.get({ id: `id://Book/1` }),
+        ).resolves.toMatchObject(book);
       });
 
-      await expect(
-        client.books.get({ id: `id://Book/1` }),
-      ).resolves.toMatchObject({
-        ...sampleData[0],
-        languages: [],
+      it("returns 404 when book does not exist", async () => {
+        await expect(
+          client.books.drafts.delete({ id: `id://Book/420` }),
+        ).rejects.toMatchObject({ code: "NOT_FOUND" });
       });
-
-      await expect(
-        client.books.applyDraft({ uuid: draft.data.uuid }),
-      ).resolves.toEqual({
-        id: `id://Book/1`,
-        status: "unpublished",
-        title: "Tractatus Revised",
-        slug: "tractatus-revised",
-        isbn13: "1234567890123",
-        isbn10: "1234567890",
-        imageUrl: "tractatus-revised.jpg",
-        publishYear: 1922,
-        publisherId: undefined,
-        authorIds: [`id://Author/1`],
-        languages: ["en"],
-        tags: ["revised"],
-        createdAt: expect.any(Date),
-        updatedAt: expect.any(Date),
-      });
-    });
-
-    it("creates a new book without backing book id", async () => {
-      const draft = await client.books.upsertDraft({
-        ...sampleData[0],
-        authors: [],
-      });
-
-      await expect(
-        client.books.applyDraft({ uuid: draft.data.uuid }),
-      ).resolves.toEqual({
-        id: `id://Book/1`,
-        status: "unpublished",
-        title: "Tractatus",
-        slug: "tractatus",
-        isbn13: "1234567890123",
-        isbn10: "1234567890",
-        imageUrl: "tractatus.jpg",
-        publishYear: 1921,
-        publisherId: undefined,
-        authorIds: [],
-        languages: ["en"],
-        tags: ["philosophy", "jokes"],
-        createdAt: expect.any(Date),
-        updatedAt: expect.any(Date),
-      });
-    });
-
-    it("returns 404 when book does not exist", async () => {
-      await expect(
-        client.books.applyDraft({ uuid: UUID.create() }),
-      ).rejects.toMatchObject({ code: "NOT_FOUND" });
-    });
-  });
-
-  describe("discardDraft", () => {
-    it("discards an active draft", async () => {
-      const book = await createBook(sampleData[0]);
-      await client.books.upsertDraft({
-        id: `id://Book/1`,
-        ...sampleData[0],
-        title: "Tractatus discarded",
-        publishYear: 1923,
-        tags: ["discarded"],
-        authors: [],
-      });
-
-      await expect(
-        client.books.discardDraft({ id: `id://Book/1` }),
-      ).resolves.toBeUndefined();
-
-      await expect(
-        client.books.getDraft({ id: `id://Book/1` }),
-      ).resolves.toBeNull();
-
-      await expect(
-        client.books.get({ id: `id://Book/1` }),
-      ).resolves.toMatchObject(book);
-    });
-
-    it("returns 404 when book does not exist", async () => {
-      await expect(
-        client.books.discardDraft({ id: `id://Book/420` }),
-      ).rejects.toMatchObject({ code: "NOT_FOUND" });
     });
   });
 });

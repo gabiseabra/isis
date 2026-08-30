@@ -35,7 +35,7 @@ export async function getMediaMetadata(mediaId: ID<"Media">) {
 
 /// relations: media
 
-export async function removeMediaMetadata(
+export async function clearMediaMetadata(
   mediaId: ID<"Media">,
   keysToDelete?: string[],
 ) {

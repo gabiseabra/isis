@@ -278,6 +278,36 @@ CREATE TABLE public.book_languages (
 
 
 --
+-- Name: book_pages; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.book_pages (
+    id bigint NOT NULL,
+    media_id bigint NOT NULL,
+    book_id bigint NOT NULL,
+    page_number integer NOT NULL,
+    page_type character varying(255) NOT NULL,
+    tags text[] DEFAULT ARRAY[]::text[] NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    updated_at timestamp with time zone DEFAULT now() NOT NULL
+);
+
+
+--
+-- Name: book_pages_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+ALTER TABLE public.book_pages ALTER COLUMN id ADD GENERATED ALWAYS AS IDENTITY (
+    SEQUENCE NAME public.book_pages_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
 -- Name: books; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -323,6 +353,23 @@ CREATE TABLE public.countries (
 
 
 --
+-- Name: draft_book_pages; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.draft_book_pages (
+    uuid uuid DEFAULT public.uuid_generate_v4() NOT NULL,
+    draft_book_uuid uuid NOT NULL,
+    media_id bigint,
+    page_id bigint,
+    page_number integer,
+    page_type character varying(255),
+    tags text[] DEFAULT ARRAY[]::text[] NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    updated_at timestamp with time zone DEFAULT now() NOT NULL
+);
+
+
+--
 -- Name: draft_books; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -340,7 +387,6 @@ CREATE TABLE public.draft_books (
     authors jsonb NOT NULL,
     languages text[] DEFAULT ARRAY[]::text[] NOT NULL,
     applied_at timestamp with time zone,
-    deleted_at timestamp with time zone,
     created_at timestamp with time zone DEFAULT now() NOT NULL,
     updated_at timestamp with time zone DEFAULT now() NOT NULL
 );
@@ -536,6 +582,22 @@ ALTER TABLE ONLY public.book_languages
 
 
 --
+-- Name: book_pages book_pages_book_id_page_number_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.book_pages
+    ADD CONSTRAINT book_pages_book_id_page_number_key UNIQUE (book_id, page_number);
+
+
+--
+-- Name: book_pages book_pages_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.book_pages
+    ADD CONSTRAINT book_pages_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: books books_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -557,6 +619,14 @@ ALTER TABLE ONLY public.books
 
 ALTER TABLE ONLY public.countries
     ADD CONSTRAINT countries_pkey PRIMARY KEY (code);
+
+
+--
+-- Name: draft_book_pages draft_book_pages_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.draft_book_pages
+    ADD CONSTRAINT draft_book_pages_pkey PRIMARY KEY (uuid);
 
 
 --
@@ -648,6 +718,20 @@ ALTER TABLE ONLY public.users
 
 
 --
+-- Name: idx_book_pages_page_number; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_book_pages_page_number ON public.book_pages USING btree (page_number);
+
+
+--
+-- Name: idx_draft_book_pages_page_number; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_draft_book_pages_page_number ON public.draft_book_pages USING btree (page_number);
+
+
+--
 -- Name: media_entries_path_unique; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -718,11 +802,51 @@ ALTER TABLE ONLY public.book_languages
 
 
 --
+-- Name: book_pages book_pages_book_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.book_pages
+    ADD CONSTRAINT book_pages_book_id_fkey FOREIGN KEY (book_id) REFERENCES public.books(id);
+
+
+--
+-- Name: book_pages book_pages_media_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.book_pages
+    ADD CONSTRAINT book_pages_media_id_fkey FOREIGN KEY (media_id) REFERENCES public.media_entries(id);
+
+
+--
 -- Name: books books_publisher_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.books
     ADD CONSTRAINT books_publisher_id_fkey FOREIGN KEY (publisher_id) REFERENCES public.publishers(id) ON DELETE SET NULL;
+
+
+--
+-- Name: draft_book_pages draft_book_pages_draft_book_uuid_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.draft_book_pages
+    ADD CONSTRAINT draft_book_pages_draft_book_uuid_fkey FOREIGN KEY (draft_book_uuid) REFERENCES public.draft_books(uuid);
+
+
+--
+-- Name: draft_book_pages draft_book_pages_media_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.draft_book_pages
+    ADD CONSTRAINT draft_book_pages_media_id_fkey FOREIGN KEY (media_id) REFERENCES public.media_entries(id);
+
+
+--
+-- Name: draft_book_pages draft_book_pages_page_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.draft_book_pages
+    ADD CONSTRAINT draft_book_pages_page_id_fkey FOREIGN KEY (page_id) REFERENCES public.book_pages(id);
 
 
 --
@@ -787,4 +911,6 @@ INSERT INTO public.schema_migrations (version) VALUES
     ('20260719020000'),
     ('20260728013000'),
     ('20260728020500'),
-    ('20260808033538');
+    ('20260808033538'),
+    ('20260817162432'),
+    ('20260817181441');

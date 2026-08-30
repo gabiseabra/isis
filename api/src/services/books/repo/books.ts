@@ -1,6 +1,8 @@
 import { Book } from "@isis/common/dto/book";
+import { BookInput } from "@isis/common/dto/book/input";
+import { QueryBooksInput } from "@isis/common/dto/book/query-input";
 import { BookStatus } from "@isis/common/dto/book/status";
-import { WithRequired } from "@isis/common/types/object";
+import { WithNonNullable } from "@isis/common/types/object";
 import { ID } from "@isis/common/utils/id";
 import { sql, sqlOne, sqlOneMaybe } from "../../db/sql";
 
@@ -59,18 +61,10 @@ export async function getBook(id: ID<"Book">) {
   return row ? mapBook(row) : null;
 }
 
-export async function queryBooks(query: {
-  offset: number;
-  limit: number;
-  query?: string;
-  ids?: ID<"Book">[];
-  tags?: string[];
-  sort?: "name" | "created_at" | "updated_at";
-  order?: "asc" | "desc";
-}) {
+export async function queryBooks(query: QueryBooksInput) {
   const sort = query.sort ?? "name";
   const order = query.order ?? "asc";
-  const ids = query.ids?.map((id) => ID.parse(id).id) ?? null;
+  const ids = query.ids?.map(ID.toNumber) ?? null;
 
   const rows = await sql<BookRow>`
     select b.*,
@@ -107,21 +101,13 @@ export async function queryBooks(query: {
 
 /// mutations
 
-type BookRowInput = {
-  status?: BookStatus;
-  title?: string;
-  slug?: string | undefined;
-  isbn13?: string | undefined;
-  isbn10?: string | undefined;
-  imageUrl?: string | undefined;
-  tags?: string[] | undefined;
-  publishYear?: number | undefined;
-  publisherId?: ID<"Publisher"> | undefined;
-};
-
 export async function createBook(
-  input: WithRequired<BookRowInput, "status" | "title">,
+  input: Omit<BookInput, "id" | "languages" | "authors" | "publisher"> & {
+    publisherId?: ID<"Publisher"> | null;
+  },
 ) {
+  const publisherId = input.publisherId ? ID.toNumber(input.publisherId) : null;
+
   const row = await sqlOne<BookRow>`
     insert into books (status, title, slug, isbn13, isbn10, image_url, publish_year, publisher_id, tags)
     values (
@@ -132,8 +118,8 @@ export async function createBook(
       ${input.isbn10 ?? null},
       ${input.imageUrl ?? null},
       ${input.publishYear ?? null},
-      ${input.publisherId ? ID.parse(input.publisherId).id : null},
-      ${(input.tags ?? []) as string[]}
+      ${publisherId},
+      ${input.tags}
     )
     returning *,
       array[]::int[] as author_ids,
@@ -143,23 +129,29 @@ export async function createBook(
 }
 
 export async function updateBook(
-  input: BookRowInput & {
-    id: ID<"Book">;
+  input: WithNonNullable<
+    Omit<BookInput, "languages" | "authors" | "publisher">,
+    "id"
+  > & {
+    publisherId?: ID<"Publisher"> | null;
   },
 ) {
+  const id = ID.toNumber(input.id);
+  const publisherId = input.publisherId ? ID.toNumber(input.publisherId) : null;
+
   const row = await sqlOne<BookRow>`
     update books
-    set status = case when ${!("status" in input)} then status else ${input.status ?? null}::book_status end,
-      title = case when ${!("title" in input)} then title else ${input.title ?? null} end,
-      slug = case when ${!("slug" in input)} then slug else ${input.slug ?? null} end,
-      isbn13 = case when ${!("isbn13" in input)} then isbn13 else ${input.isbn13 ?? null} end,
-      isbn10 = case when ${!("isbn10" in input)} then isbn10 else ${input.isbn10 ?? null} end,
-      image_url = case when ${!("imageUrl" in input)} then image_url else ${input.imageUrl ?? null} end,
-      publish_year = case when ${!("publishYear" in input)} then publish_year else ${input.publishYear ?? null} end,
-      publisher_id = case when ${!("publisherId" in input)} then publisher_id else ${input.publisherId ? ID.parse(input.publisherId).id : null} end,
-      tags = case when ${!("tags" in input)} then tags else ${(input.tags ?? null) as string[]}::text[] end,
+    set status = ${input.status}::book_status,
+      title = ${input.title},
+      slug = ${input.slug ?? null},
+      isbn13 = ${input.isbn13 ?? null},
+      isbn10 = ${input.isbn10 ?? null},
+      image_url = ${input.imageUrl ?? null},
+      publish_year = ${input.publishYear ?? null},
+      publisher_id = ${publisherId},
+      tags = ${input.tags as string[]}::text[],
       updated_at = now()
-    where id = ${ID.parse(input.id).id}
+    where id = ${id}
     returning *,
       array[]::int[] as author_ids,
       array[]::text[] as languages
@@ -190,8 +182,8 @@ export async function addBookAuthors(
     null) as number[];
   const rows = await sql<{ author_id: number }>`
     insert into book_authors (book_id, author_id)
-    select ${ID.parse(bookId).id}, *
-    from UNNEST(${authorIds}::bigint[])
+    select ${ID.toNumber(bookId)}, *
+    from unnest(${authorIds}::bigint[])
     on conflict do nothing
     returning author_id;
     `;
@@ -206,7 +198,7 @@ export async function removeBookLanguages(
 ) {
   await sql`
     delete from book_languages
-    where book_id = ${ID.parse(bookId).id}
+    where book_id = ${ID.toNumber(bookId)}
       and language_code = any(coalesce(${(langCodesToDelete ?? null) as string[]}, array[language_code]));
     `;
 }
@@ -217,8 +209,8 @@ export async function addBookLanguages(
 ) {
   const rows = await sql<{ language_code: string }>`
     insert into book_languages (book_id, language_code)
-    select ${ID.parse(bookId).id}, *
-    from UNNEST(${langCodesToCreate}::char(2)[])
+    select ${ID.toNumber(bookId)}, *
+    from unnest(${langCodesToCreate}::char(2)[])
     on conflict do nothing
     returning language_code;
     `;

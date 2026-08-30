@@ -33,6 +33,10 @@ export default defineConfig({
           parameter: "LTree",
           return: "LTree",
         },
+        book_status: {
+          parameter: "BookStatus",
+          return: "BookStatus",
+        },
       },
     },
   },

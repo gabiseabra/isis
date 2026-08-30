@@ -26,14 +26,19 @@ export async function applyDraftBook(
   const draft = (await getDraftBook(uuid)) ?? never(new DraftBookNotFound());
 
   return unit(async () => {
-    const { publisher, authors, languages, ...input } = {
-      ...draft.data,
+    const {
+      publisher,
+      authors = [],
+      languages = [],
+      ...input
+    } = BookInput.default({
+      ...draft,
       ...overrides,
-    };
+    });
 
     const [publisherId, authorIds] = await Promise.all([
       !publisher
-        ? undefined
+        ? null
         : (publisher.id ?? createPublisher(publisher).then((a) => a.id)),
       (async () => {
         const [authorIds, authorsToCreate] = partition(
@@ -57,17 +62,9 @@ export async function applyDraftBook(
       })(),
     ]);
 
-    const book = await (draft.data.bookId
-      ? updateBook({
-          id: draft.data.bookId,
-          publisherId,
-          ...input,
-        })
-      : createBook({
-          publisherId,
-          status: "unpublished",
-          ...input,
-        }));
+    const book = await (draft.bookId
+      ? updateBook({ ...input, publisherId, id: draft.bookId })
+      : createBook({ ...input, publisherId }));
 
     await Promise.all([
       removeBookLanguages(book.id).then(() =>

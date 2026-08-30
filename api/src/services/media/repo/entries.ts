@@ -1,4 +1,6 @@
+import { MediaInput } from "@isis/common/dto/media/input";
 import { LTree, Path } from "@isis/common/dto/path";
+import { WithRequired } from "@isis/common/types/object";
 import { ID } from "@isis/common/utils/id";
 import { sql, sqlOne, sqlOneMaybe } from "../../db/sql";
 
@@ -138,15 +140,9 @@ export async function queryMediaEntry(input: {
 
 /// mutations
 
-type MediaRowInput = {
-  parentId?: ID<"Media">;
-  name: string;
-  slug: string;
-  tags: string[];
-  deletedAt?: Date;
-};
-
-export async function createMediaEntry(input: MediaRowInput) {
+export async function createMediaEntry(
+  input: WithRequired<Omit<MediaInput, "metadata" | "id">, "slug">,
+) {
   const parentId: number | null = input.parentId
     ? ID.parse(input.parentId).id
     : null;
@@ -163,8 +159,8 @@ export async function createMediaEntry(input: MediaRowInput) {
       ${parentId},
       ${input.name},
       ${input.slug},
-      ${input.tags},
-      ${(input.deletedAt ?? null) as Date}
+      ${input.tags}::text[],
+      ${input.deletedAt ?? null}
     )
     returning *;
   `;
@@ -173,17 +169,15 @@ export async function createMediaEntry(input: MediaRowInput) {
 }
 
 export async function updateMediaEntry(
-  input: Partial<MediaRowInput> & {
-    id: ID<"Media">;
-  },
+  input: WithRequired<Omit<MediaInput, "metadata">, "id">,
 ) {
   const row = await sqlOneMaybe<MediaEntryRow>`
     update media_entries
-    set parent_id = case when ${!("parentId" in input)} then parent_id else ${input.parentId ? ID.parse(input.parentId).id : null} end,
-      name = case when ${!("name" in input)} then name else ${input.name ?? null} end,
-      slug = case when ${!("slug" in input)} then slug else ${input.slug ?? null} end,
-      tags = case when ${!("tags" in input)} then tags else ${(input.tags ?? null) as string[]}::text[] end,
-      deleted_at = case when ${!("deletedAt" in input)} then deleted_at else ${(input.deletedAt ?? null) as Date} end,
+    set parent_id = ${input.parentId ? ID.parse(input.parentId).id : null},
+      name = ${input.name ?? null},
+      slug = coalesce(${input.slug ?? null}, media_entries.slug),
+      tags = ${(input.tags ?? null) as string[]}::text[],
+      deleted_at = ${input.deletedAt ?? null},
       updated_at = now()
     where id = ${ID.parse(input.id).id}
       and deleted_at is null

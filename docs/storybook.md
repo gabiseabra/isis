@@ -1,13 +1,9 @@
 # Storybook Story Pattern
 
-Status: required
-Scope: `ui/src/**/*.stories.tsx`
+Stories document the component API with small, controlled examples. They show component states and variants using demo data, existing project components, and the component API.
+
 Good examples: `ui/src/feedback/Banner.stories.tsx`, `ui/src/feedback/EmptyState.stories.tsx`, `ui/src/feedback/Spinner.stories.tsx`, `ui/src/form/Select.stories.tsx`, `ui/src/form/Autocomplete.stories.tsx`
 Aggregate examples: `ui/src/layout/Card.stories.tsx`, `ui/src/display/IconControl.stories.tsx`
-
-## Purpose
-
-Stories document the component API with small, controlled examples. They show component states and variants using demo data, existing project components, and the component API.
 
 ## How to read this document
 
@@ -52,7 +48,9 @@ export const Default = {
 
 Define a story props type based on the component's base props. Expose controls for useful scalar story args: selected component props plus simple story-only args. Keep complex props and composition inside the story render function. Follow by pure helpers shared by many stories.
 
-Shared helpers used by multiple stories go before `meta`. A helper/component used by one story goes immediately before that story export.
+IMPORTANT:
+- Shared helpers **used by multiple stories** go before `meta`.
+- A helper/component **used by one story** goes immediately before that story export.
 
 ```tsx
 type SelectStoryProps = Pick<SelectProps, "disabled" | "placeholder">;
@@ -132,6 +130,12 @@ export const Default = {
 } satisfies Story;
 ```
 
+## Story source
+
+Storybook extracts the source code of the story's render function okay in simple cases, but it can't render the content of lambda props propertly.
+Whenever you have more complex props, as in the example below (Aggregate stories), create a function to render your story and use `extractDeclaration` from `@isis/common/utils/source-code` to `render parameters.docs.source`.
+Remember the IMPORTANT note! These go directly above the exported story.
+
 ## Aggregate stories
 
 For aggregate variant stories that render every option, exclude the controlled option so each rendered variant stays fixed.
@@ -147,13 +151,13 @@ Example files for this pattern:
 - Inline / column layout: `ui/src/display/IconControl.stories.tsx` (`Sizes`).
 
 ```tsx
-export const Elevations = {
-  parameters: {
-    controls: {
-      exclude: ["elevation"],
-    },
-  },
-  render: (args) => (
+import { extractDeclaration } from "@isis/common/utils/source-code";
+import ownSource from "./Card.stories.tsx?raw";
+
+// ...
+
+function ElevationsStory(props: CardStoryProps) {
+  return (
     <Table
       variant="unstyled"
       gap={2}
@@ -171,20 +175,30 @@ export const Elevations = {
         <Table.Label align="end">{index}</Table.Label>
       )}
     />
-  ),
+  );
+}
+
+export const Elevations = {
+  parameters: {
+    controls: {
+      exclude: ["elevation"],
+    },
+    docs: {
+      source: {
+        code: extractDeclaration(ownSource, "function", "ElevationsStory"),
+        language: "jsx",
+      }
+    }
+  },
+  render: (props) => <ElevationsStory {...props}>,
 } satisfies Story;
 ```
 
 Inline component column layout, copied from `ui/src/display/IconControl.stories.tsx`:
 
 ```tsx
-export const Sizes = {
-  parameters: {
-    controls: {
-      exclude: ["size"],
-    },
-  },
-  render: (props) => (
+function SizesStory(props: IconControlStoryProps) {
+  return (
     <Table
       variant="unstyled"
       gap={2}
@@ -199,7 +213,22 @@ export const Sizes = {
       cell={(row, col) => row[col]}
       headerCell={(col) => <Table.Label>{col}</Table.Label>}
     />
-  ),
+  );
+}
+
+export const Sizes = {
+  parameters: {
+    controls: {
+      exclude: ["size"],
+    },
+    docs: {
+      source: {
+        code: extractDeclaration(ownSource, "function", "SizesStory"),
+        language: "jsx",
+      }
+    }
+  },
+  render: (props) => <SizesStory {...props} />,
 } satisfies Story;
 ```
 
@@ -219,6 +248,14 @@ function SelectStory(props: SelectStoryProps) {
 }
 
 export const Default = {
+  parameters: {
+    docs: {
+      source: {
+        code: extractDeclaration(ownSource, "function", "SelectStory"),
+        language: "jsx",
+      }
+    }
+  },
   render: (props) => <SelectStory {...props} />,
 } satisfies Story;
 ```

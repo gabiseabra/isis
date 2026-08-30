@@ -1,12 +1,16 @@
 import z from "zod";
+import { omitUndefined } from "../../utils/object";
 import { Author } from "../author";
 import { AuthorInput } from "../author/input";
+import { Book } from "../book";
 import { zID } from "../primitives";
 import { Publisher } from "../publisher";
 import { PublisherInput } from "../publisher/input";
+import { BookStatus } from "./status";
 
-export const BookInput = z.object({
+const zBookInput = z.object({
   id: zID("Book").optional(),
+  status: BookStatus,
   title: z.string(),
   slug: z.string().optional(),
   isbn13: z.string().optional(),
@@ -19,4 +23,34 @@ export const BookInput = z.object({
   tags: z.string().array(),
 });
 
-export type BookInput = z.infer<typeof BookInput>;
+export type BookInput = z.infer<typeof zBookInput>;
+
+export const BookInput = Object.assign(zBookInput, {
+  default(input: Partial<BookInput>): BookInput {
+    return {
+      status: "unpublished",
+      title: "",
+      authors: [],
+      languages: [],
+      tags: [],
+      ...omitUndefined(input),
+    };
+  },
+
+  fromBook(book: Book): BookInput {
+    return {
+      id: book.id,
+      status: book.status,
+      title: book.title,
+      slug: book.slug,
+      isbn10: book.isbn10,
+      isbn13: book.isbn13,
+      imageUrl: book.imageUrl,
+      authors: book.authorIds.map((id) => ({ id })),
+      publishYear: book.publishYear,
+      publisher: book.publisherId ? { id: book.publisherId } : undefined,
+      languages: book.languages,
+      tags: book.tags,
+    };
+  },
+});

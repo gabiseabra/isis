@@ -2,6 +2,13 @@ import { withResolvers } from "@isis/common/promise";
 import { hash } from "@isis/common/utils/hash";
 import { NonEmpty } from "@isis/common/utils/non-empty";
 
+export const MAX_BATCH_SIZE = {
+  DB_QUERY: 1000,
+  DB_MUTATION: 250,
+};
+
+const MAX_BATCH_AGE_MS = 10;
+
 export type Primitive =
   | string
   | number
@@ -15,9 +22,9 @@ export type BatchedFunctionOptions<T> = {
   /** Max number of items per batch. */
   maxBatchSize: number;
   /** Max age of a batch in milliseconds. */
-  maxBatchAgeMs: number;
+  maxBatchAgeMs?: number;
   /** Function used to identify which batch an argument belongs to. */
-  key: (value: T) => Primitive;
+  key?: (value: T) => Primitive;
 };
 
 type BatchedCall<T, R> = {
@@ -89,7 +96,7 @@ export function createBatchedFunction<T, R>(
   }
 
   return (arg: T): Promise<R> => {
-    const batchKey = options.key(arg);
+    const batchKey = options.key?.(arg) ?? 0;
     const { promise, resolve, reject } = withResolvers<R>();
     const batch = batches.get(batchKey) ?? { calls: [] };
 
@@ -103,7 +110,7 @@ export function createBatchedFunction<T, R>(
 
     batch.timeoutId ??= setTimeout(
       () => flush(batchKey),
-      options.maxBatchAgeMs,
+      options.maxBatchAgeMs ?? MAX_BATCH_AGE_MS,
     );
 
     return promise;

@@ -31,6 +31,7 @@ export function Component() {
       input: {
         page: currentPage,
         limit: 25,
+        offset: (currentPage - 1) * 25,
         query: debouncedQuery,
       },
     }),
