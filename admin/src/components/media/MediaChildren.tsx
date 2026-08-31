@@ -1,5 +1,6 @@
 import { Media } from "@isis/common/dto/media";
 import { MediaInput } from "@isis/common/dto/media/input";
+import { QueryMediaInput } from "@isis/common/dto/media/query-input";
 import { Path } from "@isis/common/dto/path";
 import { extractErrorMessage } from "@isis/common/utils/error";
 import { IconControl } from "@isis/ui/display/IconControl";
@@ -21,6 +22,10 @@ type MediaChildrenProps = Omit<BoxProps, "children"> & {
   path?: Path;
   activePath?: Path;
   loading?: boolean;
+  filters?: Omit<
+    QueryMediaInput,
+    "limit" | "page" | "offset" | "order" | "sort"
+  >;
   onClickMedia?: (entry: Media, event: MouseEvent) => void;
   onDoubleClickMedia?: (entry: Media, event: MouseEvent) => void;
   onCreateMedia?: (entry: Media) => void;
@@ -34,6 +39,7 @@ export function MediaChildren({
   onDoubleClickMedia,
   onCreateMedia,
   style,
+  filters,
   ...props
 }: MediaChildrenProps) {
   const [pendingUploads, setPendingUploads] = useState<
@@ -54,6 +60,7 @@ export function MediaChildren({
         query: `parent_path = "${path ?? ""}"`,
         sort: "updated_at",
         order: "desc",
+        ...filters,
       },
     }),
   );

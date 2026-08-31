@@ -4,7 +4,7 @@ import { shutDown } from "./shut-down";
 type BookImport = {
   title: string;
   authors: string[];
-  isbn13: string;
+  isbn: string;
 };
 
 type ImportedBook = BookImport & {
@@ -35,7 +35,7 @@ class TestQueue extends JobQueue<{
 const tractatus: BookImport = {
   title: "Tractatus Logico-Philosophicus",
   authors: ["Ludwig Wittgenstein"],
-  isbn13: "9780415254083",
+  isbn: "9780415254083",
 };
 
 afterAll(async () => {

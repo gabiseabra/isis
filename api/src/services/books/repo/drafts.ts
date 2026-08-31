@@ -17,8 +17,7 @@ class DraftBookRow {
     public title: string,
     public slug: string | null,
     public tags: string[],
-    public isbn13: string | null,
-    public isbn10: string | null,
+    public isbn: string | null,
     public image_url: string | null,
     public publish_year: number | null,
     public publisher: unknown,
@@ -39,8 +38,7 @@ function mapDraftBook(row: DraftBookRow): DraftBook {
       title: row.title,
       slug: row.slug ?? undefined,
       tags: row.tags ?? [],
-      isbn13: row.isbn13 ?? undefined,
-      isbn10: row.isbn10 ?? undefined,
+      isbn: row.isbn ?? undefined,
       imageUrl: row.image_url ?? undefined,
       languages: row.languages,
       publishYear: row.publish_year ?? undefined,
@@ -98,8 +96,7 @@ export const upsertDraftBook = createBatchedFunction(
       title: string | null;
       slug: string | null;
       tags: string[] | null;
-      isbn13: string | null;
-      isbn10: string | null;
+      isbn: string | null;
       imageUrl: string | null;
       publishYear: number | null;
       publisher: Exclude<DraftBook["publisher"], undefined> | null;
@@ -114,8 +111,7 @@ export const upsertDraftBook = createBatchedFunction(
       title,
       slug,
       tags,
-      isbn13,
-      isbn10,
+      isbn,
       imageUrl,
       publishYear,
       publisher,
@@ -131,8 +127,7 @@ export const upsertDraftBook = createBatchedFunction(
     title,
     slug,
     tags,
-    isbn13,
-    isbn10,
+    isbn,
     image_url,
     publish_year,
     publisher,
@@ -146,8 +141,7 @@ export const upsertDraftBook = createBatchedFunction(
     input.title,
     input.slug,
     array(select jsonb_array_elements_text(input.tags::jsonb)),
-    input.isbn13,
-    input.isbn10,
+    input.isbn,
     input.image_url,
     input.publish_year,
     input.publisher,
@@ -160,8 +154,7 @@ export const upsertDraftBook = createBatchedFunction(
     ${title}::text[],
     ${slug}::varchar[],
     ${tags.map((tags) => JSON.stringify(tags))}::text[],
-    ${isbn13}::char(13)[],
-    ${isbn10}::char(10)[],
+    ${isbn}::varchar[],
     ${imageUrl}::text[],
     ${publishYear}::smallint[],
     ${publisher.map((p) => JSON.stringify(p))}::jsonb[],
@@ -174,8 +167,7 @@ export const upsertDraftBook = createBatchedFunction(
     title,
     slug,
     tags,
-    isbn13,
-    isbn10,
+    isbn,
     image_url,
     publish_year,
     publisher,
@@ -196,8 +188,7 @@ export const upsertDraftBook = createBatchedFunction(
     title = coalesce(excluded.title, draft_books.title),
     slug = coalesce(excluded.slug, draft_books.slug),
     tags = coalesce(excluded.tags, draft_books.tags),
-    isbn13 = coalesce(excluded.isbn13, draft_books.isbn13),
-    isbn10 = coalesce(excluded.isbn10, draft_books.isbn10),
+    isbn = coalesce(excluded.isbn, draft_books.isbn),
     image_url = coalesce(excluded.image_url, draft_books.image_url),
     publish_year = coalesce(excluded.publish_year, draft_books.publish_year),
     publisher = coalesce(excluded.publisher, draft_books.publisher),

@@ -17,9 +17,13 @@ const c = implement(adminApi.books.drafts).$context<ORPCContext>();
 
 export const bookDrafts = c.router({
   get: c.get.use(requireAuth).handler(async ({ input, errors }) => {
-    if (!(await getBook(input.id))) never(errors.NOT_FOUND());
+    if ("id" in input && !(await getBook(input.id))) never(errors.NOT_FOUND());
 
-    return getDraftBookResult(input);
+    const draft = getDraftBookResult(input);
+
+    if ("uuid" in input && !draft) never(errors.NOT_FOUND());
+
+    return draft;
   }),
 
   upsert: c.upsert
@@ -33,8 +37,7 @@ export const bookDrafts = c.router({
         title: input.title ?? null,
         slug: input.slug ?? null,
         tags: input.tags,
-        isbn13: input.isbn13 ?? null,
-        isbn10: input.isbn10 ?? null,
+        isbn: input.isbn ?? null,
         imageUrl: input.imageUrl ?? null,
         publishYear: input.publishYear ?? null,
         publisher: input.publisher ?? null,

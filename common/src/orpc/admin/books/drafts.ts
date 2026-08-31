@@ -12,7 +12,7 @@ export const bookDrafts = oc.prefix("/books/drafts").router({
     .errors({
       NOT_FOUND: {},
     })
-    .input(Book.pick({ id: true }))
+    .input(z.union([Book.pick({ id: true }), DraftBook.pick({ uuid: true })]))
     .output(DraftBookResult.nullable()),
 
   upsert: oc

@@ -12,8 +12,7 @@ class BookRow {
     public title: string,
     public status: BookStatus,
     public slug: string | null,
-    public isbn13: string | null,
-    public isbn10: string | null,
+    public isbn: string | null,
     public image_url: string | null,
     public publish_year: number | null,
     public publisher_id: number | null,
@@ -31,8 +30,7 @@ function mapBook(row: BookRow): Book {
     status: row.status,
     title: row.title,
     slug: row.slug ?? undefined,
-    isbn13: row.isbn13 ?? undefined,
-    isbn10: row.isbn10 ?? undefined,
+    isbn: row.isbn ?? undefined,
     imageUrl: row.image_url ?? undefined,
     publishYear: row.publish_year ?? undefined,
     publisherId:
@@ -78,7 +76,7 @@ export async function queryBooks(query: QueryBooksInput) {
     where b.id = any(coalesce(${ids as number[]}, array[b.id]))
     group by b.id
     having concat_ws(' ',
-        b.title, b.isbn13, b.isbn10,
+        b.title, b.isbn,
         array_to_string(b.tags, ' '),
         string_agg(distinct a.name, ' '),
         string_agg(distinct p.name, ' ')
@@ -109,13 +107,12 @@ export async function createBook(
   const publisherId = input.publisherId ? ID.toNumber(input.publisherId) : null;
 
   const row = await sqlOne<BookRow>`
-    insert into books (status, title, slug, isbn13, isbn10, image_url, publish_year, publisher_id, tags)
+    insert into books (status, title, slug, isbn, image_url, publish_year, publisher_id, tags)
     values (
       ${input.status}::book_status,
       ${input.title},
       ${input.slug ?? null},
-      ${input.isbn13 ?? null},
-      ${input.isbn10 ?? null},
+      ${input.isbn ?? null},
       ${input.imageUrl ?? null},
       ${input.publishYear ?? null},
       ${publisherId},
@@ -144,8 +141,7 @@ export async function updateBook(
     set status = ${input.status}::book_status,
       title = ${input.title},
       slug = ${input.slug ?? null},
-      isbn13 = ${input.isbn13 ?? null},
-      isbn10 = ${input.isbn10 ?? null},
+      isbn = ${input.isbn ?? null},
       image_url = ${input.imageUrl ?? null},
       publish_year = ${input.publishYear ?? null},
       publisher_id = ${publisherId},
