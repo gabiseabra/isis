@@ -186,7 +186,7 @@ export async function deleteBookPages(
   const ids = pageIds?.map((id) => ID.parse(id).id) ?? null;
   const row = await sqlOne<BookPageRow>`
     delete from book_pages
-    where book_id = ${ID.parse(bookId).id}
+    where book_id = ${ID.parse(bookId).id}::bigint
       and id = any(coalesce(${ids as number[]}::bigint[], array[id]))
     returning *;
   `;

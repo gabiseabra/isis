@@ -1,6 +1,6 @@
 import { UUID } from "@isis/common/dto/uuid";
 import { ID } from "@isis/common/utils/id";
-import { sqlOne } from "../db/sql";
+import { sqlOne, sqlOneMaybe } from "../db/sql";
 import { JWT } from "./jwt";
 
 class SessionRow {
@@ -21,7 +21,7 @@ export async function createSessionRow(input: JWT) {
 }
 
 export async function getSession(uuid: UUID) {
-  return sqlOne<SessionRow>`
+  return sqlOneMaybe<SessionRow>`
     select * from sessions
     where uuid = ${uuid}
     `;
