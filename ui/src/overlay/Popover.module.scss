@@ -1,5 +1,9 @@
 @use "../../styles/mixins/shadow" as shadow;
 
+[data-radix-popper-content-wrapper]:has(> [data-state="closed"]) {
+  pointer-events: none;
+}
+
 .Content {
   --popover-animation-duration: 150ms;
   --popover-tip-height: 7px;

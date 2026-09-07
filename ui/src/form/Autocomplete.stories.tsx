@@ -1,6 +1,8 @@
+import { extractDeclaration } from "@isis/common/utils/source-code";
 import type { Meta, StoryObj } from "@storybook/react";
 import { useState } from "react";
 import { Autocomplete, AutocompleteProps } from "./Autocomplete";
+import ownSource from "./Autocomplete.stories?raw";
 
 const demoOptions = [
   { value: "first", textValue: "First option" },
@@ -65,5 +67,13 @@ function MultiAutocompleStory(props: AutocompleteStoryProps) {
 }
 
 export const Multiple: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: extractDeclaration(ownSource, "function", "MultiAutocompleStory"),
+        language: "jsx",
+      },
+    },
+  },
   render: (props) => <MultiAutocompleStory {...props} />,
 };

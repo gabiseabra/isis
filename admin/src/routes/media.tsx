@@ -121,7 +121,7 @@ export function Component() {
             <MediaChildren
               p={2}
               path={path}
-              activePath={activePath}
+              isActive={(entry) => entry.path === activePath}
               onDoubleClick={() => {
                 setSearchParams({});
               }}

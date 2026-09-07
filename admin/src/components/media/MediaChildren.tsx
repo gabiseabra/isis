@@ -20,7 +20,7 @@ import { useUploadMediaMutation } from "../../orpc/media/use-upload-media-mutati
 
 type MediaChildrenProps = Omit<BoxProps, "children"> & {
   path?: Path;
-  activePath?: Path;
+  isActive?: (entry: Media) => boolean;
   loading?: boolean;
   filters?: Omit<
     QueryMediaInput,
@@ -33,7 +33,7 @@ type MediaChildrenProps = Omit<BoxProps, "children"> & {
 
 export function MediaChildren({
   path,
-  activePath,
+  isActive,
   loading,
   onClickMedia,
   onDoubleClickMedia,
@@ -120,7 +120,7 @@ export function MediaChildren({
               <MediaEntry
                 key={entry.id}
                 entry={entry}
-                active={activePath === entry.path}
+                active={isActive?.(entry)}
                 onClick={(e) => {
                   onClickMedia?.(entry, e);
                 }}

@@ -1,6 +1,5 @@
 import { oc } from "@orpc/contract";
 import z from "zod";
-import { BookPage } from "../../../../dto/book/page";
 import {
   DraftBookPage,
   DraftBookPageResult,

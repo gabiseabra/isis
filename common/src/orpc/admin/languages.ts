@@ -3,6 +3,16 @@ import z from "zod";
 import { Language } from "../../dto/language";
 
 export const languages = oc.prefix("/languages").router({
+  get: oc
+    .route({
+      description: "Get language.",
+    })
+    .errors({
+      NOT_FOUND: {},
+    })
+    .input(Language.pick({ code: true }))
+    .output(Language),
+
   query: oc
     .route({
       description: "Query languages.",
@@ -14,5 +24,10 @@ export const languages = oc.prefix("/languages").router({
         query: z.string().optional(),
       }),
     )
-    .output(Language.array()),
+    .output(
+      z.object({
+        items: Language.array(),
+        hasNextPage: z.boolean(),
+      }),
+    ),
 });

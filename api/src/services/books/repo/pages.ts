@@ -1,7 +1,7 @@
 import { BookPage } from "@isis/common/dto/book/page";
 import { BookPageInput } from "@isis/common/dto/book/page/input";
 import { QueryBookPagesInput } from "@isis/common/dto/book/page/query-input";
-import { WithNonNullable, WithRequired } from "@isis/common/types/object";
+import { WithNonNullable } from "@isis/common/types/object";
 import { liftMaybe } from "@isis/common/utils/fp";
 import { ID } from "@isis/common/utils/id";
 import {
@@ -54,7 +54,11 @@ export const getBookPage = createBatchedFunction(
   { maxBatchSize: MAX_BATCH_SIZE.DB_QUERY },
 );
 
-export async function queryBookPages(query: QueryBookPagesInput) {
+export async function queryBookPages(
+  query: Omit<QueryBookPagesInput, "page"> & {
+    offset?: number;
+  },
+) {
   const sort = query.sort ?? "page_number";
   const order = query.order ?? "asc";
   const ids = query.ids?.map((id) => ID.parse(id).id) ?? null;

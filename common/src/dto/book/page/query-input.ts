@@ -4,7 +4,6 @@ import { zID } from "../../primitives";
 export const QueryBookPagesInput = z.object({
   page: z.number().int().min(1),
   limit: z.number().int().min(1).max(255),
-  offset: z.number().int().min(0),
   sort: z.enum(["page_number", "created_at", "updated_at"]).optional(),
   order: z.enum(["asc", "desc"]).optional(),
   bookId: zID("Book").optional(),

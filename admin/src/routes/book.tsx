@@ -2,6 +2,7 @@ import { BookInput } from "@isis/common/dto/book/input";
 import { BookStatus } from "@isis/common/dto/book/status";
 import { UUID } from "@isis/common/dto/uuid";
 import { extractErrorMessage } from "@isis/common/utils/error";
+import { isNonNullable } from "@isis/common/utils/guards";
 import { ID } from "@isis/common/utils/id";
 import { Text } from "@isis/ui/display/Text";
 import { useToast } from "@isis/ui/feedback/Toast";
@@ -14,6 +15,9 @@ import { Col, Row } from "@isis/ui/layout/FlexBox";
 import { skipToken, useMutation, useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { useNavigate, useParams } from "react-router";
+import { AuthorSelector } from "../components/form/AuthorSelector";
+import { LanguageSelector } from "../components/form/LanguageSelector";
+import { PublisherSelector } from "../components/form/PublisherSelector";
 import { Loading } from "../components/layout/Loading";
 import { authLoader } from "../loaders/authLoader";
 import { orpcQuery, queryClient } from "../orpc/client";
@@ -98,9 +102,9 @@ export function Component() {
   const isMutating = draftMutation.isPending;
 
   return (
-    <Col asChild flex={1} width="wide">
+    <Col asChild flex={1} gap={3} width="wide">
       <form onSubmit={form.submit}>
-        <Row alignY="center" alignX="space-between">
+        <Row alignY="center" mb={-3} alignX="space-between">
           <Text as="h1">{id ? "Editar livro" : "Criar livro"}</Text>
 
           <Button
@@ -138,6 +142,35 @@ export function Component() {
           />
 
           <Input label="ISBN" disabled={isPending} {...form.register("isbn")} />
+
+          <PublisherSelector
+            label="Editora"
+            {...form.register("publisher", {
+              get: (publisher) => publisher?.id,
+              set: (_, id) => (id ? { id } : undefined),
+            })}
+          />
+
+          <AuthorSelector
+            label="Autor"
+            multiple
+            {...form.register("authors", {
+              get: (authors) => authors.map((a) => a.id).filter(isNonNullable),
+              set: (_, ids) => ids.map((id) => ({ id })),
+            })}
+          />
+
+          <LanguageSelector
+            label="Língua"
+            multiple
+            {...form.register("languages")}
+          />
+        </Card>
+
+        <Card elevation={2} p={4}>
+          <Text as="h4" mt={0}>
+            Páginas
+          </Text>
         </Card>
       </form>
     </Col>

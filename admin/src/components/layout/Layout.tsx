@@ -66,7 +66,13 @@ export function Layout({ children }: { children: ReactNode }) {
         <Nav.Link to="/media" icon={<BsImages />} title="Mídia" />
       </Nav>
 
-      <Col asChild flex={1} alignX="center" alignY="center">
+      <Col
+        asChild
+        flex={1}
+        alignX="center"
+        pb={4}
+        style={{ overflowY: "auto" }}
+      >
         <main>{children}</main>
       </Col>
     </>

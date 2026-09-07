@@ -122,7 +122,6 @@ describe("adminRouter.books", () => {
         client.books.query({
           page: 2,
           limit: 2,
-          offset: 0,
         }),
       ).resolves.toMatchObject({
         items: [
@@ -144,7 +143,6 @@ describe("adminRouter.books", () => {
         client.books.query({
           page: 1,
           limit: 3,
-          offset: 0,
           sort: "name",
           order: "desc",
         }),
@@ -172,7 +170,6 @@ describe("adminRouter.books", () => {
         client.books.query({
           page: 1,
           limit: 10,
-          offset: 0,
           query: "Einzige",
         }),
       ).resolves.toMatchObject({
@@ -191,7 +188,6 @@ describe("adminRouter.books", () => {
         client.books.query({
           page: 1,
           limit: 10,
-          offset: 0,
           ids: [`id://Book/2`, `id://Book/3`],
         }),
       ).resolves.toMatchObject({
@@ -214,7 +210,6 @@ describe("adminRouter.books", () => {
         client.books.query({
           page: 1,
           limit: 10,
-          offset: 0,
           tags: ["psychology"],
         }),
       ).resolves.toMatchObject({

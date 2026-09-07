@@ -7,7 +7,9 @@ import React, {
   Fragment,
   KeyboardEvent,
   ReactNode,
+  Ref,
   RefObject,
+  useImperativeHandle,
   useMemo,
   useRef,
   useState,
@@ -27,6 +29,7 @@ import { BaseInputProps } from "./use-form";
 
 export type Select<T, G> = {
   options: T[];
+  visibleOptions: T[];
   selectedOptions: T[];
   groupKeys?: G[];
   groupedOptions?: Map<G, T[]>;
@@ -37,48 +40,130 @@ export type Select<T, G> = {
   close(): void;
 };
 
-export type SelectProps<ID extends string, T, G> = Omit<
-  ComponentProps<typeof PopoverPrimitive.Content>,
-  "content" | "children"
-> & {
-  size?: InputWrapperProps["size"];
-  variant?: "default" | "unstyled";
+export type SelectOptions<ID extends string, T, G> = {
   disabled?: boolean;
-  autoFocus?: boolean;
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
 
-  // data
   options: T[];
+  isVisible?: (option: T) => boolean;
   optionId: (option: T) => ID;
   onSelectOption?: (option: T) => void;
   groupKey?: (option: T) => G;
   groupId?: (groupKey: G) => string;
-
-  // slots
-  label?: ReactNode;
-  description?: ReactNode;
-  optionText?: Slot<(option: T, select: Select<T, G>) => ReactNode>;
-  option?: Slot<(option: T, select: Select<T, G>) => ReactNode>;
-  group?: Slot<
-    (group: G, options: ReactElement[], select: Select<T, G>) => ReactNode
-  >;
-  placeholder?: Slot<(select: Select<T, G>) => ReactNode>;
-  triggerText?: Slot<(select: Select<T, G>) => ReactNode>;
-  trigger?: Slot<(select: Select<T, G>) => ReactNode>;
-  header?: Slot<(select: Select<T, G>) => ReactNode>;
-  footer?: Slot<(select: Select<T, G>) => ReactNode>;
-  left?: Slot<(select: Select<T, G>) => ReactNode>;
-  right?: Slot<(select: Select<T, G>) => ReactNode>;
-  emptyState?: Slot<(select: Select<T, G>) => ReactNode>;
-
-  fieldProps?: FieldProps;
 } & (
-    | ({ multiple?: false } & BaseInputProps<ID>)
-    | ({ multiple: true } & BaseInputProps<ID[]>)
+  | ({ multiple?: false } & BaseInputProps<ID>)
+  | ({ multiple: true } & BaseInputProps<ID[]>)
+);
+
+export type SelectProps<ID extends string, T, G> = Omit<
+  ComponentProps<typeof PopoverPrimitive.Content>,
+  "content" | "children" | "ref"
+> &
+  SelectOptions<ID, T, G> & {
+    ref?: Ref<Select<T, G>>;
+
+    size?: InputWrapperProps["size"];
+    variant?: "default" | "unstyled";
+    autoFocus?: boolean;
+
+    // slots
+    label?: ReactNode;
+    description?: ReactNode;
+    optionText?: Slot<(option: T, select: Select<T, G>) => ReactNode>;
+    option?: Slot<(option: T, select: Select<T, G>) => ReactNode>;
+    group?: Slot<
+      (group: G, options: ReactElement[], select: Select<T, G>) => ReactNode
+    >;
+    placeholder?: Slot<(select: Select<T, G>) => ReactNode>;
+    triggerText?: Slot<(select: Select<T, G>) => ReactNode>;
+    trigger?: Slot<(select: Select<T, G>) => ReactNode>;
+    header?: Slot<(select: Select<T, G>) => ReactNode>;
+    footer?: Slot<(select: Select<T, G>) => ReactNode>;
+    left?: Slot<(select: Select<T, G>) => ReactNode>;
+    right?: Slot<(select: Select<T, G>) => ReactNode>;
+    emptyState?: Slot<(select: Select<T, G>) => ReactNode>;
+
+    fieldProps?: FieldProps;
+  };
+
+export function useSelect<ID extends string, T, G>({
+  options,
+  isVisible = () => true,
+  optionId,
+  groupKey,
+  groupId,
+  disabled,
+  open = false,
+  onOpenChange,
+  onSelectOption,
+  ...props
+}: SelectOptions<ID, T, G>): Select<T, G> {
+  const elementsRef = useRef(new Map<ID, HTMLElement>());
+
+  const values = useMemo(
+    () =>
+      props.multiple
+        ? (props.value ?? [])
+        : typeof props.value === "string"
+          ? [props.value]
+          : [],
+    [props.multiple, props.value],
   );
 
+  return useMemo(
+    () => ({
+      options,
+      visibleOptions: options.filter(isVisible),
+      groupIds:
+        groupKey && groupId && unique(options.map(groupKey)).map(groupId),
+      groupKeys: groupKey && unique(options.map(groupKey)),
+      groupedOptions:
+        groupKey &&
+        options
+          .map((option) => [groupKey(option), option] as const)
+          .reduce((map, [id, t]) => {
+            if (map.has(id)) map.get(id)?.push(t);
+            else map.set(id, [t]);
+            return map;
+          }, new Map<G, T[]>([])),
+      selectedOptions: values
+        .map((oid) => options.find((o) => oid === optionId(o)))
+        .filter(isNonNullable),
+      toggle(option) {
+        if (disabled) return;
+        const oid = optionId(option);
+        if (!props.multiple) {
+          if (!values.includes(oid)) props.onChangeValue?.(oid);
+        } else {
+          if (values.includes(oid))
+            props.onChangeValue?.(values.filter((id) => id !== oid));
+          else props.onChangeValue?.([...values, oid]);
+        }
+        onSelectOption?.(option);
+      },
+      ref: (option) => ({
+        get current() {
+          return elementsRef.current.get(optionId(option)) ?? null;
+        },
+        set current(element) {
+          if (element) elementsRef.current.set(optionId(option), element);
+          else elementsRef.current.delete(optionId(option));
+        },
+      }),
+      disabled: !!disabled,
+      open,
+      close() {
+        onOpenChange?.(false);
+      },
+    }),
+    [options, isVisible, values, disabled, open],
+  );
+}
+
 export function Select<ID extends string, T, G>({
+  ref,
+
   size,
   variant = "default",
   disabled,
@@ -87,11 +172,9 @@ export function Select<ID extends string, T, G>({
   open: controlledOpen,
   onOpenChange: onControlledOpenChange,
 
-  options,
   optionId,
-  onSelectOption,
-  groupKey,
   groupId,
+  groupKey,
 
   touched,
   onTouch,
@@ -148,70 +231,13 @@ export function Select<ID extends string, T, G>({
   const [localOpen, setLocalOpen] = useState(false);
   const open = controlledOpen ?? localOpen;
 
-  const values = useMemo(
-    () =>
-      props.multiple
-        ? (props.value ?? [])
-        : typeof props.value === "string"
-          ? [props.value]
-          : [],
-    [props.multiple, props.value],
-  );
-
-  const elementsRef = useRef(new Map<ID, HTMLElement>());
-  const select: Select<T, G> = useMemo(
-    () => ({
-      options,
-      groupIds:
-        groupKey && groupId && unique(options.map(groupKey)).map(groupId),
-      groupKeys: groupKey && unique(options.map(groupKey)),
-      groupedOptions:
-        groupKey &&
-        options
-          .map((option) => [groupKey(option), option] as const)
-          .reduce((map, [id, t]) => {
-            if (map.has(id)) map.get(id)?.push(t);
-            else map.set(id, [t]);
-            return map;
-          }, new Map<G, T[]>([])),
-      selectedOptions: values
-        .map((oid) => options.find((o) => oid === optionId(o)))
-        .filter(isNonNullable),
-      toggle(option) {
-        if (disabled) return;
-        const oid = optionId(option);
-        if (!props.multiple) {
-          if (!values.includes(oid)) props.onChangeValue?.(oid);
-        } else {
-          if (values.includes(oid))
-            props.onChangeValue?.(values.filter((id) => id !== oid));
-          else props.onChangeValue?.([...values, oid]);
-        }
-        onSelectOption?.(option);
-      },
-      ref: (option) => ({
-        get current() {
-          return elementsRef.current.get(optionId(option)) ?? null;
-        },
-        set current(element) {
-          if (element) elementsRef.current.set(optionId(option), element);
-          else elementsRef.current.delete(optionId(option));
-        },
-      }),
-      disabled: !!disabled,
-      open,
-      close() {
-        onOpenChange(false);
-      },
-    }),
-    [options, values, disabled, open],
-  );
+  const select = useSelect({ ...props, open, optionId, groupId, groupKey });
 
   function onOpenChange(open: boolean) {
     if (open && disabled) return;
     if (open && autoFocus) {
       // focus on first selected option
-      const firstSelected = options.find((option) =>
+      const firstSelected = select.visibleOptions.find((option) =>
         select.selectedOptions.includes(option),
       );
       if (firstSelected) select.ref(firstSelected).current?.focus();
@@ -223,27 +249,39 @@ export function Select<ID extends string, T, G>({
 
   function onKeyDown(e: KeyboardEvent<HTMLElement>) {
     if (e.defaultPrevented || disabled) return;
-    const selectedOptionIndex = options.findIndex(
+
+    const selectedOptionIndex = select.visibleOptions.findIndex(
       (option) => select.ref(option)?.current === document.activeElement,
     );
-    if (selectedOptionIndex === -1) return;
     const isMod = e.shiftKey || e.metaKey || e.ctrlKey;
     const isOnlyShift = e.shiftKey && !e.metaKey && !e.ctrlKey;
-    const shiftOffset =
+    const direction =
       (e.key === "ArrowUp" && !isMod) || (e.key === "Tab" && isOnlyShift)
         ? -1
         : (e.key === "ArrowDown" && !isMod) || (e.key === "Tab" && !isMod)
           ? 1
           : null;
-    if (shiftOffset) {
-      const option =
-        options[
-          (selectedOptionIndex + shiftOffset + options.length) % options.length
-        ];
-      if (option) select.ref(option).current?.focus();
-      e.preventDefault();
-    }
+
+    if (!direction) return;
+
+    const option =
+      select.visibleOptions[
+        ((selectedOptionIndex !== -1
+          ? selectedOptionIndex
+          : direction === 1
+            ? -1
+            : 0) +
+          direction +
+          select.visibleOptions.length) %
+          select.visibleOptions.length
+      ];
+
+    if (option) select.ref(option).current?.focus();
+
+    e.preventDefault();
   }
+
+  useImperativeHandle(ref, () => select, [select]);
 
   return (
     <Field
@@ -272,7 +310,6 @@ export function Select<ID extends string, T, G>({
             collisionPadding={boundary.paddingPx}
             collisionBoundary={boundary.element}
             data-state={select.open ? "open" : "closed"}
-            data-values={values.length ? values.join(";") : undefined}
             {...omit(props, ["multiple", "value", "onChangeValue"])}
             onKeyDown={(e) => {
               props.onKeyDown?.(e);
@@ -281,9 +318,9 @@ export function Select<ID extends string, T, G>({
           >
             <div className={styles.Viewport} role="listbox">
               {Slot.render(header, select)}
-              {select.options.length
+              {select.visibleOptions.length
                 ? groupBy(
-                    select.options.map(
+                    select.visibleOptions.map(
                       (o) =>
                         [
                           o,
@@ -372,7 +409,7 @@ Select.Option = function SelectOption<T>({
       aria-disabled={disabled || undefined}
       className={[styles.Item, className].filter(Boolean).join(" ")}
       data-disabled={disabled ? "" : undefined}
-      data-selected={select?.selectedOptions.includes(option) || undefined}
+      data-active={select?.selectedOptions.includes(option) || undefined}
       role="option"
       {...props}
       onClick={(e) => {

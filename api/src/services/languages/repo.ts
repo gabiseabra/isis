@@ -1,5 +1,5 @@
 import { Language } from "@isis/common/dto/language";
-import { sql } from "../db/sql";
+import { sql, sqlOneMaybe } from "../db/sql";
 
 class LanguageRow {
   constructor(
@@ -16,6 +16,15 @@ function mapLanguage(row: LanguageRow): Language {
   };
 }
 
+export async function getLanguage(code: string) {
+  const row = await sqlOneMaybe<LanguageRow>`
+    select * from languages
+    where code = ${code};
+    `;
+
+  return row ? mapLanguage(row) : null;
+}
+
 export async function queryLanguages(query: {
   offset: number;
   limit: number;
@@ -24,6 +33,7 @@ export async function queryLanguages(query: {
   const rows = await sql<LanguageRow>`
     select * from languages
     where concat_ws(' ', code, name) ilike coalesce('%' || ${query.query ?? null}  || '%', '%')
+    order by name asc, code asc
     limit ${query.limit}
     offset ${query.offset};
     `;

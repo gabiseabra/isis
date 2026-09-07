@@ -103,7 +103,6 @@ describe("adminRouter.books.pages", () => {
         client.books.pages.query({
           page: 2,
           limit: 3,
-          offset: 0,
           bookId: book.id,
         }),
       ).resolves.toMatchObject({
@@ -121,7 +120,6 @@ describe("adminRouter.books.pages", () => {
         client.books.pages.query({
           page: 1,
           limit: 3,
-          offset: 0,
           bookId: book.id,
           sort: "page_number",
           order: "desc",
@@ -141,7 +139,6 @@ describe("adminRouter.books.pages", () => {
         client.books.pages.query({
           page: 1,
           limit: 10,
-          offset: 0,
           bookId: book.id,
           query: "Title",
         }),
@@ -156,7 +153,6 @@ describe("adminRouter.books.pages", () => {
         client.books.pages.query({
           page: 1,
           limit: 10,
-          offset: 0,
           bookId: book.id,
           ids: [`id://BookPage/2`, `id://BookPage/4`],
         }),
@@ -171,7 +167,6 @@ describe("adminRouter.books.pages", () => {
         client.books.pages.query({
           page: 1,
           limit: 10,
-          offset: 0,
           bookId: book.id,
           tags: ["a", "b"],
         }),
@@ -186,7 +181,6 @@ describe("adminRouter.books.pages", () => {
         client.books.pages.query({
           page: 1,
           limit: 10,
-          offset: 0,
           bookId: book.id,
           types: ["Blank", "Title"],
         }),
@@ -201,7 +195,6 @@ describe("adminRouter.books.pages", () => {
         client.books.pages.query({
           page: 1,
           limit: 10,
-          offset: 0,
           bookId: book.id,
           minPageNumber: 3,
           maxPageNumber: 5,
@@ -220,7 +213,7 @@ describe("adminRouter.books.pages", () => {
   describe("count", () => {
     it("supports filters", async () => {
       await expect(
-        client.books.pages.count({ offset: 0, bookId: book.id, tags: ["a"] }),
+        client.books.pages.count({ bookId: book.id, tags: ["a"] }),
       ).resolves.toBe(3);
     });
   });
@@ -258,7 +251,6 @@ describe("adminRouter.books.pages", () => {
             uuid: draft.data.uuid,
             page: 1,
             limit: 1,
-            offset: 0,
           }),
         ).resolves.toMatchObject({
           items: [{ pageId: `id://BookPage/1`, pageNumber: 13 }],
@@ -342,7 +334,6 @@ describe("adminRouter.books.pages", () => {
             uuid: draft.data.uuid,
             page: 1,
             limit: 10,
-            offset: 0,
           }),
         ).resolves.toMatchObject({ items: [], hasNextPage: false });
       });

@@ -30,7 +30,6 @@ export function MediaSelector({
   open: controlledOpen,
   onClose,
   filters,
-  isDisabled,
   ...props
 }: MediaSelectorProps) {
   const [localOpen, setLocalOpen] = useState(false);
@@ -87,6 +86,7 @@ export function MediaSelector({
       >
         <MediaChildren
           filters={filters}
+          isActive={(entry) => mediaIds.includes(entry.id)}
           onClickMedia={(media) => {
             if (props.multiple)
               props.onChangeValue?.(

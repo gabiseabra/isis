@@ -1,6 +1,7 @@
 import { WithRequired } from "@isis/common/types/object";
 import { hash } from "@isis/common/utils/hash";
 import { keys } from "@isis/common/utils/object";
+import type { Lens } from "@isis/common/utils/optics/lens";
 import { SubmitEvent, useCallback, useId, useMemo, useState } from "react";
 import z, { ZodError } from "zod";
 
@@ -32,6 +33,10 @@ export type Form<T extends AnySchema> = {
   register<K extends keyof T>(
     field: K,
   ): WithRequired<BaseInputProps<FormValue<T>[K]>, "id" | "onChangeValue">;
+  register<K extends keyof T, A>(
+    field: K,
+    lens: Lens<FormValue<T>[K], A>,
+  ): WithRequired<BaseInputProps<A>, "id" | "onChangeValue">;
   setValue<K extends keyof T>(field: K, value: FormValue<T>[K]): void;
   getValue<K extends keyof T>(field: K): FormValue<T>[K] | undefined;
   hasUnsavedChanges: boolean;
@@ -92,18 +97,33 @@ export function useForm<T extends AnySchema>({
     });
   };
 
-  const register = <K extends keyof T>(field: K) => ({
-    id: `${id}-${String(field)}`,
-    value: values[field],
-    onChangeValue: (value: FormValue<T>[K]) => setValue(field, value),
-    required: schema.shape[field]._zod.optin !== "optional",
-    error: errors.has(field) ? z.prettifyError(errors.get(field)!) : undefined,
-    touched: touched.has(field),
-    onTouch: () => {
-      validate(field);
-      setTouched((touched) => new Set([...Array.from(touched), field]));
-    },
-  });
+  function register<K extends keyof T>(
+    field: K,
+  ): WithRequired<BaseInputProps<FormValue<T>[K]>, "id" | "onChangeValue">;
+  function register<K extends keyof T, A>(
+    field: K,
+    lens: Lens<FormValue<T>[K], A>,
+  ): WithRequired<BaseInputProps<A>, "id" | "onChangeValue">;
+  function register<K extends keyof T, A>(
+    field: K,
+    lens?: Lens<FormValue<T>[K], A>,
+  ) {
+    return {
+      id: `${id}-${String(field)}`,
+      value: lens ? lens.get(values[field]!) : values[field],
+      onChangeValue: (value: FormValue<T>[K] & A) =>
+        setValue(field, lens ? lens.set(values[field]!, value) : value),
+      required: schema.shape[field]._zod.optin !== "optional",
+      error: errors.has(field)
+        ? z.prettifyError(errors.get(field)!)
+        : undefined,
+      touched: touched.has(field),
+      onTouch: () => {
+        validate(field);
+        setTouched((touched) => new Set([...Array.from(touched), field]));
+      },
+    };
+  }
 
   const hasUnsavedChanges = useMemo(() => {
     return keys(schema.shape).some(

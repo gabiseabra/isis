@@ -59,12 +59,30 @@ export async function getBook(id: ID<"Book">) {
   return row ? mapBook(row) : null;
 }
 
-export async function queryBooks(query: QueryBooksInput) {
+export async function queryBooks(
+  query: Omit<QueryBooksInput, "page"> & {
+    offset: number;
+  },
+) {
   const sort = query.sort ?? "name";
   const order = query.order ?? "asc";
   const ids = query.ids?.map(ID.toNumber) ?? null;
 
-  const rows = await sql<BookRow>`
+  const rows = await sql<{
+    id: number;
+    title: string;
+    status: BookStatus;
+    slug: string | null;
+    tags: string[];
+    isbn: string | null;
+    image_url: string | null;
+    publish_year: number | null;
+    publisher_id: number | null;
+    created_at: Date;
+    updated_at: Date;
+    author_ids: number[] | null;
+    languages: string[] | null;
+  }>`
     select b.*,
       array_agg(distinct coalesce(ba.author_id::int, 0)) filter (where ba.author_id is not null) as author_ids,
       array_agg(distinct coalesce(bl.language_code::text, '')) filter (where bl.language_code is not null) as languages
@@ -106,7 +124,21 @@ export async function createBook(
 ) {
   const publisherId = input.publisherId ? ID.toNumber(input.publisherId) : null;
 
-  const row = await sqlOne<BookRow>`
+  const row = await sqlOne<{
+    id: number;
+    title: string;
+    status: BookStatus;
+    slug: string | null;
+    tags: string[];
+    isbn: string | null;
+    image_url: string | null;
+    publish_year: number | null;
+    publisher_id: number | null;
+    created_at: Date;
+    updated_at: Date;
+    author_ids: number[] | null;
+    languages: string[] | null;
+  }>`
     insert into books (status, title, slug, isbn, image_url, publish_year, publisher_id, tags)
     values (
       ${input.status}::book_status,
@@ -136,7 +168,21 @@ export async function updateBook(
   const id = ID.toNumber(input.id);
   const publisherId = input.publisherId ? ID.toNumber(input.publisherId) : null;
 
-  const row = await sqlOne<BookRow>`
+  const row = await sqlOne<{
+    id: number;
+    title: string;
+    status: BookStatus;
+    slug: string | null;
+    tags: string[];
+    isbn: string | null;
+    image_url: string | null;
+    publish_year: number | null;
+    publisher_id: number | null;
+    created_at: Date;
+    updated_at: Date;
+    author_ids: number[] | null;
+    languages: string[] | null;
+  }>`
     update books
     set status = ${input.status}::book_status,
       title = ${input.title},
